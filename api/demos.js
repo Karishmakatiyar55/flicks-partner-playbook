@@ -7,8 +7,11 @@
 // POST /api/demos  {partner, op:"remove", url, base}
 //   "base" is the partner's current list on the page; it seeds storage the first
 //   time a partner is changed, so demos written in the code are kept.
+// POST /api/demos  {partner, op:"stage", stage:0-3, note}
+//   Deal stage tracker. GET also returns { stages: { partnerId: {stage,note} } }.
 
 const KEY = "flicks-playbook:demos";
+const STAGE_KEY = "flicks-playbook:stages";
 const MAX_PER_PARTNER = 30;
 
 function store() {
@@ -27,8 +30,8 @@ async function redis(s, command) {
   return (await r.json()).result;
 }
 
-async function readAll(s) {
-  const raw = await redis(s, ["GET", KEY]);
+async function readAll(s, key) {
+  const raw = await redis(s, ["GET", key || KEY]);
   try { return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
 }
 
@@ -45,13 +48,26 @@ module.exports = async (req, res) => {
   if (!s) return res.status(503).json({ error: "Shared storage is not connected" });
 
   try {
-    if (req.method === "GET") return res.status(200).json({ demos: await readAll(s) });
+    if (req.method === "GET") {
+      const [demos, stages] = await Promise.all([readAll(s), readAll(s, STAGE_KEY)]);
+      return res.status(200).json({ demos, stages });
+    }
 
     if (req.method !== "POST") return res.status(405).json({ error: "Use GET or POST" });
 
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const { partner, op } = body;
     if (!/^[a-z0-9-]{1,40}$/.test(partner || "")) return res.status(400).json({ error: "Unknown partner" });
+
+    if (op === "stage") {
+      const stage = Number(body.stage);
+      if (!Number.isInteger(stage) || stage < 0 || stage > 3) return res.status(400).json({ error: "Unknown stage" });
+      const note = String(body.note == null ? "" : body.note).replace(/\s+/g, " ").trim().slice(0, 140);
+      const stages = await readAll(s, STAGE_KEY);
+      stages[partner] = { stage, note };
+      await redis(s, ["SET", STAGE_KEY, JSON.stringify(stages)]);
+      return res.status(200).json({ deal: stages[partner] });
+    }
 
     const all = await readAll(s);
     let list = Array.isArray(all[partner]) ? clean(all[partner]) : clean(body.base);
@@ -65,7 +81,7 @@ module.exports = async (req, res) => {
       const i = list.findIndex((d) => d.url === body.url);
       if (i >= 0) list.splice(i, 1);
     } else {
-      return res.status(400).json({ error: "op must be add or remove" });
+      return res.status(400).json({ error: "op must be add, remove or stage" });
     }
 
     all[partner] = list;
