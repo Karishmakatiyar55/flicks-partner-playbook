@@ -218,6 +218,9 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 .cbar .small .i{width:14px;height:14px}
 .pdfv{position:relative;height:min(80vh,900px);border-radius:18px;overflow:hidden;background:#1b1615;box-shadow:inset 0 0 0 1px var(--line-2),0 30px 60px rgba(0,0,0,.45)}
 .pdfv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
+.pdfv iframe:not([src]){visibility:hidden}
+.pdfload{position:absolute;inset:0;display:grid;place-items:center;margin:0;z-index:2;font-size:14px;color:var(--muted)}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
 .cform{display:grid;grid-template-columns:minmax(0,1.2fr) auto minmax(0,1.6fr) auto;gap:8px;align-items:center;padding:12px;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
 .cform input[name=title],.cform input[name=url]{min-width:0;border:0;border-radius:10px;padding:10px 12px;background:#0a0807;color:var(--ink);font:inherit;font-size:13.5px;box-shadow:inset 0 0 0 1px var(--line-2)}
 .cform input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--khaki)}
@@ -891,10 +894,24 @@ var COMPETITORS={
   var localCases=function(){try{var a=JSON.parse(localStorage.getItem(LOCAL_CASES_KEY)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}};
   function allCases(){return (SHARED?SHARED_CASES:localCases()).concat(CASES.map(function(c){var o={};for(var k in c)o[k]=c[k];o.fixed=true;return o}))}
   var caseFile=function(c,dl){return c.url&&c.kind==="pdf"?c.url:"api/demos?file="+encodeURIComponent(c.id)+(dl?"&download=1":"")};
+  var PDF_MAX=20*1048576, PDF_PART=2.5*1048576, PDF_BLOBS={};
+  function loadPdf(c,onProgress){
+    if(PDF_BLOBS[c.id]) return Promise.resolve(PDF_BLOBS[c.id]);
+    var got=0, bufs=new Array(c.parts);
+    var one=function(n,tries){return fetch("api/demos?file="+encodeURIComponent(c.id)+"&part="+n).then(function(r){if(!r.ok) throw new Error(r.status); return r.arrayBuffer();}).then(function(b){bufs[n]=b; got++; onProgress(got,c.parts);},function(e){if(tries>0) return one(n,tries-1); throw e;})};
+    var chain=Promise.resolve(), idx=[]; for(var n=0;n<c.parts;n++) idx.push(n);
+    // two pieces at a time
+    var run=function(){var n=idx.shift(); if(n==null) return Promise.resolve(); return one(n,1).then(run)};
+    return Promise.all([run(),run()]).then(function(){var u=URL.createObjectURL(new Blob(bufs,{type:"application/pdf"})); PDF_BLOBS[c.id]=u; return u;});
+  }
   var mb=function(n){return n?(n/1048576<0.1?"<0.1":(n/1048576).toFixed(1))+" MB":""};
   var host=function(u){try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){return u}};
   function caseViewer(c){
     if(!c) return '<div class="stage"><div class="empty"><div><span class="tile">'+ic("book")+'</span>No case studies yet<br><span class="small">Add a PDF or a link below</span></div></div></div>';
+    if(c.kind==="pdf"&&c.parts){var bu=PDF_BLOBS[c.id];
+      return '<div class="cbar"><span class="small">'+ic("book")+esc(c.name||"PDF")+(c.size?' · '+mb(c.size):'')+'</span><span class="chips"><a class="btn sm" id="pdfOpen" '+(bu?'href="'+bu+'"':'aria-disabled="true"')+' target="_blank" rel="noopener">'+ic("external")+'Open full screen</a><a class="btn sm primary" id="pdfDl" '+(bu?'href="'+bu+'"':'aria-disabled="true"')+' download="'+esc(c.name||"case-study.pdf")+'">'+ic("download")+'Download</a></span></div>'+
+        '<div class="pdfv" data-pdf="'+esc(c.id)+'">'+(bu?'':'<div class="loader"></div><p class="pdfload" id="pdfLoad">Loading PDF…</p>')+'<iframe id="pdfFrame" '+(bu?'src="'+bu+'#view=FitH"':'')+' title="'+esc(c.title)+'"></iframe></div>'+
+        '<p class="small">If the PDF doesn\'t show here (some phones can\'t show PDFs inside a page), use Open full screen or Download.</p>';}
     if(c.kind==="pdf"){var u=caseFile(c,false);
       return '<div class="cbar"><span class="small">'+ic("book")+esc(c.name||"PDF")+(c.size?' · '+mb(c.size):'')+'</span><span class="chips"><a class="btn sm" href="'+esc(u)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a><a class="btn sm primary" href="'+esc(caseFile(c,true))+'" download="'+esc(c.name||"case-study.pdf")+'">'+ic("download")+'Download</a></span></div>'+
         '<div class="pdfv"><div class="loader"></div><iframe src="'+esc(u)+'#view=FitH" title="'+esc(c.title)+'"></iframe></div>'+
@@ -917,17 +934,25 @@ var COMPETITORS={
     h+='<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Add<b>Case study</b></span></div>'+
       '<form class="cform" id="cform" novalidate><input name="title" maxlength="80" placeholder="Name, e.g. BigBasket Diwali Flicks" aria-label="Case study name">'+
       '<div class="seg" role="group" aria-label="Type"><button type="button" data-ckind="pdf" aria-pressed="'+(caseState.kind==="pdf")+'">'+ic("book")+'PDF</button><button type="button" data-ckind="link" aria-pressed="'+(caseState.kind==="link")+'">'+ic("link")+'Link</button></div>'+
-      (caseState.kind==="pdf"?'<label class="cfile"><input type="file" name="file" accept="application/pdf,.pdf"><span id="cfname">'+ic("plus")+'Choose a PDF (up to 3 MB)</span></label>':'<input name="url" type="url" placeholder="https://… (a PDF link or any page)" aria-label="Link">')+
+      (caseState.kind==="pdf"?'<label class="cfile"><input type="file" name="file" accept="application/pdf,.pdf"><span id="cfname">'+ic("plus")+'Choose a PDF (up to 20 MB)</span></label>':'<input name="url" type="url" placeholder="https://… (a PDF link or any page)" aria-label="Link">')+
       '<button class="btn sm primary" type="submit">'+ic("plus")+'Add</button><p class="err" id="cerr"></p></form>'+
       '<p class="small">'+(SHARED?ic("users")+' Case studies added here show for everyone who opens this playbook. ':'Shared saving isn\'t connected yet: links save only in this browser and PDF upload is off. ')+
-      'The playbook is on a public link, so anything added here can be seen by anyone with it. For a PDF over 3 MB, add a link to it, or commit it to <code>assets/case-studies/</code>.</p></section>';
+      'The playbook is on a public link, so anything added here can be seen by anyone with it. For a PDF over 20 MB, add a link to it, or commit it to <code>assets/case-studies/</code>.</p></section>';
     return h;
   }
   function drawCases(){var y=window.scrollY; $("view").innerHTML=casesPage(); applyEditing(); wireCases(); window.scrollTo(0,y);}
   function wireCases(){
     if($("dframe")) wireDemo();
-    var pf=document.querySelector(".pdfv iframe"); if(pf) pf.addEventListener("load",function(){var l=document.querySelector(".pdfv .loader"); if(l) l.style.opacity="0";});
-    var fi=document.querySelector('#cform input[type=file]'); if(fi) fi.addEventListener("change",function(){var f=fi.files[0]; $("cfname").innerHTML=f?ic("book")+esc(f.name)+' · '+mb(f.size):ic("plus")+'Choose a PDF (up to 3 MB)';});
+    var pf=document.querySelector(".pdfv iframe"); if(pf&&pf.getAttribute("src")) pf.addEventListener("load",function(){var l=document.querySelector(".pdfv .loader"); if(l) l.style.opacity="0";});
+    var pv=document.querySelector(".pdfv[data-pdf]"), cc=allCases()[caseState.i];
+    if(pv&&cc&&cc.parts&&!PDF_BLOBS[cc.id]){
+      loadPdf(cc,function(a,b){var t=$("pdfLoad"); if(t) t.textContent="Loading PDF… "+Math.round(a/b*100)+"%";}).then(function(u){
+        var v=document.querySelector('.pdfv[data-pdf="'+cc.id+'"]'); if(!v) return;
+        $("pdfFrame").src=u+"#view=FitH"; ["pdfOpen","pdfDl"].forEach(function(id){var a=$(id); a.href=u; a.removeAttribute("aria-disabled");});
+        var l=v.querySelector(".loader"), t=$("pdfLoad"); if(l) l.style.opacity="0"; if(t) t.remove();
+      },function(){var t=$("pdfLoad"); if(t) t.textContent="Couldn't load this PDF. Refresh to try again.";});
+    }
+    var fi=document.querySelector('#cform input[type=file]'); if(fi) fi.addEventListener("change",function(){var f=fi.files[0]; $("cfname").innerHTML=f?ic("book")+esc(f.name)+' · '+mb(f.size):ic("plus")+'Choose a PDF (up to 20 MB)';});
   }
   function caseClick(t){
     if(t.dataset.case!=null){caseState.i=+t.dataset.case; caseState.armed=null; drawCases(); return true;}
@@ -955,13 +980,20 @@ var COMPETITORS={
     var file=f.file&&f.file.files[0];
     if(!SHARED) return fail("PDF upload needs shared storage connected (see README). Add it as a link for now.");
     if(!file) return fail("Choose a PDF file.");
-    if(file.size>3*1048576) return fail("This PDF is "+mb(file.size)+". The limit is 3 MB: add it as a link instead.");
-    btn.disabled=true; btn.textContent="Uploading…";
-    var rd=new FileReader();
-    rd.onload=function(){var data=String(rd.result).split(",")[1]||"";
-      api("POST",{op:"case-add",title:title,kind:"pdf",name:file.name,data:data},60000).then(function(r){done(r.cases)},fail);};
-    rd.onerror=function(){fail("Couldn't read that file.")};
-    rd.readAsDataURL(file);
+    if(file.size>PDF_MAX) return fail("This PDF is "+mb(file.size)+". The limit is 20 MB: add it as a link instead.");
+    var parts=Math.ceil(file.size/PDF_PART);
+    btn.disabled=true; btn.textContent="Uploading 0%";
+    var b64=function(blob){return new Promise(function(ok,no){var rd=new FileReader(); rd.onload=function(){ok(String(rd.result).split(",")[1]||"")}; rd.onerror=function(){no("Couldn't read that file.")}; rd.readAsDataURL(blob);})};
+    var sendPart=function(id,n,tries){return b64(file.slice(n*PDF_PART,Math.min(file.size,(n+1)*PDF_PART))).then(function(d){return api("POST",{op:"pdf-part",id:id,n:n,data:d},60000)}).catch(function(m){if(tries>0) return sendPart(id,n,tries-1); throw m;})};
+    file.slice(0,5).text().then(function(head){
+      if(head!=="%PDF-") throw "That file isn't a PDF.";
+      return api("POST",{op:"pdf-start",title:title,name:file.name,size:file.size,parts:parts});
+    }).then(function(r){
+      var id=r.id, n=0;
+      var next=function(){ if(n>=parts) return api("POST",{op:"pdf-done",id:id},20000);
+        return sendPart(id,n,2).then(function(){n++; btn.textContent="Uploading "+Math.round(n/parts*100)+"%"; return next();}); };
+      return next();
+    }).then(function(r){done(r.cases)},function(m){fail(typeof m==="string"?m:"Upload failed. Try again.")});
   }
 
   /* ---------- partner page ---------- */

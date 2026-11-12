@@ -12,15 +12,23 @@
 //
 // Case studies. GET also returns { cases: [{id,title,kind,url,name,size}] }.
 // POST /api/demos  {op:"case-add", title, kind:"link", url}
-// POST /api/demos  {op:"case-add", title, kind:"pdf", name, data}   data = base64 PDF, up to 3 MB
+// PDFs up to 20 MB go up in pieces (a Vercel function call carries at most 4.5 MB):
+// POST /api/demos  {op:"pdf-start", title, name, size, parts}   -> {id}
+// POST /api/demos  {op:"pdf-part", id, n, data}                  data = base64 of one piece
+// POST /api/demos  {op:"pdf-done", id}                           -> {cases}
+// GET  /api/demos?file=<id>&part=<n>                             one piece, raw bytes
 // POST /api/demos  {op:"case-remove", id}
-// GET  /api/demos?file=<id>[&download=1]   streams an uploaded PDF
+// Unfinished uploads expire after an hour.
 
 const KEY = "flicks-playbook:demos";
 const STAGE_KEY = "flicks-playbook:stages";
 const CASES_KEY = "flicks-playbook:cases";
 const FILE_KEY = (id) => "flicks-playbook:case-file:" + id;
-const MAX_PDF = 3 * 1024 * 1024;
+const MAX_PDF = 20 * 1024 * 1024;
+const PART = 2.5 * 1024 * 1024;           // raw bytes per piece
+const PART_KEY = (id, n) => FILE_KEY(id) + ":" + n;
+const PENDING_KEY = (id) => "flicks-playbook:case-pending:" + id;
+const TTL = 3600;
 const MAX_CASES = 60;
 const MAX_PER_PARTNER = 30;
 
@@ -62,6 +70,17 @@ module.exports = async (req, res) => {
     if (req.method === "GET") {
       const q = new URL(req.url || "/", "http://x").searchParams;
       const fileId = q.get("file");
+      if (fileId && q.has("part")) {
+        const n = Number(q.get("part"));
+        if (!/^[a-z0-9]{6,24}$/.test(fileId) || !Number.isInteger(n) || n < 0 || n > 20) return res.status(400).json({ error: "Unknown file" });
+        const b64 = await redis(s, ["GET", PART_KEY(fileId, n)]);
+        if (!b64) return res.status(404).json({ error: "File not found" });
+        const buf = Buffer.from(b64, "base64");
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader("Content-Length", buf.length);
+        res.setHeader("Cache-Control", "private, max-age=86400, immutable");
+        return res.end(buf);
+      }
       if (fileId) {
         if (!/^[a-z0-9]{6,24}$/.test(fileId)) return res.status(400).json({ error: "Unknown file" });
         const [b64, cases] = await Promise.all([redis(s, ["GET", FILE_KEY(fileId)]), readCases(s)]);
@@ -94,18 +113,47 @@ module.exports = async (req, res) => {
       if (body.kind === "link") {
         if (!isUrl(body.url)) return res.status(400).json({ error: "Paste a full link starting with https://" });
         item = { id, title, kind: "link", url: body.url };
-      } else if (body.kind === "pdf") {
-        const data = String(body.data || "");
-        const buf = Buffer.from(data, "base64");
-        if (!buf.length) return res.status(400).json({ error: "Choose a PDF file" });
-        if (buf.length > MAX_PDF) return res.status(400).json({ error: "PDF is over 3 MB. Add it as a link instead." });
-        if (buf.slice(0, 5).toString() !== "%PDF-") return res.status(400).json({ error: "That file isn't a PDF" });
-        const name = String(body.name || "case-study.pdf").slice(0, 100);
-        await redis(s, ["SET", FILE_KEY(id), buf.toString("base64")]);
-        item = { id, title, kind: "pdf", name, size: buf.length };
       } else {
-        return res.status(400).json({ error: "kind must be pdf or link" });
+        return res.status(400).json({ error: "Use pdf-start to upload a PDF" });
       }
+      cases.unshift(item);
+      await redis(s, ["SET", CASES_KEY, JSON.stringify(cases)]);
+      return res.status(200).json({ cases });
+    }
+    if (op === "pdf-start") {
+      const title = String(body.title || "").replace(/\s+/g, " ").trim().slice(0, 80);
+      if (!title) return res.status(400).json({ error: "Give the case study a name" });
+      const size = Number(body.size), parts = Number(body.parts);
+      if (!Number.isInteger(size) || size <= 0) return res.status(400).json({ error: "Choose a PDF file" });
+      if (size > MAX_PDF) return res.status(400).json({ error: "PDF is over 20 MB" });
+      if (parts !== Math.ceil(size / PART)) return res.status(400).json({ error: "Upload pieces don't match the file size" });
+      if ((await readCases(s)).length >= MAX_CASES) return res.status(400).json({ error: "Too many case studies" });
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      const name = String(body.name || "case-study.pdf").slice(0, 100);
+      await redis(s, ["SET", PENDING_KEY(id), JSON.stringify({ id, title, kind: "pdf", name, size, parts }), "EX", TTL]);
+      return res.status(200).json({ id });
+    }
+    if (op === "pdf-part" || op === "pdf-done") {
+      if (!/^[a-z0-9]{6,24}$/.test(body.id || "")) return res.status(400).json({ error: "Unknown upload" });
+      const raw = await redis(s, ["GET", PENDING_KEY(body.id)]);
+      if (!raw) return res.status(400).json({ error: "Upload expired. Try again." });
+      const item = JSON.parse(raw);
+      if (op === "pdf-part") {
+        const n = Number(body.n);
+        if (!Number.isInteger(n) || n < 0 || n >= item.parts) return res.status(400).json({ error: "Unknown piece" });
+        const buf = Buffer.from(String(body.data || ""), "base64");
+        const want = n < item.parts - 1 ? PART : item.size - PART * (item.parts - 1);
+        if (buf.length !== want) return res.status(400).json({ error: "A piece arrived damaged. Try again." });
+        if (n === 0 && buf.slice(0, 5).toString() !== "%PDF-") return res.status(400).json({ error: "That file isn't a PDF" });
+        await redis(s, ["SET", PART_KEY(item.id, n), buf.toString("base64"), "EX", TTL]);
+        return res.status(200).json({ ok: true });
+      }
+      for (let n = 0; n < item.parts; n++) {
+        if (!(await redis(s, ["EXISTS", PART_KEY(item.id, n)]))) return res.status(400).json({ error: "Upload is missing a piece. Try again." });
+      }
+      for (let n = 0; n < item.parts; n++) await redis(s, ["PERSIST", PART_KEY(item.id, n)]);
+      await redis(s, ["DEL", PENDING_KEY(item.id)]);
+      const cases = await readCases(s);
       cases.unshift(item);
       await redis(s, ["SET", CASES_KEY, JSON.stringify(cases)]);
       return res.status(200).json({ cases });
@@ -114,7 +162,11 @@ module.exports = async (req, res) => {
       const cases = await readCases(s);
       const i = cases.findIndex((c) => c.id === body.id);
       if (i >= 0) {
-        if (cases[i].kind === "pdf") await redis(s, ["DEL", FILE_KEY(cases[i].id)]);
+        if (cases[i].kind === "pdf") {
+          const keys = [FILE_KEY(cases[i].id)];
+          for (let n = 0; n < (cases[i].parts || 0); n++) keys.push(PART_KEY(cases[i].id, n));
+          await redis(s, ["DEL"].concat(keys));
+        }
         cases.splice(i, 1);
         await redis(s, ["SET", CASES_KEY, JSON.stringify(cases)]);
       }
