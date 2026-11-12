@@ -203,6 +203,32 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 .s0 .dbar i.on{background:var(--taupe)} .s1 .dbar i.on,.s2 .dbar i.on{background:var(--rose-2)} .s3 .dbar i.on{background:var(--khaki)}
 .s1 .dlab,.s2 .dlab{color:var(--rose-1)} .s3 .dlab{color:var(--khaki)}
 .deal{display:flex;flex-direction:column;gap:16px}
+#cases{display:flex;flex-direction:column;gap:18px}
+.clist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:10px}
+.citem{position:relative;display:flex;align-items:center;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);transition:box-shadow .25s,transform .25s var(--ease)}
+.citem:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-3)}
+.citem.on{box-shadow:inset 0 0 0 1px var(--khaki),0 14px 30px rgba(0,0,0,.35)}
+.cpick{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;background:transparent;text-align:left;cursor:pointer;color:var(--ink)}
+.cpick .ct{display:flex;flex-direction:column;min-width:0}
+.cpick b{font-weight:500;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crm{margin-right:10px;flex:none}
+.crm.armed{width:auto;padding:0 10px;font-size:12px;color:var(--khaki-ink);background:var(--deep)}
+.cbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cbar .small{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.cbar .small .i{width:14px;height:14px}
+.pdfv{position:relative;height:min(80vh,900px);border-radius:18px;overflow:hidden;background:#1b1615;box-shadow:inset 0 0 0 1px var(--line-2),0 30px 60px rgba(0,0,0,.45)}
+.pdfv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
+.cform{display:grid;grid-template-columns:minmax(0,1.2fr) auto minmax(0,1.6fr) auto;gap:8px;align-items:center;padding:12px;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.cform input[name=title],.cform input[name=url]{min-width:0;border:0;border-radius:10px;padding:10px 12px;background:#0a0807;color:var(--ink);font:inherit;font-size:13.5px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.cform input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--khaki)}
+.cfile{position:relative;display:flex;align-items:center;min-width:0;padding:10px 12px;border-radius:10px;background:#0a0807;box-shadow:inset 0 0 0 1px var(--line-2);font-size:13.5px;color:var(--muted);cursor:pointer}
+.cfile:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-3)}
+.cfile input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.cfile span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cfile .i{width:14px;height:14px;flex:none}
+.cform .err{grid-column:1/-1;margin:0;font-size:12.5px;color:var(--deep)}
+.cform .err:empty{display:none}
+@media(max-width:760px){.cform{grid-template-columns:minmax(0,1fr)}.cform .seg{justify-self:start}.pdfv{height:70vh}}
 .dsteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;position:relative}
 .dstep{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;border:0;border-radius:16px;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;transition:background .25s,color .25s}
 .dstep:hover{background:rgba(255,236,226,.05);color:var(--ink)}
@@ -520,6 +546,7 @@ body.editing .editbar .only{display:inline-flex}
   <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.500 4.500 4.500L19 7.500"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></symbol>
   <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
   <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.400-5.700M4 4v4h4"/></symbol>
@@ -679,6 +706,9 @@ var ROLLOUT=[
   {i:"rocket",wk:"Weeks 3 and 4",t:"Launch",items:["2 or 3 brand campaigns","Standard ads as control","Track CPM, CTR, swaps","Collect feedback"]},
   {i:"chart",wk:"Weeks 5 and 6",t:"Decide",items:["Compare with standard ads","Measure price premium","Review swap rates","Choose what's next"]}
 ];
+/* Case studies added in code: {id:"c1", title:"…", kind:"pdf", url:"assets/case-studies/file.pdf", name:"file.pdf"} or {id:"c2", title:"…", kind:"link", url:"https://…"}.
+   Ones added on the page are stored in shared storage. */
+var CASES=[];
 var STAGES=[{t:"Not started",i:"flag"},{t:"In talks",i:"users"},{t:"Closing",i:"target"},{t:"Won",i:"check"}];
 var COMPETITORS={
   direct:[
@@ -745,7 +775,7 @@ var COMPETITORS={
       return '<a class="nav" href="#'+id+'"'+(id===cur?' aria-current="page"':'')+'>'+mono+'<span>'+esc(label)+'</span>'+(st?'<span class="sd st-'+st+'"></span>':'')+'</a>'};
     var t=function(n){return '<span class="mono t">'+ic(n)+'</span>'};
     $("nav").innerHTML='<span class="ind" id="ind"></span>'+
-      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+'</div>'+
+      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+'</div>'+
       '<div class="navgroup"><h4>Partners</h4>'+PARTNERS.map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Plan</h4>'+link("rollout","Pilot plan",t("calendar"))+link("competitors","Competitors",t("shield"))+'</div>';
     requestAnimationFrame(moveInd);
@@ -854,6 +884,84 @@ var COMPETITORS={
         ((p.demos||[]).length?p.demos.map(function(x){return '<a class="dchip" href="#'+p.id+'" data-jump="demos">'+ic("play")+esc(x.label)+'</a>'}).join(""):(p.demoPending?'<span class="pending">'+ic("alert")+'Link pending</span>':'<span class="pending">None yet</span>'))+
         '</div><a class="btn sm" href="#'+p.id+'" data-jump="demos">'+ic("plus")+'Add demo</a></div>'}).join("")+'</section>';
     return h;
+  }
+
+  /* ---------- case studies ---------- */
+  var SHARED_CASES=[], caseState={i:0,dev:"desk",kind:"pdf",armed:null}, LOCAL_CASES_KEY="flicks-playbook-cases";
+  var localCases=function(){try{var a=JSON.parse(localStorage.getItem(LOCAL_CASES_KEY)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}};
+  function allCases(){return (SHARED?SHARED_CASES:localCases()).concat(CASES.map(function(c){var o={};for(var k in c)o[k]=c[k];o.fixed=true;return o}))}
+  var caseFile=function(c,dl){return c.url&&c.kind==="pdf"?c.url:"api/demos?file="+encodeURIComponent(c.id)+(dl?"&download=1":"")};
+  var mb=function(n){return n?(n/1048576<0.1?"<0.1":(n/1048576).toFixed(1))+" MB":""};
+  var host=function(u){try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){return u}};
+  function caseViewer(c){
+    if(!c) return '<div class="stage"><div class="empty"><div><span class="tile">'+ic("book")+'</span>No case studies yet<br><span class="small">Add a PDF or a link below</span></div></div></div>';
+    if(c.kind==="pdf"){var u=caseFile(c,false);
+      return '<div class="cbar"><span class="small">'+ic("book")+esc(c.name||"PDF")+(c.size?' · '+mb(c.size):'')+'</span><span class="chips"><a class="btn sm" href="'+esc(u)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a><a class="btn sm primary" href="'+esc(caseFile(c,true))+'" download="'+esc(c.name||"case-study.pdf")+'">'+ic("download")+'Download</a></span></div>'+
+        '<div class="pdfv"><div class="loader"></div><iframe src="'+esc(u)+'#view=FitH" title="'+esc(c.title)+'"></iframe></div>'+
+        '<p class="small">If the PDF doesn\'t show here (some phones can\'t show PDFs inside a page), use Open full screen.</p>';}
+    var vw=VIEWPORT[caseState.dev];
+    return '<div class="cbar"><span class="small">'+ic("link")+esc(host(c.url))+'</span><span class="chips"><div class="seg" role="group" aria-label="Frame"><button type="button" data-cdev="phone" aria-pressed="'+(caseState.dev==="phone")+'">'+ic("phone")+'Phone</button><button type="button" data-cdev="desk" aria-pressed="'+(caseState.dev==="desk")+'">'+ic("monitor")+'Desktop</button></div><a class="btn sm" href="'+esc(c.url)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a></span></div>'+
+      '<div class="stage"><div class="device '+caseState.dev+'" id="dev"><div class="screen" id="screen"><div class="loader"></div><iframe id="dframe" src="'+esc(c.url)+'" title="'+esc(c.title)+'" width="'+vw[0]+'" height="'+vw[1]+'" style="width:'+vw[0]+'px;height:'+vw[1]+'px" allow="autoplay; fullscreen; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></div>'+
+      '<p class="small" id="vpLabel"></p>';
+  }
+  function casesPage(){
+    var cs=allCases(); if(caseState.i>=cs.length) caseState.i=0; var cur=cs[caseState.i];
+    var pdfs=cs.filter(function(c){return c.kind==="pdf"}).length;
+    var h='<header class="phead anim"><div class="left"><span class="eyebrow">Proof</span><h1 class="rose">Flicks case studies</h1><p class="lede">Read them here, download the PDFs, or preview a link.</p></div>'+
+      '<div class="stats" style="grid-template-columns:repeat(2,minmax(min(120px,100%),1fr))"><div class="stat"><b class="num rose" data-count="'+pdfs+'">'+pdfs+'</b><span>PDFs</span></div><div class="stat"><b class="num rose" data-count="'+(cs.length-pdfs)+'">'+(cs.length-pdfs)+'</b><span>Links</span></div></div></header>';
+    h+='<section class="card anim"'+D()+' id="cases">'+(cs.length?'<div class="clist">'+cs.map(function(c,i){
+        var armed=caseState.armed===c.id;
+        return '<div class="citem'+(i===caseState.i?' on':'')+'"><button type="button" class="cpick" data-case="'+i+'" aria-pressed="'+(i===caseState.i)+'"><span class="tile sm'+(c.kind==="pdf"?' c':' k')+'">'+ic(c.kind==="pdf"?"book":"link")+'</span><span class="ct"><b>'+esc(c.title)+'</b><span class="small">'+(c.kind==="pdf"?'PDF'+(c.size?' · '+mb(c.size):''):esc(host(c.url)))+'</span></span></button>'+
+          (c.fixed?'':'<button type="button" class="iconbtn crm'+(armed?' armed':'')+'" data-crm="'+esc(c.id)+'" aria-label="Remove '+esc(c.title)+'">'+(armed?'Remove?':ic("x"))+'</button>')+'</div>'}).join("")+'</div>':'')+
+      '<div id="cview">'+caseViewer(cur)+'</div></section>';
+    h+='<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Add<b>Case study</b></span></div>'+
+      '<form class="cform" id="cform" novalidate><input name="title" maxlength="80" placeholder="Name, e.g. BigBasket Diwali Flicks" aria-label="Case study name">'+
+      '<div class="seg" role="group" aria-label="Type"><button type="button" data-ckind="pdf" aria-pressed="'+(caseState.kind==="pdf")+'">'+ic("book")+'PDF</button><button type="button" data-ckind="link" aria-pressed="'+(caseState.kind==="link")+'">'+ic("link")+'Link</button></div>'+
+      (caseState.kind==="pdf"?'<label class="cfile"><input type="file" name="file" accept="application/pdf,.pdf"><span id="cfname">'+ic("plus")+'Choose a PDF (up to 3 MB)</span></label>':'<input name="url" type="url" placeholder="https://… (a PDF link or any page)" aria-label="Link">')+
+      '<button class="btn sm primary" type="submit">'+ic("plus")+'Add</button><p class="err" id="cerr"></p></form>'+
+      '<p class="small">'+(SHARED?ic("users")+' Case studies added here show for everyone who opens this playbook. ':'Shared saving isn\'t connected yet: links save only in this browser and PDF upload is off. ')+
+      'The playbook is on a public link, so anything added here can be seen by anyone with it. For a PDF over 3 MB, add a link to it, or commit it to <code>assets/case-studies/</code>.</p></section>';
+    return h;
+  }
+  function drawCases(){var y=window.scrollY; $("view").innerHTML=casesPage(); applyEditing(); wireCases(); window.scrollTo(0,y);}
+  function wireCases(){
+    if($("dframe")) wireDemo();
+    var pf=document.querySelector(".pdfv iframe"); if(pf) pf.addEventListener("load",function(){var l=document.querySelector(".pdfv .loader"); if(l) l.style.opacity="0";});
+    var fi=document.querySelector('#cform input[type=file]'); if(fi) fi.addEventListener("change",function(){var f=fi.files[0]; $("cfname").innerHTML=f?ic("book")+esc(f.name)+' · '+mb(f.size):ic("plus")+'Choose a PDF (up to 3 MB)';});
+  }
+  function caseClick(t){
+    if(t.dataset.case!=null){caseState.i=+t.dataset.case; caseState.armed=null; drawCases(); return true;}
+    if(t.dataset.cdev){caseState.dev=t.dataset.cdev; drawCases(); return true;}
+    if(t.dataset.ckind){var ti=document.querySelector('#cform input[name=title]'), keep=ti?ti.value:""; caseState.kind=t.dataset.ckind; drawCases(); var t2=document.querySelector('#cform input[name=title]'); if(t2) t2.value=keep; return true;}
+    if(t.dataset.crm){var id=t.dataset.crm;
+      if(caseState.armed!==id){caseState.armed=id; drawCases(); return true;}
+      caseState.armed=null; caseState.i=0;
+      if(SHARED){t.disabled=true; api("POST",{op:"case-remove",id:id}).then(function(r){SHARED_CASES=r.cases||[]; drawCases(); toast("Removed for everyone");},function(m){t.disabled=false; toast(m);});}
+      else{try{localStorage.setItem(LOCAL_CASES_KEY,JSON.stringify(localCases().filter(function(c){return c.id!==id})))}catch(e){} drawCases(); toast("Removed");}
+      return true;}
+    return false;
+  }
+  function addCase(f){
+    var err=$("cerr"), btn=f.querySelector("button[type=submit]"), title=f.title.value.replace(/\s+/g," ").trim();
+    var fail=function(m){err.textContent=m; btn.disabled=false; btn.innerHTML=ic("plus")+"Add";};
+    err.textContent="";
+    if(!title) return fail("Give the case study a name.");
+    var done=function(list){ if(list) SHARED_CASES=list; caseState.i=0; drawCases(); toast("Added "+title+(SHARED?" for everyone":"")); };
+    if(caseState.kind==="link"){
+      var u=f.url.value.trim(); if(!/^https?:\/\/[^\s.]+\.[^\s]+$/.test(u)) return fail("Paste a full link starting with https://");
+      if(!SHARED){var a=localCases(); a.unshift({id:"l"+Date.now().toString(36),title:title,kind:"link",url:u}); try{localStorage.setItem(LOCAL_CASES_KEY,JSON.stringify(a))}catch(e){} return done();}
+      btn.disabled=true; api("POST",{op:"case-add",title:title,kind:"link",url:u}).then(function(r){done(r.cases)},fail); return;
+    }
+    var file=f.file&&f.file.files[0];
+    if(!SHARED) return fail("PDF upload needs shared storage connected (see README). Add it as a link for now.");
+    if(!file) return fail("Choose a PDF file.");
+    if(file.size>3*1048576) return fail("This PDF is "+mb(file.size)+". The limit is 3 MB: add it as a link instead.");
+    btn.disabled=true; btn.textContent="Uploading…";
+    var rd=new FileReader();
+    rd.onload=function(){var data=String(rd.result).split(",")[1]||"";
+      api("POST",{op:"case-add",title:title,kind:"pdf",name:file.name,data:data},60000).then(function(r){done(r.cases)},fail);};
+    rd.onerror=function(){fail("Couldn't read that file.")};
+    rd.readAsDataURL(file);
   }
 
   /* ---------- partner page ---------- */
@@ -1070,13 +1178,14 @@ var COMPETITORS={
   function route(){
     var id=(location.hash||"#overview").slice(1);
     var p=byId(id);
-    if(!p && ["overview","rollout","competitors","demos"].indexOf(id)<0) id="overview";
+    if(!p && ["overview","rollout","competitors","demos","cases"].indexOf(id)<0) id="overview";
     current=p?p.id:id; d=0;
     drawNav(current);
-    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():overview();
+    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():id==="cases"?casesPage():overview();
     document.title=(p?p.name+" · ":"")+"Flicks Partner Playbook";
     applyEditing();
     countUp();
+    if(id==="cases"&&!p) wireCases();
     if(p){ if(p.calc==="B") wireB(p.id); if(p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
     wireMind();
     if(jump){var el=$(jump); jump=null; if(el) setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},300);} else window.scrollTo(0,0);
@@ -1109,6 +1218,7 @@ var COMPETITORS={
     if(t.dataset.add){var pa=t.dataset.add.split("."), q=byId(pa[0]); q[pa[1]].push(JSON.parse(JSON.stringify(TPL[pa[1]]))); persist(pa[0],pa[1]); rerender();
       var idx=q[pa[1]].length-1, sel='.ed[data-path="'+pa[0]+'.'+pa[1]+'.'+idx+(typeof TPL[pa[1]]==="string"?'':'.t')+'"]', el=document.querySelector(sel);
       if(el){el.focus(); var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);} return;}
+    if(current==="cases"&&caseClick(t)) return;
     if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; rerenderDemo(); return;}
     if(t.dataset.stage!=null){var dp=byId(current); if(dp) saveDeal(dp,+t.dataset.stage,($("dnote")||{}).value||dealOf(dp).note); return;}
     if(t.dataset.ddel){var pp=byId(current), di=+t.dataset.ddel, rmv=pp.demos[di];
@@ -1175,12 +1285,12 @@ var COMPETITORS={
       api("POST",{partner:p.id,op:"stage",stage:stage,note:note}).then(function(r){p.deal=r.deal; done();},function(m){bs.forEach(function(b){b.disabled=false}); toast(m);}); return; }
     p.deal={stage:stage,note:note}; persist(p.id,"deal"); done();
   }
-  $("view").addEventListener("submit",function(e){ if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
+  $("view").addEventListener("submit",function(e){ if(e.target.id==="cform"){ e.preventDefault(); addCase(e.target); return; } if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
 
   /* ---------- shared demos (Vercel function /api/demos) ---------- */
-  function api(method,body){
+  function api(method,body,ms){
     return new Promise(function(ok,fail){
-      var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){if(ctl)ctl.abort();},6000);
+      var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){if(ctl)ctl.abort();},ms||6000);
       fetch("api/demos",{method:method,cache:"no-store",headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined,signal:ctl?ctl.signal:undefined})
         .then(function(r){return r.json().catch(function(){return {}}).then(function(j){clearTimeout(to); if(r.ok) ok(j); else fail(j.error||"Couldn't save. Try again.");});})
         .catch(function(){clearTimeout(to); fail("Couldn't reach the server. Check your connection.");});
@@ -1197,13 +1307,16 @@ var COMPETITORS={
     api("GET").then(function(j){
       SHARED=true;
       PARTNERS.forEach(function(p){ if(overrides[p.id]){ delete overrides[p.id].demos; if(overrides[p.id].deal){ p.deal=JSON.parse(JSON.stringify(byIdOrig(p.id).deal||{stage:0,note:""})); delete overrides[p.id].deal; } } });
+      SHARED_CASES=Array.isArray(j.cases)?j.cases:[];
       applyShared(j.demos||{},j.stages); cb();
     },function(){ SHARED=false; cb(); });
   }
   var syncing=false;
   function syncShared(){
     if(!SHARED||syncing) return; syncing=true;
-    api("GET").then(function(j){ syncing=false; if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
+    api("GET").then(function(j){ syncing=false;
+      var nc=Array.isArray(j.cases)?j.cases:[]; if(JSON.stringify(nc)!==JSON.stringify(SHARED_CASES)){ SHARED_CASES=nc; var ae=document.activeElement; if(current==="cases"&&!(ae&&ae.closest&&ae.closest("#cform"))&&!caseState.armed) drawCases(); }
+      if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
   }
   window.addEventListener("hashchange",function(){setTimeout(syncShared,50)});
   window.addEventListener("focus",syncShared);
