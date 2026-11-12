@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Flicks Partner Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>/* #calculator shows only the calculator, for embedding in the playbook */ if(location.hash==="#calculator") document.documentElement.classList.add("embed");</script>
+<style>
+/* Layout idea: Flam product-slide look. Warm near-black field, rose-beige gradient headings, charcoal cards on a dot grid,
+   olive "API" pills, thin circuit lines. Every colour comes from one warm family. Single dark theme by choice. */
+:root{
+  color-scheme:dark;
+  --bg:#0a0706; --card:#121010; --card-2:#0c0a09;
+  --line:rgba(255,236,226,.09); --line-2:rgba(255,236,226,.17);
+  --ink:#f4ece6; --muted:#a3958e; --faint:#6f625c;
+  --rose-1:#f4dbd1; --rose-2:#d9a594; --rose-3:#c48572;
+  --khaki:#cdc584; --khaki-ink:#1d1b0e;
+  --cream:#eee2d3; --taupe:#8a7c75; --deep:#df7f6b;
+  --flam:var(--rose-2); --osmos:var(--khaki); --retail:var(--cream); --brand:var(--taupe);
+  --font:"Inter","SF Pro Display","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html.embed .hero,html.embed .wrap>section:not(#calculator){display:none}
+html.embed .wrap{padding:0;max-width:none}
+html.embed body{background:transparent}
+html.embed #calculator{box-shadow:none;background-color:transparent;background-image:none;padding:4px}
+html{background:var(--bg)}
+body{
+  background:
+    radial-gradient(55% 40% at 8% 0%, rgba(92,40,28,.55), transparent 72%),
+    radial-gradient(45% 45% at 100% 100%, rgba(84,40,26,.45), transparent 70%),
+    linear-gradient(180deg,#120a08 0%, var(--bg) 40%);
+  color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:44px 20px 72px;display:flex;flex-direction:column;gap:26px}
+h1,h2,h3{margin:0;font-weight:500;text-wrap:balance;letter-spacing:-.02em;line-height:1.1}
+.rose{background:linear-gradient(180deg,var(--rose-1) 0%,var(--rose-2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:clamp(24px,3.4vw,34px)}
+h3{font-size:17px;letter-spacing:-.01em}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13.5px;color:var(--muted)}
+svg.i{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* icon tile: dark glass square with a soft top light, like the logo tile */
+.tile{position:relative;display:inline-grid;place-items:center;width:42px;height:42px;border-radius:12px;color:var(--rose-1);
+  background:radial-gradient(120% 90% at 30% 0%,rgba(255,226,212,.13),transparent 60%),linear-gradient(180deg,#1b1716,#110e0d);
+  box-shadow:inset 0 0 0 1px rgba(255,236,226,.11),inset 0 1px 0 rgba(255,255,255,.07),0 6px 16px rgba(0,0,0,.35)}
+.tile.k{color:var(--khaki)} .tile.c{color:var(--cream)} .tile.t{color:var(--taupe)}
+.mark{display:block;background:linear-gradient(180deg,var(--rose-1),var(--rose-3));
+  -webkit-mask:var(--mark) center/contain no-repeat;mask:var(--mark) center/contain no-repeat}
+.tile .mark{width:19px;height:22px}
+
+/* pills, modelled on the "Flicks | API" pill */
+.duo{display:inline-flex;align-items:center;gap:8px;padding:4px 4px 4px 12px;border-radius:999px;border:1px solid var(--line-2);
+  background:rgba(12,10,9,.7);font-size:13px;color:var(--ink);align-self:flex-start}
+.duo b{background:var(--khaki);color:var(--khaki-ink);font-weight:600;border-radius:999px;padding:2px 10px;font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;border:1px solid var(--line-2);
+  background:rgba(14,11,10,.75);font-size:14px;color:var(--cream)}
+.pill svg.i{width:16px;height:16px;color:var(--rose-2)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 300px;gap:30px;align-items:center;padding:6px 0 10px}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.deco{display:none}}
+.hero-text{display:flex;flex-direction:column;gap:22px}
+.lockup{display:flex;align-items:center;gap:22px}
+.lockup .flam{height:44px;width:auto;filter:brightness(0) invert(1);opacity:.94}
+.lockup .osmos{height:20px;width:auto;filter:brightness(0) invert(1);opacity:.94}
+.lockup i{width:1px;height:34px;background:var(--line-2)}
+h1{font-size:clamp(36px,5.6vw,62px);max-width:15ch}
+.hero .cap{font-size:clamp(17px,2vw,21px);color:var(--ink);max-width:46ch;opacity:.92}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.deco{position:relative;height:340px}
+.deco svg.lines{position:absolute;inset:0;width:100%;height:100%}
+.deco svg.lines path{fill:none;stroke:rgba(214,170,150,.2);stroke-width:1.2}
+.logo-tile{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:190px;height:190px;border-radius:30px;
+  background:linear-gradient(180deg,#1a1615,#0f0c0b);box-shadow:inset 0 0 0 1px rgba(255,236,226,.08),0 30px 60px rgba(0,0,0,.55);
+  display:grid;place-items:center}
+.logo-tile .ring{width:136px;height:136px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,236,226,.08),inset 0 -12px 30px rgba(0,0,0,.4);display:grid;place-items:center}
+.emboss{filter:drop-shadow(0 1px 0 rgba(255,236,226,.18)) drop-shadow(0 -1px 1px rgba(0,0,0,.9))}
+.emboss .mark{width:72px;height:85px;background:linear-gradient(160deg,#2e2725,#171312)}
+
+/* cards */
+.card{position:relative;border-radius:26px;padding:28px;display:flex;flex-direction:column;gap:20px;
+  background-color:var(--card);
+  background-image:radial-gradient(rgba(255,236,226,.07) 1px,transparent 1.3px);background-size:18px 18px;
+  box-shadow:inset 0 0 0 1px var(--line),0 24px 60px rgba(0,0,0,.35)}
+@media (max-width:560px){.card{padding:20px}}
+.step{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);letter-spacing:.02em}
+.step em{font-style:normal;font-weight:600;font-size:12px;background:var(--khaki);color:var(--khaki-ink);border-radius:999px;padding:2px 9px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.panel{background:var(--card-2);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.c-flam{color:var(--flam)} .c-osmos{color:var(--osmos)} .c-retail{color:var(--retail)} .c-brand{color:var(--brand)}
+.b-flam{background:var(--flam)} .b-osmos{background:var(--osmos)} .b-retail{background:var(--retail)} .b-brand{background:var(--brand)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px}
+
+/* fee cards */
+.fee .big{font-size:52px;font-weight:500;letter-spacing:-.03em;line-height:1}
+.fee .unit{font-size:13.5px;color:var(--muted);min-height:2.6em}
+.split{display:flex;width:100%;height:6px;border-radius:999px;overflow:hidden;gap:2px}
+.split i{display:block;border-radius:999px}
+
+/* flow */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.node{flex:1 1 140px;border-radius:16px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+  background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);font-size:13px;color:var(--muted)}
+.node b{font-size:16px;font-weight:500;color:var(--ink)}
+.node.hl{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)}
+.conn{flex:1 1 70px;min-width:70px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.wire{position:relative;width:100%;height:1px;background:var(--line-2)}
+.wire::after{content:"";position:absolute;right:-2px;top:-2.5px;width:6px;height:6px;border-radius:50%;background:var(--rose-1)}
+.amt{font-size:14px;font-weight:500;color:var(--ink);padding:2px 10px;border-radius:999px;border:1px solid var(--line-2);background:rgba(12,10,9,.8)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:minmax(270px,340px) 1fr;gap:20px}
+@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.controls{display:flex;flex-direction:column;gap:12px}
+.group{background:var(--card-2);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.group.yours{box-shadow:inset 0 0 0 1px rgba(205,197,132,.45)}
+.group h3{font-size:14px;display:flex;align-items:center;gap:8px;font-weight:500}
+.group h3 svg.i{width:16px;height:16px;color:var(--rose-2)}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl label{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--muted)}
+.ctl label{align-items:center}
+.field{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;padding:3px 8px;border-radius:8px;background:#0a0807;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--muted);font-size:13px;cursor:text}
+.field:focus-within{box-shadow:inset 0 0 0 1px var(--khaki)}
+.field input{width:62px;border:0;background:transparent;color:var(--ink);font:inherit;font-weight:500;font-size:14px;text-align:right;padding:0;-moz-appearance:textfield;appearance:textfield}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field input:focus-visible{outline:none}
+.fixedrow{display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted)}
+.fixedrow b{color:var(--ink);font-weight:500}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;margin:0;background:transparent;cursor:pointer;--p:50%}
+input[type=range]::-webkit-slider-runnable-track{height:2px;border-radius:2px;background:linear-gradient(90deg,var(--rose-2) var(--p),rgba(255,236,226,.14) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-7px;border-radius:50%;background:var(--rose-1);border:4px solid #1a1513;box-shadow:0 0 0 1px rgba(244,219,209,.55)}
+input[type=range]::-moz-range-track{height:2px;background:rgba(255,236,226,.14);border-radius:2px}
+input[type=range]::-moz-range-progress{height:2px;background:var(--rose-2);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--rose-1);border:4px solid #1a1513;box-shadow:0 0 0 1px rgba(244,219,209,.55)}
+input[type=range]:disabled{opacity:.35;cursor:default}
+input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-radius:4px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:500}
+.switch input{-webkit-appearance:none;appearance:none;width:38px;height:22px;border-radius:999px;margin:0;cursor:pointer;position:relative;
+  background:rgba(255,236,226,.12);box-shadow:inset 0 0 0 1px var(--line-2);transition:background .2s}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.switch input:checked{background:var(--khaki)}
+.switch input:checked::after{transform:translateX(16px);background:var(--khaki-ink)}
+@media (prefers-reduced-motion:reduce){.switch input,.switch input::after,.bar div{transition:none}}
+
+.results{display:flex;flex-direction:column;gap:12px;min-width:0}
+.party{background:var(--card-2);border-radius:18px;padding:14px 16px;display:grid;grid-template-columns:42px 1fr auto;gap:3px 14px;align-items:center;box-shadow:inset 0 0 0 1px var(--line-2)}
+.party.lead{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55);background:linear-gradient(180deg,rgba(205,197,132,.07),rgba(205,197,132,.02)),var(--card-2)}
+.party .tile{grid-row:span 2}
+.party .who{font-weight:500;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:15px}
+.party .now{font-size:26px;font-weight:500;letter-spacing:-.02em;text-align:right}
+.party .sub{font-size:12.5px;color:var(--muted);grid-column:2}
+.party .sub.r{grid-column:3;text-align:right}
+.tagx{display:inline-block;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px}
+.tagx.good{background:var(--khaki);color:var(--khaki-ink)}
+.tagx.bad{background:rgba(223,127,107,.16);color:var(--deep);box-shadow:inset 0 0 0 1px rgba(223,127,107,.5)}
+.bar{display:flex;gap:3px;height:12px}
+.bar div{border-radius:999px;min-width:3px;transition:flex-basis .2s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;margin-top:10px;color:var(--muted)}
+.legend b{color:var(--ink);font-weight:500}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.mtile{background:var(--card-2);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.mtile.lead{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55);background:linear-gradient(180deg,rgba(205,197,132,.07),rgba(205,197,132,.02)),var(--card-2)}
+.mtile .who{font-size:14px;font-weight:500}
+.mtile .now{font-size:26px;font-weight:500;letter-spacing:-.02em;line-height:1.15}
+.mtile .was{font-size:12.5px;color:var(--muted)}
+.mtile .tagx{align-self:flex-start;margin-top:4px}
+.tablewrap{overflow-x:auto}
+.rcpt{width:100%;border-collapse:collapse;font-size:13.5px;min-width:440px}
+.rcpt th{font-weight:500;color:var(--muted);font-size:12.5px;text-align:right;padding:4px 0 8px 12px;border-bottom:1px solid var(--line-2)}
+.rcpt th:first-child{text-align:left;padding-left:0}
+.rcpt td{padding:6px 0 6px 12px;text-align:right;color:var(--ink);white-space:nowrap}
+.rcpt td:first-child{text-align:left;padding-left:0;color:var(--muted);white-space:normal}
+.rcpt tr.grp td{padding-top:16px;color:var(--ink);font-weight:500;font-size:14px}
+.rcpt tr.tot td{border-top:1px solid var(--line);font-weight:600}
+.rcpt tr.tot td:first-child{color:var(--ink);font-weight:500}
+.rcpt td.up{color:var(--khaki)} .rcpt td.down{color:var(--deep)}
+.rcpt tr.tot td:last-child:not(.down){color:var(--khaki)}
+.list{display:flex;flex-direction:column;gap:12px}
+.li{display:flex;gap:12px;align-items:center;font-size:14.5px}
+.li .tile{width:34px;height:34px;border-radius:10px}
+.li .tile svg.i{width:16px;height:16px}
+</style>
+</head>
+<body style="--mark:url('data:image/png;base64,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')">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 12s3.300-6.500 9-6.500S21 12 21 12s-3.300 6.500-9 6.500S3 12 3 12z"/><path d="M9.800 9.800a3 3 0 0 0 4.400 4.400M4.500 4.500l15 15"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M5 8.500h13.500M15 5l3.500 3.500L15 12M19 15.500H5.500M9 12l-3.500 3.500L9 19"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M4.500 9.500 6 4.500h12l1.500 5"/><path d="M4.500 9.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500"/><path d="M5.500 12v7.500h13V12M10 19.500V15h4v4.500"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.500 3.500H20v7.500l-8.500 8.500a1.500 1.500 0 0 1-2.100 0l-5.400-5.400a1.500 1.500 0 0 1 0-2.100z"/><circle cx="16" cy="7.500" r="1.300"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="M12 4 20 8l-8 4-8-4z"/><path d="m4 12 8 4 8-4M4 16l8 4 8-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m6 12.500 4 4 8-9"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.500" y="10.500" width="13" height="9" rx="2.500"/><path d="M8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><rect x="3.500" y="5.500" width="17" height="13" rx="3"/><path d="M10.500 9.500v5l4-2.500z"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3.500V8M15 3.500V8M6.500 8h11v3a5.500 5.500 0 0 1-11 0zM12 16.500v4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7.500h9M17 7.500h3M4 16.500h3M11 16.500h9"/><circle cx="15" cy="7.500" r="2"/><circle cx="9" cy="16.500" r="2"/></symbol>
+    <symbol id="i-count" viewBox="0 0 24 24"><path d="M4 19.500h16M7 16V11M12 16V6.500M17 16v-3"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-text">
+    <div class="lockup">
+      <img class="flam" alt="Flam AI" src="assets/flam-logo.png">
+      <i></i>
+      <img class="osmos" alt="Osmos" src="assets/osmos-logo.png">
+    </div>
+    <h1 class="rose">One ad slot that earns more for you and your retailers</h1>
+    <p class="cap">Flicks is an interactive video ad. Shoppers swap the product, model or scene while it plays.</p>
+    <div class="pills">
+      <span class="pill"><svg class="i"><use href="#i-lock"/></svg>Fixed fees, no revenue share</span>
+      <span class="pill"><svg class="i"><use href="#i-eyeoff"/></svg>Your pricing stays private</span>
+      <span class="pill"><svg class="i"><use href="#i-plug"/></svg>Runs in your existing slots</span>
+    </div>
+  </div>
+  <div class="deco" aria-hidden="true">
+    <svg class="lines" viewBox="0 0 300 340" preserveAspectRatio="none">
+      <path d="M40 0V120q0 14 14 14h0q14 0 14 14V340"/>
+      <path d="M90 0V96q0 14-14 14h0q-14 0-14 14V340"/>
+      <path d="M150 0V340"/>
+      <path d="M210 0V214q0 14 14 14h0q14 0 14 14V340"/>
+      <path d="M262 0V90q0 14-14 14h0q-14 0-14 14V340"/>
+    </svg>
+    <div class="logo-tile"><div class="ring"><div class="emboss"><span class="mark"></span></div></div></div>
+  </div>
+</header>
+
+<!-- 1 -->
+<section class="card">
+  <span class="step"><em>01</em>What Flicks adds</span>
+  <h2 class="rose">A premium format and a new thing to bill</h2>
+  <div class="grid3">
+    <div class="panel"><span class="tile"><svg class="i"><use href="#i-play"/></svg></span><h3>Premium format</h3><p class="small">Interactive video retailers can sell above a standard display ad.</p></div>
+    <div class="panel"><span class="tile"><svg class="i"><use href="#i-swap"/></svg></span><h3>The swap</h3><p class="small">Every swap is counted, so brands can pay per swap on top of impressions.</p></div>
+    <div class="panel"><span class="tile"><svg class="i"><use href="#i-plug"/></svg></span><h3>No new inventory</h3><p class="small">Delivered by tag or SDK into slots you already serve.</p></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="card">
+  <span class="step"><em>02</em>The model</span>
+  <h2 class="rose">Three fixed fees</h2>
+  <div class="grid3">
+    <div class="panel fee" style="box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)">
+      <span class="tile k"><svg class="i"><use href="#i-stack"/></svg></span>
+      <h3 class="c-osmos">Partner fee, yours</h3>
+      <div class="big num rose">₹15</div>
+      <span class="unit">per 1,000 Flicks impressions, on top of your normal platform fee</span>
+      <span class="duo">Fee<b>Fixed</b></span>
+    </div>
+    <div class="panel fee">
+      <span class="tile"><span class="mark"></span></span>
+      <h3 class="c-flam">Flam fee</h3>
+      <div class="big num rose">₹50</div>
+      <span class="unit">per 1,000 Flicks impressions</span>
+      <span class="duo">Fee<b>Fixed</b></span>
+    </div>
+    <div class="panel fee">
+      <span class="tile c"><svg class="i"><use href="#i-swap"/></svg></span>
+      <h3 class="c-retail">Interaction fee</h3>
+      <div class="big num rose">₹1</div>
+      <span class="unit">per swap, paid by the brand</span>
+      <div class="split" role="img" aria-label="40 paise retailer, 20 paise partner, 40 paise Flam"><i class="b-retail" style="flex:0 0 40%"></i><i class="b-osmos" style="flex:0 0 20%"></i><i class="b-flam" style="flex:1"></i></div>
+      <span class="small num">40p retailer · 20p you · 40p Flam</span>
+      <span class="duo">Fee<b>Optional</b></span>
+    </div>
+  </div>
+
+  <h3>Money flow for 1,000 Flicks impressions</h3>
+  <div class="flow" role="img" aria-label="Brand pays the retailer. Retailer pays the platform its normal fee plus 65 rupees. The platform keeps 15 and passes 50 to Flam.">
+    <div class="node"><span class="tile t"><svg class="i"><use href="#i-tag"/></svg></span><b>Brand</b>pays for the slot</div>
+    <div class="conn"><span class="amt">Price</span><span class="wire"></span><span>set by retailer</span></div>
+    <div class="node"><span class="tile c"><svg class="i"><use href="#i-store"/></svg></span><b>Retailer</b>keeps media money</div>
+    <div class="conn"><span class="amt num">₹65</span><span class="wire"></span><span>+ normal fee</span></div>
+    <div class="node hl"><span class="tile k"><svg class="i"><use href="#i-stack"/></svg></span><b>Osmos</b>keeps ₹15</div>
+    <div class="conn"><span class="amt num">₹50</span><span class="wire"></span><span>passed on</span></div>
+    <div class="node"><span class="tile"><span class="mark"></span></span><b>Flam</b>fixed fee</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="card" id="calculator">
+  <span class="step"><em>03</em>Live calculator</span>
+  <h2 class="rose">Try it with your own numbers</h2>
+  <p class="small">Every starting value is an example, not data from any retailer. "Normal ad" means the same slot sold as a standard display ad.</p>
+  <div class="calc">
+    <div class="controls">
+      <div class="group yours">
+        <h3><svg class="i"><use href="#i-sliders"/></svg>Your numbers</h3>
+        <div class="ctl"><label for="rate">Your platform share of ad revenue <output id="o-rate"></output></label>
+          <input id="rate" type="range" min="1" max="20" step="0.5" value="10" data-suf="%"></div>
+        <div class="ctl"><label for="cpm">Normal ad price to brands, per 1,000 <output id="o-cpm"></output></label>
+          <input id="cpm" type="range" min="50" max="600" step="10" value="200" data-pre="₹"></div>
+        <div class="ctl"><label for="fcpm">Flicks ad price to brands, per 1,000 <output id="o-fcpm"></output></label>
+          <input id="fcpm" type="range" min="50" max="1000" step="10" value="250" data-pre="₹"></div>
+        <div class="ctl"><label for="imps">Impressions a month <output id="o-imps"></output></label>
+          <input id="imps" type="range" min="5" max="500" step="5" value="50" data-suf="lakh"></div>
+      </div>
+
+      <div class="group">
+        <h3><svg class="i"><use href="#i-lock"/></svg>Fixed fees</h3>
+        <div class="ctl"><label for="osmos"><span><i class="dot b-osmos"></i>Partner fee, per 1,000</span> <output id="o-osmos"></output></label>
+          <input id="osmos" type="range" min="5" max="30" step="1" value="15" data-pre="₹"></div>
+        <div class="fixedrow"><span><i class="dot b-flam"></i>Flam fee, per 1,000</span><b class="num">₹50</b></div>
+      </div>
+
+      <div class="group">
+        <label class="switch" for="inton">Interaction fee <input id="inton" type="checkbox" checked></label>
+        <div class="ctl"><label for="itr">Shoppers who swap <output id="o-itr"></output></label>
+          <input id="itr" type="range" min="1" max="20" step="0.5" value="8" data-suf="%"></div>
+        <div class="ctl"><label for="ifee">Brand pays per swap <output id="o-ifee"></output></label>
+          <input id="ifee" type="range" min="0.25" max="3" step="0.25" value="1" data-pre="₹"></div>
+      </div>
+    </div>
+
+    <div class="results">
+      <p class="small">A month, normal ad → with Flicks</p>
+      <div class="tiles">
+        <div class="mtile lead"><span class="who c-osmos"><i class="dot b-osmos"></i>Osmos earns</span><span class="now num rose" id="m-o"></span><span class="was num" id="m-o0"></span><span class="tagx good num" id="m-ox"></span></div>
+        <div class="mtile"><span class="who c-retail"><i class="dot b-retail"></i>Retailer keeps</span><span class="now num" id="m-r"></span><span class="was num" id="m-r0"></span><span class="tagx num" id="m-rx"></span></div>
+        <div class="mtile"><span class="who c-flam"><i class="dot b-flam"></i>Flam earns</span><span class="now num" id="m-f"></span><span class="was num">was ₹0</span></div>
+      </div>
+
+      <div class="panel" style="padding:16px 18px">
+        <h3 style="font-size:14px">How each number is built, per 1,000 impressions</h3>
+        <div class="tablewrap">
+          <table class="rcpt num">
+            <thead><tr><th></th><th>Normal ad</th><th>Flicks ad</th><th>Change</th></tr></thead>
+            <tbody>
+              <tr class="grp"><td colspan="4"><i class="dot b-brand"></i>Brand pays</td></tr>
+              <tr><td>Ad price</td><td id="t-bm0"></td><td id="t-bm1"></td><td></td></tr>
+              <tr><td id="t-bsl">Swaps</td><td>–</td><td id="t-bs1"></td><td></td></tr>
+              <tr class="tot"><td>Total</td><td id="t-b0"></td><td id="t-b1"></td><td id="t-bd"></td></tr>
+
+              <tr class="grp"><td colspan="4"><i class="dot b-osmos"></i>Osmos earns</td></tr>
+              <tr><td id="t-orl">Platform share of ad price</td><td id="t-or0"></td><td id="t-or1"></td><td></td></tr>
+              <tr><td>Partner fee, fixed</td><td>–</td><td id="t-of1"></td><td></td></tr>
+              <tr><td>Swap share, 20%</td><td>–</td><td id="t-os1"></td><td></td></tr>
+              <tr class="tot"><td>Total</td><td id="t-o0"></td><td id="t-o1"></td><td id="t-od"></td></tr>
+
+              <tr class="grp"><td colspan="4"><i class="dot b-flam"></i>Flam earns</td></tr>
+              <tr><td>Flicks fee, fixed</td><td>–</td><td>₹50</td><td></td></tr>
+              <tr><td>Swap share, 40%</td><td>–</td><td id="t-fs1"></td><td></td></tr>
+              <tr class="tot"><td>Total</td><td>₹0</td><td id="t-f1"></td><td id="t-fd"></td></tr>
+
+              <tr class="grp"><td colspan="4"><i class="dot b-retail"></i>Retailer keeps</td></tr>
+              <tr><td>Ad price minus platform share</td><td id="t-rm0"></td><td id="t-rm1"></td><td></td></tr>
+              <tr><td>Minus fixed fees (partner + Flam)</td><td>–</td><td id="t-rf1"></td><td></td></tr>
+              <tr><td>Swap share, 40%</td><td>–</td><td id="t-rs1"></td><td></td></tr>
+              <tr class="tot"><td>Total</td><td id="t-r0"></td><td id="t-r1"></td><td id="t-rd"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" id="t-be"></p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 4 -->
+<section class="card">
+  <span class="step"><em>04</em>Working together</span>
+  <h2 class="rose">What we need, and what we never ask for</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3 class="c-osmos">Billing runs on two counts</h3>
+      <div class="list">
+        <div class="li"><span class="tile k"><svg class="i"><use href="#i-check"/></svg></span>Flicks impressions served</div>
+        <div class="li"><span class="tile k"><svg class="i"><use href="#i-check"/></svg></span>Swaps made</div>
+        <div class="li"><span class="tile k"><svg class="i"><use href="#i-count"/></svg></span>Counted by the Flicks tag, matched to your dashboard</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 class="muted">We never ask for</h3>
+      <div class="list muted">
+        <div class="li"><span class="tile t"><svg class="i"><use href="#i-eyeoff"/></svg></span>Retailer pricing to brands</div>
+        <div class="li"><span class="tile t"><svg class="i"><use href="#i-eyeoff"/></svg></span>Your commercial terms with retailers</div>
+        <div class="li"><span class="tile t"><svg class="i"><use href="#i-eyeoff"/></svg></span>Anyone's revenue or GMV</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+<script src="assets/fields.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var V=function(id){return FlamFields.val(id)};
+  var FLAM=50;
+  var inr=function(v){return (v<0?'−':'')+'₹'+Math.round(Math.abs(v)).toLocaleString('en-IN')};
+  var inr2=function(v){var a=Math.round(Math.abs(v)*100)/100;return (v<0?'−':'')+'₹'+a.toLocaleString('en-IN',{minimumFractionDigits:a%1?2:0,maximumFractionDigits:2})};
+  var chg=function(v){return (v>0?'+':v<0?'−':'')+'₹'+(Math.round(Math.abs(v)*100)/100).toLocaleString('en-IN',{maximumFractionDigits:2})};
+  function set(id,t){$(id).textContent=t}
+
+  function calc(){
+    var rate=V('rate')/100, cpm=V('cpm'), fcpm=V('fcpm'), imps=V('imps');
+    var osm=V('osmos'), on=$('inton').checked, itr=V('itr'), ifee=V('ifee');
+    var swaps=on?itr*10:0, sw=swaps*ifee;     // swaps and swap money per 1,000 impressions
+    var k=imps*100;                           // number of 1,000-impression blocks in a month
+
+    var b0=cpm, o0=rate*cpm, r0=cpm-o0;
+    var or1=rate*fcpm, os1=0.2*sw, o1=or1+osm+os1;
+    var fs1=0.4*sw, f1=FLAM+fs1;
+    var rm1=fcpm-or1, rf1=osm+FLAM, rs1=0.4*sw, r1=rm1-rf1+rs1;
+    var b1=fcpm+sw;
+
+    ['itr','ifee'].forEach(function(id){$(id).disabled=!on; $('n-'+id).disabled=!on});
+
+    set('t-bm0',inr2(cpm)); set('t-bm1',inr2(fcpm));
+    set('t-bsl',on?'Swaps ('+itr+'% of 1,000 = '+(Math.round(swaps*10)/10)+' × '+inr2(ifee)+')':'Swaps (off)');
+    set('t-bs1',inr2(sw)); set('t-b0',inr2(b0)); set('t-b1',inr2(b1)); set('t-bd',chg(b1-b0));
+
+    set('t-orl','Platform share, '+(Math.round(rate*1000)/10)+'% of ad price');
+    set('t-or0',inr2(o0)); set('t-or1',inr2(or1)); set('t-of1',inr2(osm)); set('t-os1',inr2(os1));
+    set('t-o0',inr2(o0)); set('t-o1',inr2(o1)); set('t-od',chg(o1-o0));
+
+    set('t-fs1',inr2(fs1)); set('t-f1',inr2(f1)); set('t-fd',chg(f1));
+
+    set('t-rm0',inr2(r0)); set('t-rm1',inr2(rm1)); set('t-rf1',inr2(-rf1)); set('t-rs1',inr2(rs1));
+    set('t-r0',inr2(r0)); set('t-r1',inr2(r1)); set('t-rd',chg(r1-r0));
+    $('t-rd').className=r1>=r0?'up':'down';
+
+    var be=rate<1?cpm+(rf1-rs1)/(1-rate):Infinity;
+    set('t-be','Retailer breaks even when the Flicks price is '+inr(Math.ceil(be))+' per 1,000 or more. Today it is '+inr(fcpm)+'.');
+
+    set('m-o',inr(o1*k)); set('m-o0','was '+inr(o0*k)); set('m-ox',o0>0?(o1/o0).toFixed(1)+'× a normal ad':'new revenue');
+    set('m-r',inr(r1*k)); set('m-r0','was '+inr(r0*k));
+    set('m-rx',chg((r1-r0)*k)); $('m-rx').className='tagx num '+(r1>=r0?'good':'bad');
+    set('m-f',inr(f1*k));
+  }
+  FlamFields.make(document.querySelector('.calc'),calc);
+  $('inton').addEventListener('input',calc);
+  calc();
+})();
+</script>
+</body>
+</html>
