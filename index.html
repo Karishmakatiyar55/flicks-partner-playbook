@@ -295,6 +295,24 @@ details.xp[open] summary .chev{transform:rotate(90deg)}
 details.xp .xpbody{padding:0 16px 16px;animation:rise .45s var(--ease) both}
 .embedframe{width:100%;border:0;border-radius:16px;min-height:600px;display:block;background:var(--bg)}
 
+.fmark{display:block;flex:0 0 auto;width:17px;height:20px;background:linear-gradient(180deg,var(--rose-1),var(--rose-3));
+  -webkit-mask:url(assets/flam-mark.png) center/contain no-repeat;mask:url(assets/flam-mark.png) center/contain no-repeat}
+.mono.lg .fmark{width:30px;height:35px}
+.tile.c .fmark{background:var(--cream)}
+/* live calculator call-to-action */
+details.xp.cta{box-shadow:inset 0 0 0 1px rgba(205,197,132,.6),0 0 0 4px rgba(205,197,132,.07);background:linear-gradient(100deg,rgba(205,197,132,.14),rgba(205,197,132,.03) 55%),var(--card-2)}
+details.xp.cta summary{padding:18px 20px;gap:16px}
+details.xp.cta summary:hover{background:rgba(205,197,132,.06)}
+details.xp.cta .ctx{display:flex;flex-direction:column;gap:2px}
+details.xp.cta .ctx b{font-weight:500;font-size:16px}
+details.xp.cta .ctx span{font-size:13px;color:var(--muted);font-weight:400}
+details.xp.cta .go{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--khaki);color:var(--khaki-ink);font-size:13px;font-weight:600;white-space:nowrap}
+details.xp.cta .go svg.i{width:15px;height:15px;color:var(--khaki-ink);transition:transform .35s var(--ease)}
+details.xp.cta[open] .go svg.i{transform:rotate(90deg)}
+details.xp.cta .go .cl{display:none}
+details.xp.cta[open] .go .op{display:none}
+details.xp.cta[open] .go .cl{display:inline}
+@media (max-width:560px){details.xp.cta .ctx span{display:none}}
 /* ---------- demos ---------- */
 .demo{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
 @media (max-width:860px){.demo{grid-template-columns:1fr}}
@@ -603,7 +621,7 @@ var COMPETITORS={
   "use strict";
   var $=function(id){return document.getElementById(id)};
   var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
-  var ic=function(n,cls){return '<svg class="i'+(cls?' '+cls:'')+'"><use href="#i-'+(n||"spark")+'"/></svg>'};
+  var ic=function(n,cls){if(n==="flam") return '<span class="fmark" aria-hidden="true"></span>';return '<svg class="i'+(cls?' '+cls:'')+'"><use href="#i-'+(n||"spark")+'"/></svg>'};
   var STATUS={built:"Pricing built",draft:"Draft pricing",explore:"Fit to confirm"};
   var chip=function(s){return '<span class="chip st-'+s+'">'+STATUS[s]+'</span>'};
   var byId=function(id){return PARTNERS.filter(function(p){return p.id===id})[0]};
@@ -783,7 +801,7 @@ var COMPETITORS={
       h+=card(S(),["Pricing","Model A · fixed fees"],flowA()+
         '<div class="grid3">'+[["layers","₹15","Osmos, per 1,000","k"],["flam","₹50","Flam, per 1,000",""],["swap","₹1","Per swap, split 3 ways","c"]].map(function(x){return '<div class="panel lift"><div class="row"><span class="tile '+x[3]+'">'+ic(x[0])+'</span><div><div class="big rose num">'+x[1]+'</div><span class="small">'+x[2]+'</span></div></div></div>'}).join("")+'</div>'+
         '<div class="note">'+ic("alert")+'<span>'+esc(p.docNote)+'</span></div>'+
-        '<details class="xp" id="osxp"><summary>'+ic("sliders")+'Open the live Osmos calculator<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
+        '<details class="xp cta" id="osxp"><summary><span class="tile k">'+ic("sliders")+'</span><span class="ctx"><b>Live Osmos calculator</b><span>Try your own numbers: platform share, prices, swaps</span></span><span class="go"><span class="op">Open calculator</span><span class="cl">Close</span>'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
     } else {
       h+=card(S(),["Pricing","Model B · direct publisher"],'<div class="note">'+ic("sliders")+'<span>Draft. Starting numbers are examples. Type or drag any value.</span></div>'+flowB()+calcB()+
