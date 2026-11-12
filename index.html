@@ -137,7 +137,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{o
 .eyebrow{font-size:12.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 .phead h1{font-size:clamp(34px,5vw,56px)}
 .phead .lede{font-size:18px;max-width:52ch;color:var(--ink);opacity:.88}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(min(110px,100%),1fr));gap:12px}
 @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{border-radius:18px;padding:16px 18px;background:rgba(18,16,16,.8);box-shadow:inset 0 0 0 1px var(--line-2);display:flex;flex-direction:column;gap:2px}
 .stat b{font-size:34px;font-weight:500;letter-spacing:-.03em;line-height:1.1}
@@ -155,15 +155,15 @@ input:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{o
 .card h2{font-size:clamp(23px,2.8vw,30px)}
 .step{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
 .step em{font-style:normal;font-weight:600;font-size:11.5px;background:var(--khaki);color:var(--khaki-ink);border-radius:999px;padding:2px 9px}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:18px}
 .panel{position:relative;background:var(--card-2);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px var(--line-2);
   transition:transform .3s var(--ease),box-shadow .3s}
 .panel.lift:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 1px var(--line-3),0 18px 40px rgba(0,0,0,.35)}
 .panel h3{font-size:17px;letter-spacing:-.01em}
 .panel.hl{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)}
 .panel .row{display:flex;align-items:center;gap:14px}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px}
 .fact{position:relative;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);font-size:14.5px;
   transition:transform .3s var(--ease),box-shadow .3s}
 .fact:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 1px var(--line-3)}
@@ -186,7 +186,7 @@ svg.mind .mt{font-size:12px;font-weight:600;fill:var(--rose-1)}
 svg.mind .sub{font-size:11.5px;fill:var(--muted)}
 svg.mind .core rect.box{fill:url(#coreg);stroke:rgba(244,219,209,.5)}
 svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
-.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:16px}
 .pcard{position:relative;display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:20px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);
   color:var(--ink);text-decoration:none;transition:transform .35s var(--ease),box-shadow .35s;overflow:hidden}
 .pcard::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(70% 60% at 0% 0%,rgba(217,165,148,.12),transparent 70%);opacity:0;transition:opacity .35s;pointer-events:none}
@@ -264,7 +264,7 @@ input[type=range]:disabled{opacity:.35;cursor:default}
 .switch input:checked{background:var(--khaki)}
 .switch input:checked::after{transform:translateX(17px);background:var(--khaki-ink)}
 .results{display:flex;flex-direction:column;gap:14px;min-width:0}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:12px}
 .mtile{background:var(--card-2);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 0 0 1px var(--line-2)}
 .mtile.lead{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55);background:linear-gradient(180deg,rgba(205,197,132,.08),rgba(205,197,132,.02)),var(--card-2)}
 .mtile .who{font-size:13px;font-weight:500;display:flex;align-items:center}
@@ -324,17 +324,19 @@ details.xp.cta[open] .go .cl{display:inline}
 @media (max-width:560px){details.xp.cta .ctx span{display:none}}
 /* ---------- demos ---------- */
 .demo{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
-@media (max-width:860px){.demo{grid-template-columns:1fr}}
+@media (max-width:860px){.demo{grid-template-columns:minmax(0,1fr)}}
 .demo.wide{grid-template-columns:1fr}
-.stage{position:relative;display:grid;place-items:center;padding:clamp(10px,3vw,26px);border-radius:24px;background:radial-gradient(60% 60% at 50% 40%,rgba(217,165,148,.1),transparent 70%),var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
-.device{position:relative;max-width:100%}
-.device.phone{width:min(320px,100%);height:auto;aspect-ratio:320/660;border-radius:42px;padding:11px;background:linear-gradient(180deg,#241e1c,#120f0e);box-shadow:inset 0 0 0 1px rgba(255,236,226,.16),0 34px 70px rgba(0,0,0,.55)}
-.device.desk{width:100%;height:560px;border-radius:18px;padding:10px;background:linear-gradient(180deg,#241e1c,#120f0e);box-shadow:inset 0 0 0 1px rgba(255,236,226,.16),0 34px 70px rgba(0,0,0,.55)}
-.device iframe{width:100%;height:100%;border:0;background:transparent;display:block;position:relative;z-index:1}
-.device.phone iframe{border-radius:32px}
-.device.desk iframe{border-radius:10px}
-.loader{position:absolute;inset:11px;border-radius:32px;background:linear-gradient(90deg,#141110 0%,#221c1a 50%,#141110 100%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;z-index:0;transition:opacity .4s}
-.device.desk .loader{inset:10px;border-radius:10px}
+.stage{position:relative;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;place-items:center;padding:clamp(10px,3vw,26px);border-radius:24px;background:radial-gradient(60% 60% at 50% 40%,rgba(217,165,148,.1),transparent 70%),var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.device{position:relative;max-width:100%;background:linear-gradient(180deg,#241e1c,#120f0e);box-shadow:inset 0 0 0 1px rgba(255,236,226,.16),0 34px 70px rgba(0,0,0,.55)}
+.device.phone{width:340px;max-width:100%;border-radius:44px;padding:11px}
+.device.desk{width:100%;border-radius:16px;padding:10px 10px 12px}
+.device.desk::before{content:"";display:block;height:14px;margin:-2px 0 8px;background:radial-gradient(circle at 7px 7px,rgba(255,236,226,.25) 3px,transparent 3.5px),radial-gradient(circle at 21px 7px,rgba(255,236,226,.18) 3px,transparent 3.5px),radial-gradient(circle at 35px 7px,rgba(255,236,226,.12) 3px,transparent 3.5px)}
+.screen{position:relative;width:100%;overflow:hidden;background:#000}
+.device.phone .screen{border-radius:34px}
+.device.desk .screen{border-radius:8px}
+.screen iframe{position:absolute;left:0;top:0;border:0;background:#fff;display:block;transform-origin:0 0;z-index:1}
+.loader{position:absolute;inset:0;background:linear-gradient(90deg,#141110 0%,#221c1a 50%,#141110 100%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;z-index:2;transition:opacity .4s;pointer-events:none}
+.vp{font-size:12px;color:var(--muted)}
 .dside{display:flex;flex-direction:column;gap:16px;min-width:0}
 .tabs{display:flex;flex-wrap:wrap;gap:8px}
 .tabw{display:inline-flex;align-items:center;gap:4px}
@@ -538,7 +540,7 @@ var PARTNERS=[
   today:[{i:"cart",t:"StreamToCart Ads with Instamart, Oct 2026"},{i:"target",t:"Commerce-signal ads, Apr 2026"},{i:"bag",t:"Shop The Look on Splitsvilla 16"},{i:"pause",t:"Pause ads and Tadka micro-dramas"}],
   why:[{i:"swap",t:"Shop The Look, live",d:"Swap the outfit on screen, then buy"},{i:"cart",t:"Layer for StreamToCart",d:"Variants before add-to-cart"},{i:"layers",t:"One format, every surface",d:"Breaks, pause, micro-dramas"}],
   fits:[{i:"film",t:"In-show swap",d:"Outfit, jewellery, makeup"},{i:"play",t:"Ad break",d:"Linked to StreamToCart"},{i:"pause",t:"Pause ad",d:"Paused frame becomes a swap"},{i:"clapper",t:"Tadka episodes",d:"In-story product swaps"}],
-  calc:"B", modelC:true, demos:[], demoPending:"Prototype built, link to add",
+  calc:"B", modelC:true, demos:[{label:"JioHotstar",url:"https://flicks-jiohotstar-demo-aifr.vercel.app"}],
   next:["Lead with the in-show swap demo","Position as a layer on StreamToCart"],
   risks:["Builds formats in-house; show what their stack can't do"],
   sources:[{t:"StreamToCart Ads (exchange4media)",u:"https://www.exchange4media.com/industry-briefing-news/jiohotstar-launches-streamtocart-ads-transforming-video-breaks-into-digital-storefronts-159543.html"},{t:"Commerce-signal ads (JioStar)",u:"https://www.jiostar.com/news/jiohotstar-launches-industry-first-commerce-signal-led-advertising-to-power-intent-driven-engagement-at-scale/"},{t:"NEWME Shop The Look (MediaNews4U)",u:"https://www.medianews4u.com/?p=2488688"},{t:"JioStar CTV formats",u:"https://ads.jiostar.com/"}]
@@ -738,22 +740,36 @@ var COMPETITORS={
   function demoBlock(p){
     var ds=p.demos||[], st=demoState[p.id]||{i:0,dev:"phone"}; if(st.i>=ds.length) st.i=0; demoState[p.id]=st;
     var cur=ds[st.i];
-    var stage= cur? '<div class="stage"><div class="device '+st.dev+'" id="dev"><div class="loader"></div><iframe id="dframe" src="'+esc(cur.url)+'" title="'+esc(cur.label)+' demo" allow="autoplay; fullscreen; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>'
+    var vw=VIEWPORT[st.dev];
+    var stage= cur? '<div class="stage"><div class="device '+st.dev+'" id="dev"><div class="screen" id="screen"><div class="loader"></div><iframe id="dframe" src="'+esc(cur.url)+'" title="'+esc(cur.label)+' demo" width="'+vw[0]+'" height="'+vw[1]+'" style="width:'+vw[0]+'px;height:'+vw[1]+'px" allow="autoplay; fullscreen; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></div>'
       : '<div class="stage"><div class="empty"><div><span class="tile">'+ic("phone")+'</span>'+(p.demoPending?esc(p.demoPending):"No demo yet")+'<br><span class="small">Add a link to play it here</span></div></div></div>';
     var side='<div class="dside">'+
       (ds.length?'<div class="tabs" role="tablist" aria-label="Demos">'+ds.map(function(x,i){return '<span class="tabw"><button class="tab" role="tab" type="button" aria-selected="'+(i===st.i)+'" data-dtab="'+i+'">'+ic("play")+esc(x.label)+'</button><button class="iconbtn" type="button" data-ddel="'+i+'" aria-label="Remove '+esc(x.label)+' demo">'+ic("x")+'</button></span>'}).join("")+'</div>':'')+
       (cur?'<div class="chips"><div class="seg" role="group" aria-label="Frame"><button type="button" data-dev="phone" aria-pressed="'+(st.dev==="phone")+'">'+ic("phone")+'Phone</button><button type="button" data-dev="desk" aria-pressed="'+(st.dev==="desk")+'">'+ic("monitor")+'Desktop</button></div>'+
-        '<a class="btn sm" href="'+esc(cur.url)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a></div>':'')+
+        '<a class="btn sm" href="'+esc(cur.url)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a></div><span class="vp" id="vpLabel"></span>':'')+
       '<form class="dform" data-dform="'+p.id+'" novalidate><input name="label" placeholder="Name, e.g. Swiggy" aria-label="Demo name" maxlength="40" autocomplete="off"><input name="url" placeholder="https://your-demo.vercel.app" aria-label="Demo link" inputmode="url" autocomplete="off"><button class="btn primary sm" type="submit">'+ic("plus")+'Add demo</button><span class="err" role="alert"></span></form>'+
       (SHARED?'<p class="small sharednote">'+ic("users")+'Demos added here show for everyone who opens this playbook.</p>':'<p class="small">Shared saving isn\'t connected yet, so new links save only in this browser.</p>')+'</div>';
     return '<div class="demo'+(st.dev==="desk"&&cur?' wide':'')+'">'+stage+side+'</div>';
   }
+  /* demos render at a real screen size, then scale down evenly to fit the frame */
+  var VIEWPORT={phone:[390,844],desk:[1440,900]};
+  function fitDevice(){
+    var dev=$("dev"), scr=$("screen"), f=$("dframe"); if(!dev||!scr||!f) return;
+    var vw=VIEWPORT[dev.classList.contains("desk")?"desk":"phone"];
+    var cs=getComputedStyle(dev), inner=dev.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    var k=inner/vw[0];
+    scr.style.height=Math.round(vw[1]*k)+"px";
+    f.style.transform="scale("+k+")";
+    var lab=$("vpLabel"); if(lab) lab.textContent="Shown as a "+vw[0]+" × "+vw[1]+" screen, scaled to "+Math.round(k*100)+"%";
+  }
+  window.addEventListener("resize",fitDevice);
   function wireDemo(){
-    var f=$("dframe"); if(f){f.addEventListener("load",function(){var l=document.querySelector("#dev .loader"); if(l) l.style.opacity="0";});}
+    fitDevice();
+    var f=$("dframe"); if(f){f.addEventListener("load",function(){var l=document.querySelector("#screen .loader"); if(l) l.style.opacity="0";});}
   }
   function demosHub(){
     var covered=PARTNERS.filter(function(p){return(p.demos||[]).length}).length;
-    var h='<header class="phead anim"><div class="left"><span class="eyebrow">All demos</span><h1 class="rose">Live demos</h1><p class="lede">Every partner\'s demos. Add a link and it plays on that partner\'s page.</p></div><div class="stats" style="grid-template-columns:repeat(2,minmax(120px,1fr))"><div class="stat"><b class="num rose" data-count="'+demoCount()+'">'+demoCount()+'</b><span>Demos</span></div><div class="stat"><b class="num rose" data-count="'+covered+'">'+covered+'</b><span>Partners covered</span></div></div></header>';
+    var h='<header class="phead anim"><div class="left"><span class="eyebrow">All demos</span><h1 class="rose">Live demos</h1><p class="lede">Every partner\'s demos. Add a link and it plays on that partner\'s page.</p></div><div class="stats" style="grid-template-columns:repeat(2,minmax(min(120px,100%),1fr))"><div class="stat"><b class="num rose" data-count="'+demoCount()+'">'+demoCount()+'</b><span>Demos</span></div><div class="stat"><b class="num rose" data-count="'+covered+'">'+covered+'</b><span>Partners covered</span></div></div></header>';
     h+='<section class="card anim"'+D()+'>'+PARTNERS.map(function(p){
       return '<div class="hubrow"><a class="who" href="#'+p.id+'">'+badge(p)+'<span>'+esc(p.name)+'</span></a><div class="chips">'+
         ((p.demos||[]).length?p.demos.map(function(x){return '<a class="dchip" href="#'+p.id+'" data-jump="demos">'+ic("play")+esc(x.label)+'</a>'}).join(""):(p.demoPending?'<span class="pending">'+ic("alert")+'Link pending</span>':'<span class="pending">None yet</span>'))+
