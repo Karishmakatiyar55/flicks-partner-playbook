@@ -301,7 +301,10 @@ details.xp .xpbody{padding:0 16px 16px;animation:rise .45s var(--ease) both}
   -webkit-mask:url(assets/flam-mark.png) center/contain no-repeat;mask:url(assets/flam-mark.png) center/contain no-repeat}
 .mono.lg .fmark{width:30px;height:35px}
 .tile.c .fmark{background:var(--cream)}
-.fees .fee{gap:14px;padding:26px}
+.grid3.fees{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1100px){.grid3.fees{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.grid3.fees{grid-template-columns:minmax(0,1fr)}}
+.fees .fee{gap:14px;padding:24px}
 .fees .fee h3{font-size:18px}
 .feeamt{font-size:56px;font-weight:500;letter-spacing:-.035em;line-height:1}
 .fees .fee p.small{font-size:14px;min-height:2.9em}
@@ -527,7 +530,7 @@ var MODELS={
   B:{name:"Premium Spot",icon:"tv",status:"draft"},
   C:{name:"Swap Partner",icon:"film",status:"draft"}
 };
-var B_DEFAULTS={cpm:200,fcpm:280,imps:20,flam:50,itr:8,ifee:1,fs:40,on:false};
+var B_DEFAULTS={cpm:200,fcpm:280,imps:20,flam:50,itr:8,ifee:1,fs:40,on:false,atc:1,afee:3,afs:30,cartOn:true};
 var C_DEFAULTS={norm:100,swap:150,eps:20,views:50,sr:5,sfee:1,build:50,vfee:20,fs:40};
 
 var PARTNERS=[
@@ -536,7 +539,7 @@ var PARTNERS=[
   lede:"Runs the ad tech for many retailers. Retailers sell the slots, Osmos takes a fee.",
   today:[{i:"layers",t:"White-label retail media for retailers"},{i:"lock",t:"Retailers keep pricing and brand ties"},{i:"globe",t:"India, US, UK, Singapore, South Africa"}],
   why:[{i:"spark",t:"Premium format",d:"Sell interactive video above display rates"},{i:"coins",t:"Fixed fee",d:"Earns per 1,000 Flicks, no hidden prices"},{i:"swap",t:"New billable unit",d:"Brands can pay per swap"}],
-  fits:[{i:"home",t:"Home banner",d:"Swap flavours or variants"},{i:"grid",t:"Category banner",d:"Several SKUs, one brand"},{i:"search",t:"Search results",d:"Sponsored Flicks tile"},{i:"box",t:"Product page",d:"Colour, size or flavour swap"}],
+  fits:[{i:"home",t:"Home banner",d:"Swap flavours or variants"},{i:"grid",t:"Category banner",d:"Several SKUs, one brand"},{i:"search",t:"Search results",d:"Sponsored Flicks tile"},{i:"box",t:"Product page",d:"Colour, size or flavour swap"},{i:"cart",t:"Add to cart",d:"Add the chosen variant in one tap"}],
   retailersIN:["BigBasket","1mg","Purplle","FirstCry","Apollo Pharmacy","Rapido","Truemeds","Snapmint","Tata CLiQ"],
   retailersINTL:["Wakefern","Takealot","Pick n Pay","Mr D","Sharaf DG"],
   docNote:"The doc's 30 to 40% margin idea became fixed ₹ fees: a % needs prices Flam can't see.",
@@ -619,11 +622,11 @@ var PARTNERS=[
   sources:[{t:"DashReels (afaqs)",u:"https://www.afaqs.com/news/mktg/dashverse-partners-with-vigloo-to-bring-korean-microdrama-to-india-10651199"},{t:"ShortFree (AppGoblin)",u:"https://appgoblin.info/apps/com.dashtoon.video.shortfree"},{t:"Frameo.AI (afaqs)",u:"https://www.afaqs.com/news/media/dashverse-creates-indias-first-completely-ai-generated-microdrama-10065088"}]
 },
 {
-  id:"firstclub", name:"FirstClub", mono:"FC", logo:"assets/logos/firstclub.png", logoFit:"cover", group:"Quick commerce", status:"explore", models:["B"], bDef:{cpm:150,fcpm:220},
+  id:"firstclub", name:"FirstClub", mono:"FC", logo:"assets/logos/firstclub.png", logoFit:"cover", group:"Quick commerce", status:"explore", models:["B"], bDef:{cpm:150,fcpm:220}, cart:true,
   lede:"Premium quick commerce in Bengaluru and Hyderabad.",
   today:[{i:"box",t:"About 4,000 curated products"},{i:"chart",t:"$55M Series B, Jun 2026"},{i:"alert",t:"2024: no plans for ads"}],
   why:[{i:"spark",t:"Discovery that fits curation",d:"Variants without clutter"}],
-  fits:[{i:"box",t:"Product page",d:"Variant swaps for D2C brands"},{i:"home",t:"Home showcase",d:"One curated brand moment"}],
+  fits:[{i:"box",t:"Product page",d:"Variant swaps for D2C brands"},{i:"home",t:"Home showcase",d:"One curated brand moment"},{i:"cart",t:"Add to cart",d:"Add the chosen variant in one tap"}],
   calc:"B", demos:[],
   next:["Check if they sell ads now"], risks:["Said they don't want ads"],
   sources:[{t:"Series B (YourStory)",u:"https://www.yourstory.com/2026/06/firstclub-raises-55-million-series-b-co-led-by-peak-xv-partners-sofina"},{t:"Stores and range (RuntimeWire)",u:"https://runtimewire.com/article/firstclub-series-b-255-million-valuation"},{t:"No ads, 2024 (YourStory)",u:"https://yourstory.com/2024/12/former-flipkart-exec-ayyappans-venture-accel-firstclub"}]
@@ -867,20 +870,21 @@ var COMPETITORS={
   }
   var pmState={};
   function ctl(id,label,min,max,step,pre,suf){return '<div class="ctl"><label for="'+id+'">'+label+' <output></output></label><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'"'+(pre?' data-pre="'+pre+'"':'')+(suf?' data-suf="'+suf+'"':'')+'></div>'}
-  function calcB(){
+  function calcB(p){
     return '<div class="calc" id="calcB"><div class="controls">'+
       '<div class="group"><h3>'+ic("sliders")+'Their numbers</h3>'+ctl("cpm","Normal ad price, per 1,000",20,600,10,"₹")+ctl("fcpm","Flicks ad price, per 1,000",20,1000,10,"₹")+ctl("imps","Flicks impressions a month",1,500,1,"","lakh")+'</div>'+
       '<div class="group"><h3>'+ic("lock")+'Flam fee</h3>'+ctl("flam","Flam fee, per 1,000",10,150,5,"₹")+'</div>'+
       '<div class="group"><label class="switch" for="on">Interaction fee <input id="on" type="checkbox"></label>'+ctl("itr","Viewers who swap",1,20,0.5,"","%")+ctl("ifee","Brand pays per swap",0.25,3,0.25,"₹")+ctl("fs","Flam share of swap money",0,100,5,"","%")+'</div>'+
+      (p&&p.cart?'<div class="group"><label class="switch" for="cartOn">Add-to-cart fee <input id="cartOn" type="checkbox"></label>'+ctl("atc","Shoppers who add to cart",0.1,10,0.1,"","%")+ctl("afee","Brand pays per add to cart",0.5,20,0.5,"₹")+ctl("afs","Flam share of add-to-cart fee",0,100,5,"","%")+'</div>':'')+
       '<button class="btn" type="button" id="reset">'+ic("reset")+'Reset to examples</button>'+
       '</div><div class="results"><div class="tiles">'+
       '<div class="mtile lead"><span class="who"><i class="dot8 b-pub"></i>Publisher keeps / month</span><span class="now num rose" id="m-p"></span><span class="was num" id="m-p0"></span><span class="tagx num" id="m-px"></span></div>'+
       '<div class="mtile"><span class="who"><i class="dot8 b-flam"></i>Flam earns / month</span><span class="now num" id="m-f"></span><span class="was">was ₹0</span></div>'+
       '<div class="mtile"><span class="who"><i class="dot8 b-brand"></i>Brand pays / month</span><span class="now num" id="m-b"></span><span class="was num" id="m-b0"></span></div>'+
       '</div><details class="xp" open><summary>'+ic("book")+'How each number is built<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="tablewrap"><table class="rcpt num"><thead><tr><th>Per 1,000</th><th>Normal ad</th><th>Flicks ad</th><th>Change</th></tr></thead><tbody>'+
-      '<tr class="grp"><td colspan="4"><i class="dot8 b-brand"></i>Brand pays</td></tr><tr><td>Ad price</td><td id="t-bm0"></td><td id="t-bm1"></td><td></td></tr><tr><td id="t-bsl">Swaps</td><td>–</td><td id="t-bs1"></td><td></td></tr><tr class="tot"><td>Total</td><td id="t-b0"></td><td id="t-b1"></td><td id="t-bd"></td></tr>'+
-      '<tr class="grp"><td colspan="4"><i class="dot8 b-flam"></i>Flam earns</td></tr><tr><td>Flicks fee, fixed</td><td>–</td><td id="t-ff1"></td><td></td></tr><tr><td id="t-fsl">Swap share</td><td>–</td><td id="t-fs1"></td><td></td></tr><tr class="tot"><td>Total</td><td>₹0</td><td id="t-f1"></td><td id="t-fd"></td></tr>'+
-      '<tr class="grp"><td colspan="4"><i class="dot8 b-pub"></i>Publisher keeps</td></tr><tr><td>Ad price</td><td id="t-pm0"></td><td id="t-pm1"></td><td></td></tr><tr><td>Minus Flam fee</td><td>–</td><td id="t-pf1"></td><td></td></tr><tr><td id="t-psl">Swap share</td><td>–</td><td id="t-ps1"></td><td></td></tr><tr class="tot"><td>Total</td><td id="t-p0"></td><td id="t-p1"></td><td id="t-pd"></td></tr>'+
+      '<tr class="grp"><td colspan="4"><i class="dot8 b-brand"></i>Brand pays</td></tr><tr><td>Ad price</td><td id="t-bm0"></td><td id="t-bm1"></td><td></td></tr><tr><td id="t-bsl">Swaps</td><td>–</td><td id="t-bs1"></td><td></td></tr>'+(p&&p.cart?'<tr><td id="t-bal">Adds to cart</td><td>–</td><td id="t-ba1"></td><td></td></tr>':'')+'<tr class="tot"><td>Total</td><td id="t-b0"></td><td id="t-b1"></td><td id="t-bd"></td></tr>'+
+      '<tr class="grp"><td colspan="4"><i class="dot8 b-flam"></i>Flam earns</td></tr><tr><td>Flicks fee, fixed</td><td>–</td><td id="t-ff1"></td><td></td></tr><tr><td id="t-fsl">Swap share</td><td>–</td><td id="t-fs1"></td><td></td></tr>'+(p&&p.cart?'<tr><td id="t-fal">Add-to-cart share</td><td>–</td><td id="t-fa1"></td><td></td></tr>':'')+'<tr class="tot"><td>Total</td><td>₹0</td><td id="t-f1"></td><td id="t-fd"></td></tr>'+
+      '<tr class="grp"><td colspan="4"><i class="dot8 b-pub"></i>Publisher keeps</td></tr><tr><td>Ad price</td><td id="t-pm0"></td><td id="t-pm1"></td><td></td></tr><tr><td>Minus Flam fee</td><td>–</td><td id="t-pf1"></td><td></td></tr><tr><td id="t-psl">Swap share</td><td>–</td><td id="t-ps1"></td><td></td></tr>'+(p&&p.cart?'<tr><td id="t-pal">Add-to-cart share</td><td>–</td><td id="t-pa1"></td><td></td></tr>':'')+'<tr class="tot"><td>Total</td><td id="t-p0"></td><td id="t-p1"></td><td id="t-pd"></td></tr>'+
       '</tbody></table></div><p class="small" id="t-be" style="margin-top:10px"></p></div></details></div></div>';
   }
   function lane(steps){return steps.map(function(s,i){return (i?'<span class="ar">'+ic("arrow")+'</span>':'')+'<span class="stp"><span class="tile sm">'+ic(s.i)+'</span>'+esc(s.t)+'</span>'}).join("")}
@@ -908,13 +912,16 @@ var COMPETITORS={
           '<div class="panel lift fee"><span class="tile c">'+ic("swap")+'</span><h3>Interaction fee</h3><div class="feeamt rose num">₹1</div><p class="small">per swap, paid by the brand</p>'+
             '<div class="split3" role="img" aria-label="40 paise retailer, 20 paise Osmos, 40 paise Flam"><i style="flex:0 0 40%;background:var(--cream)"></i><i style="flex:0 0 20%;background:var(--khaki)"></i><i style="flex:1;background:var(--rose-2)"></i></div>'+
             '<p class="small num">40p retailer · 20p Osmos · 40p Flam</p><span class="duo">Fee<b>Optional</b></span></div>'+
+          '<div class="panel lift fee"><span class="tile c">'+ic("cart")+'</span><h3>Add-to-cart fee</h3><div class="feeamt rose num">₹3</div><p class="small">per add to cart straight from the Flicks, paid by the brand</p>'+
+            '<div class="split3" role="img" aria-label="50 percent retailer, 20 percent Osmos, 30 percent Flam"><i style="flex:0 0 50%;background:var(--cream)"></i><i style="flex:0 0 20%;background:var(--khaki)"></i><i style="flex:1;background:var(--rose-2)"></i></div>'+
+            '<p class="small num">₹1.50 retailer · 60p Osmos · 90p Flam</p><span class="duo">Fee<b>Optional</b></span></div>'+
         '</div>'+
         '<div class="note">'+ic("alert")+'<span>'+esc(p.docNote)+'</span></div>'+
         '<details class="xp cta" id="osxp"><summary><span class="tile k">'+ic("sliders")+'</span><span class="ctx"><b>Live Osmos calculator</b><span>Try your own numbers: platform share, prices, swaps</span></span><span class="go"><span class="op">Open calculator</span><span class="cl">Close</span>'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
     } else {
       var hasC=p.models.indexOf("C")>=0, pm=pmState[p.id]||(hasC?"C":"B"); pmState[p.id]=pm;
-      var paneB='<div class="pmpane" data-pane="B"'+(pm==="B"?'':' hidden')+'><div class="note">'+ic("tv")+'<span><b>Premium Spot:</b> Flicks sold in their ad slots (breaks, pause, banners) on CPM, at a premium tier. Flam takes a fixed fee per 1,000. Numbers are examples; type or drag any value.</span></div>'+flowB()+calcB()+'</div>';
+      var paneB='<div class="pmpane" data-pane="B"'+(pm==="B"?'':' hidden')+'><div class="note">'+ic("tv")+'<span><b>Premium Spot:</b> Flicks sold in their ad slots (breaks, pause, banners) on CPM, at a premium tier. Flam takes a fixed fee per 1,000. Numbers are examples; type or drag any value.</span></div>'+flowB()+calcB(p)+'</div>';
       var paneC=hasC?'<div class="pmpane" data-pane="C"'+(pm==="C"?'':' hidden')+'><div class="note">'+ic("film")+'<span><b>Swap Partner:</b> a sponsor tier where viewers swap the brand\'s product inside '+esc(p.cShow||"the show")+'. Numbers are examples; type or drag any value.</span></div>'+flowC()+calcC()+'</div>':'';
       var sw=hasC?'<div class="pmseg" role="tablist" aria-label="Pricing model"><button type="button" role="tab" data-pm="C" aria-selected="'+(pm==="C")+'">'+ic("film")+'<span><b>Swap Partner</b><small>inside the show</small></span></button><button type="button" role="tab" data-pm="B" aria-selected="'+(pm==="B")+'">'+ic("tv")+'<span><b>Premium Spot</b><small>ad slots, CPM</small></span></button></div>':'';
       h+=card(S(),["Pricing",hasC?"Two ways to sell Flicks":"Premium Spot · ad slots"],sw+paneC+paneB);
@@ -945,8 +952,8 @@ var COMPETITORS={
     var P=byId(pid), DEF={}; for(var k0 in B_DEFAULTS) DEF[k0]=B_DEFAULTS[k0]; if(P&&P.bDef) for(var k1 in P.bDef) DEF[k1]=P.bDef[k1];
     var KEY="flicks-playbook-b2-"+pid, dv={}; for(var k in DEF) dv[k]=DEF[k];
     try{var saved=JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) for(var s in saved) dv[s]=saved[s];}catch(e){}
-    ["cpm","fcpm","imps","flam","itr","ifee","fs"].forEach(function(id){$(id).value=dv[id]});
-    $("on").checked=!!dv.on;
+    ["cpm","fcpm","imps","flam","itr","ifee","fs","atc","afee","afs"].forEach(function(id){if($(id)) $(id).value=dv[id]});
+    $("on").checked=!!dv.on; if($("cartOn")) $("cartOn").checked=!!dv.cartOn;
     var V=FlamFields.val;
     var inr=function(v){return (v<0?"−":"")+"₹"+Math.round(Math.abs(v)).toLocaleString("en-IN")};
     var inr2=function(v){var a=Math.round(Math.abs(v)*100)/100;return (v<0?"−":"")+"₹"+a.toLocaleString("en-IN",{minimumFractionDigits:a%1?2:0,maximumFractionDigits:2})};
@@ -955,7 +962,9 @@ var COMPETITORS={
     function calc(){
       var cpm=V("cpm"),fcpm=V("fcpm"),imps=V("imps"),flam=V("flam"),itr=V("itr"),ifee=V("ifee"),fs=Math.min(V("fs"),100)/100,on=$("on").checked;
       var swaps=on?itr*10:0, sw=swaps*ifee, kk=imps*100;
-      var p0=cpm, f1=flam+fs*sw, ps=(1-fs)*sw, p1=fcpm-flam+ps, b1=fcpm+sw;
+      var hasCart=!!$("cartOn"), con=hasCart&&$("cartOn").checked, adds=con?V("atc")*10:0, am=adds*(hasCart?V("afee"):0), afs=hasCart?Math.min(V("afs"),100)/100:0, fa=afs*am, pa=am-fa;
+      var p0=cpm, f1=flam+fs*sw+fa, ps=(1-fs)*sw, p1=fcpm-flam+ps+pa, b1=fcpm+sw+am;
+      if(hasCart){["atc","afee","afs"].forEach(function(id){$(id).disabled=!con; $("n-"+id).disabled=!con}); set("t-bal",con?"Adds to cart ("+V("atc")+"% of 1,000 = "+(Math.round(adds*10)/10)+" × "+inr2(V("afee"))+")":"Adds to cart (off)"); set("t-ba1",inr2(am)); set("t-fal","Add-to-cart share, "+Math.round(afs*100)+"%"); set("t-fa1",inr2(fa)); set("t-pal","Add-to-cart share, "+Math.round((1-afs)*100)+"%"); set("t-pa1",inr2(pa));}
       ["itr","ifee","fs"].forEach(function(id){$(id).disabled=!on; $("n-"+id).disabled=!on});
       set("w1",inr(b1)); set("w2","keeps "+inr(p1)); set("w3",inr(f1));
       set("t-bm0",inr2(cpm)); set("t-bm1",inr2(fcpm));
@@ -964,14 +973,14 @@ var COMPETITORS={
       set("t-ff1",inr2(flam)); set("t-fsl","Swap share, "+Math.round(fs*100)+"%"); set("t-fs1",inr2(fs*sw)); set("t-f1",inr2(f1)); set("t-fd",chg(f1));
       set("t-pm0",inr2(cpm)); set("t-pm1",inr2(fcpm)); set("t-pf1",inr2(-flam)); set("t-psl","Swap share, "+Math.round((1-fs)*100)+"%"); set("t-ps1",inr2(ps));
       set("t-p0",inr2(p0)); set("t-p1",inr2(p1)); set("t-pd",chg(p1-p0)); $("t-pd").className=p1>=p0?"up":"down";
-      set("t-be","Publisher breaks even at a Flicks price of "+inr(Math.ceil(cpm+flam-ps))+" per 1,000. Today it is "+inr(fcpm)+".");
+      set("t-be","Publisher breaks even at a Flicks price of "+inr(Math.ceil(cpm+flam-ps-pa))+" per 1,000. Today it is "+inr(fcpm)+".");
       set("m-p",inr(p1*kk)); set("m-p0","was "+inr(p0*kk)); set("m-px",chg((p1-p0)*kk)); $("m-px").className="tagx num "+(p1>=p0?"good":"bad");
       set("m-f",inr(f1*kk)); set("m-b",inr(b1*kk)); set("m-b0","was "+inr(cpm*kk));
-      try{localStorage.setItem(KEY,JSON.stringify({cpm:cpm,fcpm:fcpm,imps:imps,flam:flam,itr:itr,ifee:ifee,fs:fs*100,on:on}))}catch(e){}
+      try{localStorage.setItem(KEY,JSON.stringify({cpm:cpm,fcpm:fcpm,imps:imps,flam:flam,itr:itr,ifee:ifee,fs:fs*100,on:on,atc:hasCart?V("atc"):DEF.atc,afee:hasCart?V("afee"):DEF.afee,afs:afs*100||DEF.afs,cartOn:hasCart?con:DEF.cartOn}))}catch(e){}
     }
     FlamFields.make($("calcB"),calc);
-    $("on").addEventListener("input",calc);
-    $("reset").addEventListener("click",function(){["cpm","fcpm","imps","flam","itr","ifee","fs"].forEach(function(id){FlamFields.setVal(id,DEF[id])}); $("on").checked=DEF.on; calc(); toast("Back to example numbers");});
+    $("on").addEventListener("input",calc); if($("cartOn")) $("cartOn").addEventListener("input",calc);
+    $("reset").addEventListener("click",function(){["cpm","fcpm","imps","flam","itr","ifee","fs","atc","afee","afs"].forEach(function(id){if($(id)) FlamFields.setVal(id,DEF[id])}); $("on").checked=DEF.on; if($("cartOn")) $("cartOn").checked=DEF.cartOn; calc(); toast("Back to example numbers");});
     calc();
   }
   function wireOsmos(){

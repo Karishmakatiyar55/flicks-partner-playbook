@@ -94,7 +94,8 @@ h1{font-size:clamp(36px,5.6vw,62px);max-width:15ch}
 .step{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);letter-spacing:.02em}
 .step em{font-style:normal;font-weight:600;font-size:12px;background:var(--khaki);color:var(--khaki-ink);border-radius:999px;padding:2px 9px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px}
+.grid3.fees4{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
 .panel{background:var(--card-2);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px var(--line-2)}
 .c-flam{color:var(--flam)} .c-osmos{color:var(--osmos)} .c-retail{color:var(--retail)} .c-brand{color:var(--brand)}
 .b-flam{background:var(--flam)} .b-osmos{background:var(--osmos)} .b-retail{background:var(--retail)} .b-brand{background:var(--brand)}
@@ -196,6 +197,7 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 12s3.300-6.500 9-6.500S21 12 21 12s-3.300 6.500-9 6.500S3 12 3 12z"/><path d="M9.800 9.800a3 3 0 0 0 4.400 4.400M4.500 4.500l15 15"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.200l2.300 11h10.300L20 7.500H6.300"/><circle cx="9.500" cy="19.500" r="1.400"/><circle cx="16.500" cy="19.500" r="1.400"/></symbol>
     <symbol id="i-swap" viewBox="0 0 24 24"><path d="M5 8.500h13.500M15 5l3.500 3.500L15 12M19 15.500H5.500M9 12l-3.500 3.500L9 19"/></symbol>
     <symbol id="i-store" viewBox="0 0 24 24"><path d="M4.500 9.500 6 4.500h12l1.500 5"/><path d="M4.500 9.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500c0 1.400 1.100 2.500 2.500 2.500s2.500-1.100 2.500-2.500"/><path d="M5.500 12v7.500h13V12M10 19.500V15h4v4.500"/></symbol>
     <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.500 3.500H20v7.500l-8.500 8.500a1.500 1.500 0 0 1-2.100 0l-5.400-5.400a1.500 1.500 0 0 1 0-2.100z"/><circle cx="16" cy="7.500" r="1.300"/></symbol>
@@ -252,8 +254,8 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
 <!-- 2 -->
 <section class="card">
   <span class="step"><em>02</em>The model</span>
-  <h2 class="rose">Three fixed fees</h2>
-  <div class="grid3">
+  <h2 class="rose">Four fixed fees</h2>
+  <div class="grid3 fees4">
     <div class="panel fee" style="box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)">
       <span class="tile k"><svg class="i"><use href="#i-stack"/></svg></span>
       <h3 class="c-osmos">Partner fee, yours</h3>
@@ -275,6 +277,15 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
       <span class="unit">per swap, paid by the brand</span>
       <div class="split" role="img" aria-label="40 paise retailer, 20 paise partner, 40 paise Flam"><i class="b-retail" style="flex:0 0 40%"></i><i class="b-osmos" style="flex:0 0 20%"></i><i class="b-flam" style="flex:1"></i></div>
       <span class="small num">40p retailer · 20p you · 40p Flam</span>
+      <span class="duo">Fee<b>Optional</b></span>
+    </div>
+    <div class="panel fee">
+      <span class="tile c"><svg class="i"><use href="#i-cart"/></svg></span>
+      <h3 class="c-retail">Add-to-cart fee</h3>
+      <div class="big num rose">₹3</div>
+      <span class="unit">per add to cart straight from the Flicks, paid by the brand</span>
+      <div class="split" role="img" aria-label="50 percent retailer, 20 percent partner, 30 percent Flam"><i class="b-retail" style="flex:0 0 50%"></i><i class="b-osmos" style="flex:0 0 20%"></i><i class="b-flam" style="flex:1"></i></div>
+      <span class="small num">₹1.50 retailer · 60p you · 90p Flam</span>
       <span class="duo">Fee<b>Optional</b></span>
     </div>
   </div>
@@ -324,6 +335,14 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
         <div class="ctl"><label for="ifee">Brand pays per swap <output id="o-ifee"></output></label>
           <input id="ifee" type="range" min="0.25" max="3" step="0.25" value="1" data-pre="₹"></div>
       </div>
+
+      <div class="group">
+        <label class="switch" for="carton">Add-to-cart fee <input id="carton" type="checkbox" checked></label>
+        <div class="ctl"><label for="atc">Shoppers who add to cart <output></output></label>
+          <input id="atc" type="range" min="0.1" max="10" step="0.1" value="1" data-suf="%"></div>
+        <div class="ctl"><label for="afee">Brand pays per add to cart <output></output></label>
+          <input id="afee" type="range" min="0.5" max="20" step="0.5" value="3" data-pre="₹"></div>
+      </div>
     </div>
 
     <div class="results">
@@ -343,23 +362,27 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
               <tr class="grp"><td colspan="4"><i class="dot b-brand"></i>Brand pays</td></tr>
               <tr><td>Ad price</td><td id="t-bm0"></td><td id="t-bm1"></td><td></td></tr>
               <tr><td id="t-bsl">Swaps</td><td>–</td><td id="t-bs1"></td><td></td></tr>
+              <tr><td id="t-bal">Adds to cart</td><td>–</td><td id="t-ba1"></td><td></td></tr>
               <tr class="tot"><td>Total</td><td id="t-b0"></td><td id="t-b1"></td><td id="t-bd"></td></tr>
 
               <tr class="grp"><td colspan="4"><i class="dot b-osmos"></i>Osmos earns</td></tr>
               <tr><td id="t-orl">Platform share of ad price</td><td id="t-or0"></td><td id="t-or1"></td><td></td></tr>
               <tr><td>Partner fee, fixed</td><td>–</td><td id="t-of1"></td><td></td></tr>
               <tr><td>Swap share, 20%</td><td>–</td><td id="t-os1"></td><td></td></tr>
+              <tr><td>Add-to-cart share, 20%</td><td>–</td><td id="t-oa1"></td><td></td></tr>
               <tr class="tot"><td>Total</td><td id="t-o0"></td><td id="t-o1"></td><td id="t-od"></td></tr>
 
               <tr class="grp"><td colspan="4"><i class="dot b-flam"></i>Flam earns</td></tr>
               <tr><td>Flicks fee, fixed</td><td>–</td><td>₹50</td><td></td></tr>
               <tr><td>Swap share, 40%</td><td>–</td><td id="t-fs1"></td><td></td></tr>
+              <tr><td>Add-to-cart share, 30%</td><td>–</td><td id="t-fa1"></td><td></td></tr>
               <tr class="tot"><td>Total</td><td>₹0</td><td id="t-f1"></td><td id="t-fd"></td></tr>
 
               <tr class="grp"><td colspan="4"><i class="dot b-retail"></i>Retailer keeps</td></tr>
               <tr><td>Ad price minus platform share</td><td id="t-rm0"></td><td id="t-rm1"></td><td></td></tr>
               <tr><td>Minus fixed fees (partner + Flam)</td><td>–</td><td id="t-rf1"></td><td></td></tr>
               <tr><td>Swap share, 40%</td><td>–</td><td id="t-rs1"></td><td></td></tr>
+              <tr><td>Add-to-cart share, 50%</td><td>–</td><td id="t-ra1"></td><td></td></tr>
               <tr class="tot"><td>Total</td><td id="t-r0"></td><td id="t-r1"></td><td id="t-rd"></td></tr>
             </tbody>
           </table>
@@ -409,15 +432,21 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
     var rate=V('rate')/100, cpm=V('cpm'), fcpm=V('fcpm'), imps=V('imps');
     var osm=V('osmos'), on=$('inton').checked, itr=V('itr'), ifee=V('ifee');
     var swaps=on?itr*10:0, sw=swaps*ifee;     // swaps and swap money per 1,000 impressions
+    var con=$('carton').checked, atc=V('atc'), afee=V('afee');
+    var adds=con?atc*10:0, am=adds*afee;      // adds to cart and their fees per 1,000 impressions
     var k=imps*100;                           // number of 1,000-impression blocks in a month
 
     var b0=cpm, o0=rate*cpm, r0=cpm-o0;
-    var or1=rate*fcpm, os1=0.2*sw, o1=or1+osm+os1;
-    var fs1=0.4*sw, f1=FLAM+fs1;
-    var rm1=fcpm-or1, rf1=osm+FLAM, rs1=0.4*sw, r1=rm1-rf1+rs1;
-    var b1=fcpm+sw;
+    var oa1=0.2*am, fa1=0.3*am, ra1=0.5*am;
+    var or1=rate*fcpm, os1=0.2*sw, o1=or1+osm+os1+oa1;
+    var fs1=0.4*sw, f1=FLAM+fs1+fa1;
+    var rm1=fcpm-or1, rf1=osm+FLAM, rs1=0.4*sw, r1=rm1-rf1+rs1+ra1;
+    var b1=fcpm+sw+am;
 
     ['itr','ifee'].forEach(function(id){$(id).disabled=!on; $('n-'+id).disabled=!on});
+    ['atc','afee'].forEach(function(id){$(id).disabled=!con; $('n-'+id).disabled=!con});
+    set('t-bal',con?'Adds to cart ('+atc+'% of 1,000 = '+(Math.round(adds*10)/10)+' × '+inr2(afee)+')':'Adds to cart (off)'); set('t-ba1',inr2(am));
+    set('t-oa1',inr2(oa1)); set('t-fa1',inr2(fa1)); set('t-ra1',inr2(ra1));
 
     set('t-bm0',inr2(cpm)); set('t-bm1',inr2(fcpm));
     set('t-bsl',on?'Swaps ('+itr+'% of 1,000 = '+(Math.round(swaps*10)/10)+' × '+inr2(ifee)+')':'Swaps (off)');
@@ -433,7 +462,7 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
     set('t-r0',inr2(r0)); set('t-r1',inr2(r1)); set('t-rd',chg(r1-r0));
     $('t-rd').className=r1>=r0?'up':'down';
 
-    var be=rate<1?cpm+(rf1-rs1)/(1-rate):Infinity;
+    var be=rate<1?cpm+(rf1-rs1-ra1)/(1-rate):Infinity;
     set('t-be','Retailer breaks even when the Flicks price is '+inr(Math.ceil(be))+' per 1,000 or more. Today it is '+inr(fcpm)+'.');
 
     set('m-o',inr(o1*k)); set('m-o0','was '+inr(o0*k)); set('m-ox',o0>0?(o1/o0).toFixed(1)+'× a normal ad':'new revenue');
@@ -443,6 +472,7 @@ input:focus-visible{outline:2px solid var(--khaki);outline-offset:3px;border-rad
   }
   FlamFields.make(document.querySelector('.calc'),calc);
   $('inton').addEventListener('input',calc);
+  $('carton').addEventListener('input',calc);
   calc();
 })();
 </script>
