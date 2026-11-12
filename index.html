@@ -408,7 +408,20 @@ details.xp.cta[open] .go .cl{display:inline}
 .cluster{display:grid;grid-template-columns:1fr auto 1fr;gap:28px;align-items:center}
 @media (max-width:860px){.cluster{grid-template-columns:1fr}}
 .cluster .hubc{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
-.colhead{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.colhead{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.compgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:14px}
+.comp{display:flex;flex-direction:column;gap:14px;padding:22px}
+.comph{display:flex;align-items:center;gap:12px}
+.comph>div{flex:1}
+.bcount{display:flex;flex-direction:column;align-items:flex-end;font-size:26px;line-height:1;background:linear-gradient(180deg,var(--ink),var(--rose-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.bcount small{font-size:11px;color:var(--faint);-webkit-text-fill-color:var(--faint);margin-top:4px}
+.bchips{display:flex;flex-wrap:wrap;gap:6px}
+.bchip{display:inline-block;padding:5px 11px;border-radius:999px;font-size:12.5px;color:var(--cream);background:rgba(255,236,226,.05);box-shadow:inset 0 0 0 1px var(--line-2);transition:background .2s,transform .2s}
+.bchip:hover{background:rgba(255,236,226,.1);transform:translateY(-1px)}
+.bchip.sh{color:var(--khaki-ink);background:var(--khaki);box-shadow:none}
+.srcl{display:block;margin-top:auto;font-size:12px;line-height:1.5;color:var(--faint)}
+.srcl .i{width:13px;height:13px;vertical-align:-2px;margin-right:6px}
+.srcl a{color:var(--muted)}
 
 /* ---------- edit mode ---------- */
 .ed{border-radius:6px;transition:background .2s,box-shadow .2s;outline:none}
@@ -640,8 +653,21 @@ var ROLLOUT=[
   {i:"chart",wk:"Weeks 5 and 6",t:"Decide",items:["Compare with standard ads","Measure price premium","Review swap rates","Choose what's next"]}
 ];
 var COMPETITORS={
-  direct:[{n:"KERV Interactive",d:"Shoppable interactive video",i:"bag"},{n:"Teads",d:"Premium video formats",i:"play"},{n:"Mobkoi",d:"Interactive, AR, VR for luxury",i:"spark"}],
-  retail:[{n:"Criteo Commerce Media",d:"Target, Costco, Best Buy",i:"store"},{n:"Epsilon (CitrusAd)",d:"Woolworths, REWE, Sainsbury's",i:"store"},{n:"Zitcha",d:"Retail media platform",i:"store"}]
+  direct:[
+    {n:"KERV Interactive",d:"Turns existing video into interactive, shoppable video",i:"bag",
+     b:["Lowe's","IKEA","Audi","Welch's"],more:"and other major retail, travel and beverage advertisers",src:"doc"},
+    {n:"Teads",d:"Premium video and interactive ad formats",i:"play",
+     b:["Breuninger","Lenovo","BYD","Skoda","Renault","Accor"],src:"doc"},
+    {n:"Mobkoi",d:"Interactive video, AR and VR, mostly luxury",i:"spark",
+     b:["BMW","Bentley","Maserati","Nespresso","Canon","Montblanc","Bally","GE","Prada","Calvin Klein","Dyson","Nike","Swarovski","Lego","American Express","Rolex"],src:"doc"}],
+  retail:[
+    {n:"Criteo Commerce Media",d:"Retail media for big retailers and marketplaces",i:"store",
+     b:["ASDA","Carrefour","Albertsons","Best Buy","Target","Costco","Walgreens","Sainsbury's","Leroy Merlin","Macy's","Ulta Beauty"],src:"doc"},
+    {n:"Epsilon Retail Media (CitrusAd)",d:"White-label retail media platform",i:"store",
+     b:["Carrefour","Woolworths","REWE","Target","Sainsbury's"],src:"doc"},
+    {n:"Zitcha",d:"Omnichannel retail media platform, Australia-based",i:"store",
+     b:["The Warehouse Group","Noel Leeming","Coles Liquor Group","Liquor Legends","Adore Beauty","Tyresales","Leroy Merlin","Frasers Group"],src:"web",
+     links:[{t:"CB Insights",u:"https://www.cbinsights.com/company/zitcha/customers"},{t:"SP Edge",u:"https://sp-edge.com/companies/2056394"}]}]
 };
 </script>
 
@@ -940,11 +966,16 @@ var COMPETITORS={
       '<section class="card anim"'+D()+'><div class="tl">'+ROLLOUT.map(function(r,i){return '<div class="ph anim" style="--d:'+(300+i*150)+'ms"><span class="tile'+(i===3?' k':'')+'">'+ic(r.i)+'</span><div class="panel lift"><span class="wk">'+esc(r.wk)+'</span><h3>'+esc(r.t)+'</h3><ul class="mini">'+r.items.map(function(x){return '<li>'+ic("check")+'<span>'+esc(x)+'</span></li>'}).join("")+'</ul></div></div>'}).join("")+'</div></section>';
   }
   function competitors(){
-    var col=function(arr,c){return '<div style="display:flex;flex-direction:column;gap:12px">'+arr.map(function(x,i){return '<div class="fact anim" style="--d:'+(250+i*90)+'ms"><span class="tile sm '+c+'">'+ic(x.i)+'</span><div><b style="font-weight:500">'+esc(x.n)+'</b><div class="small">'+esc(x.d)+'</div></div></div>'}).join("")+'</div>'};
-    return '<header class="phead anim"><div class="left"><span class="eyebrow">From the planning doc</span><h1 class="rose">Who else is in the room</h1><p class="lede">Interactive formats compete. Retail media platforms could carry Flicks.</p></div></header>'+
-      '<section class="card anim"'+D()+'><div class="cluster"><div><div class="colhead"><span class="duo">Compete with<b>Formats</b></span></div>'+col(COMPETITORS.direct,"")+'</div>'+
-      '<div class="hubc"><span class="mono lg pulse">'+ic("flam")+'</span><b style="font-weight:500">Flicks</b></div>'+
-      '<div><div class="colhead"><span class="duo">Could carry<b>Channels</b></span></div>'+col(COMPETITORS.retail,"k")+'</div></div></section>';
+    var seen={}; COMPETITORS.retail.forEach(function(x){x.b.forEach(function(n){seen[n]=(seen[n]||0)+1})});
+    var card=function(x,i,c,shared){
+      var chips=x.b.map(function(n){var sh=shared&&seen[n]>1;return '<span class="bchip'+(sh?' sh':'')+'"'+(sh?' title="Also works with another platform here"':'')+'>'+esc(n)+'</span>'}).join("");
+      var src=x.src==="web"?'<span class="srcl">'+ic("link")+'Not in the planning doc · from '+x.links.map(function(l){return '<a href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.t)+'</a>'}).join(", ")+'</span>':'<span class="srcl">'+ic("book")+'Planning doc</span>';
+      return '<div class="panel lift comp anim" style="--d:'+(250+i*90)+'ms"><div class="comph"><span class="tile sm '+c+'">'+ic(x.i)+'</span><div style="min-width:0"><b style="font-weight:500">'+esc(x.n)+'</b><div class="small">'+esc(x.d)+'</div></div><span class="bcount num">'+x.b.length+'<small>'+(c?'retailers':'brands')+'</small></span></div>'+
+        '<div class="bchips">'+chips+'</div>'+(x.more?'<p class="small">…'+esc(x.more)+'</p>':'')+src+'</div>'};
+    var grid=function(arr,c,shared){return '<div class="compgrid">'+arr.map(function(x,i){return card(x,i,c,shared)}).join("")+'</div>'};
+    return '<header class="phead anim"><div class="left"><span class="eyebrow">From the planning doc</span><h1 class="rose">Who else is in the room</h1><p class="lede">Who each one already works with.</p></div></header>'+
+      '<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Compete with<b>Formats</b></span><span class="small">Brands already buying interactive video</span></div>'+grid(COMPETITORS.direct,"",false)+'</section>'+
+      '<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Could carry<b>Channels</b></span><span class="small">Retailers on each platform · <span class="bchip sh">Highlighted</span> works with more than one</span></div>'+grid(COMPETITORS.retail,"k",true)+'</section>';
   }
 
   /* ---------- Model B calculator wiring ---------- */
