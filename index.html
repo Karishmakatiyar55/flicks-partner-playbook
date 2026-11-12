@@ -492,12 +492,7 @@ body.editing .edonly.iconbtn{display:inline-grid!important}
 .addbtn{align-self:flex-start;align-items:center;gap:8px;padding:9px 15px;border-radius:14px;border:1px dashed rgba(205,197,132,.5);background:transparent;color:var(--khaki);font-size:13px;cursor:pointer}
 .addbtn:hover{background:rgba(205,197,132,.08)}
 .addbtn svg.i{width:15px;height:15px}
-.editbar{position:fixed;right:22px;bottom:22px;z-index:50;display:flex;align-items:center;gap:8px;padding:7px;border-radius:999px;background:rgba(20,16,15,.92);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px var(--line-2),0 20px 50px rgba(0,0,0,.55)}
-.editbar .msg{font-size:12.5px;color:var(--muted);padding:0 6px;white-space:nowrap}
-.editbar .only{display:none}
-body.editing .editbar .only{display:inline-flex}
-@media (max-width:640px){.editbar{right:12px;bottom:12px;max-width:calc(100vw - 24px);overflow-x:auto}body.editing .editbar{left:12px}.editbar .msg{display:none!important}}
 .toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;z-index:60;padding:10px 18px;border-radius:999px;background:var(--ink);color:#1a1312;font-size:13.5px;font-weight:500;
   transition:opacity .3s,transform .4s var(--ease);pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -571,12 +566,6 @@ body.editing .editbar .only{display:inline-flex}
   <main><div class="page" id="view"></div></main>
 </div>
 
-<div class="editbar" role="toolbar" aria-label="Editing">
-  <span class="msg only">Saves in this browser</span>
-  <button class="btn sm ghost only" type="button" id="copyEdits"><svg class="i"><use href="#i-copy"/></svg>Copy changes</button>
-  <button class="btn sm ghost only" type="button" id="resetEdits"><svg class="i"><use href="#i-reset"/></svg><span>Reset</span></button>
-  <button class="btn sm primary" type="button" id="editToggle" aria-pressed="false"><svg class="i"><use href="#i-edit"/></svg><span>Edit page</span></button>
-</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal" id="modal" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -759,7 +748,7 @@ var COMPETITORS={
   var STORE="flicks-playbook-v2", ORIGINAL=JSON.parse(JSON.stringify(PARTNERS)), overrides={};
   var byIdOrig=function(id){return ORIGINAL.filter(function(p){return p.id===id})[0]||{}};
   try{overrides=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){overrides={};}
-  PARTNERS.forEach(function(p){var o=overrides[p.id]; if(o) for(var k in o) p[k]=o[k];});
+  PARTNERS.forEach(function(p){var o=overrides[p.id]; if(o) ["demos","deal"].forEach(function(k){ if(k in o) p[k]=o[k]; });});
   function persist(pid,field){
     var p=byId(pid); overrides[pid]=overrides[pid]||{}; overrides[pid][field]=JSON.parse(JSON.stringify(p[field]));
     try{localStorage.setItem(STORE,JSON.stringify(overrides));}catch(e){toast("Couldn't save in this browser");}
@@ -1230,10 +1219,7 @@ var COMPETITORS={
   function applyEditing(){
     document.body.classList.toggle("editing",editing);
     document.querySelectorAll(".ed").forEach(function(el){ if(editing){el.setAttribute("contenteditable","true");el.setAttribute("spellcheck","true")} else el.removeAttribute("contenteditable") });
-    $("editToggle").setAttribute("aria-pressed",String(editing));
-    $("editToggle").querySelector("span").textContent=editing?"Done":"Edit page";
   }
-  $("editToggle").addEventListener("click",function(){editing=!editing; applyEditing(); toast(editing?"Click any outlined text to change it":"Edit mode off");});
   var saveT;
   $("view").addEventListener("input",function(e){
     var el=e.target.closest&&e.target.closest(".ed[contenteditable]"); if(!el) return;
@@ -1272,22 +1258,8 @@ var COMPETITORS={
   });
   function rerenderDemo(){var p=byId(current), sec=$("demos"); if(!sec) return; var box=sec.querySelector(".demo"); var tmp=document.createElement("div"); tmp.innerHTML=demoBlock(p); box.replaceWith(tmp.firstChild); wireDemo(); var q=$("qfDemos"); if(q) q.textContent=(p.demos||[]).length;}
 
-  $("copyEdits").addEventListener("click",function(){
-    var txt=JSON.stringify(overrides,null,2);
-    if(txt==="{}"){toast("No changes yet");return}
-    var show=function(){$("modalText").value=txt; $("modal").hidden=false; $("modalText").focus(); $("modalText").select();};
-    try{navigator.clipboard.writeText(txt).then(function(){toast("Changes copied")},show)}catch(e){show()}
-  });
   $("modalClose").addEventListener("click",function(){$("modal").hidden=true});
   document.addEventListener("keydown",function(e){if(e.key==="Escape") $("modal").hidden=true;});
-  var armed=false;
-  $("resetEdits").addEventListener("click",function(){
-    var lab=this.querySelector("span");
-    if(!armed){armed=true; lab.textContent="Click again to reset"; setTimeout(function(){armed=false; lab.textContent="Reset"},3000); return;}
-    armed=false; lab.textContent="Reset"; overrides={}; try{localStorage.removeItem(STORE)}catch(e){}
-    PARTNERS.length=0; JSON.parse(JSON.stringify(ORIGINAL)).forEach(function(p){PARTNERS.push(p)}); checkLogos(function(){rerender(); toast("Back to the original playbook");});
-  });
-
   function checkLogos(done){
     var left=PARTNERS.length, called=false, fin=function(){if(!called){called=true;done();}};
     PARTNERS.forEach(function(p){
