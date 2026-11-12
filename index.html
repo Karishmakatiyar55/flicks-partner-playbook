@@ -96,6 +96,8 @@ main{min-width:0;padding:44px 40px 120px}
 .mono.lg svg.i{width:30px;height:30px}
 .mono.logo{background:linear-gradient(180deg,#fbf6f2,#efe6df);padding:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 8px 18px rgba(0,0,0,.35)}
 .mono.logo img{width:100%;height:100%;object-fit:contain;display:block}
+.mono.logo.cover{padding:0!important;background:#000;overflow:hidden}
+.mono.logo.cover img{object-fit:cover}
 .mono.logo.lg{padding:12px}
 .nav .mono.logo{padding:3px}
 .mono.k{color:var(--khaki)} .mono.c{color:var(--cream)} .mono.t{color:var(--taupe)}
@@ -299,6 +301,13 @@ details.xp .xpbody{padding:0 16px 16px;animation:rise .45s var(--ease) both}
   -webkit-mask:url(assets/flam-mark.png) center/contain no-repeat;mask:url(assets/flam-mark.png) center/contain no-repeat}
 .mono.lg .fmark{width:30px;height:35px}
 .tile.c .fmark{background:var(--cream)}
+.fees .fee{gap:14px;padding:26px}
+.fees .fee h3{font-size:18px}
+.feeamt{font-size:56px;font-weight:500;letter-spacing:-.035em;line-height:1}
+.fees .fee p.small{font-size:14px;min-height:2.9em}
+.fees .fee .duo{align-self:flex-start;margin-top:auto}
+.split3{display:flex;gap:4px;height:6px}
+.split3 i{display:block;border-radius:999px}
 /* live calculator call-to-action */
 details.xp.cta{box-shadow:inset 0 0 0 1px rgba(205,197,132,.6),0 0 0 4px rgba(205,197,132,.07);background:linear-gradient(100deg,rgba(205,197,132,.14),rgba(205,197,132,.03) 55%),var(--card-2)}
 details.xp.cta summary{padding:18px 20px;gap:16px}
@@ -522,7 +531,7 @@ var PARTNERS=[
   sources:[{t:"Osmos company overview",u:"https://www.osmos.ai/llms.txt"}]
 },
 {
-  id:"jiohotstar", name:"JioHotstar", mono:"JH", logo:"assets/logos/jiohotstar.png", group:"OTT video", status:"draft", models:["B","C"],
+  id:"jiohotstar", name:"JioHotstar", mono:"JH", logo:"assets/logos/jiohotstar.png", logoFit:"cover", group:"OTT video", status:"draft", models:["B","C"],
   lede:"India's biggest streamer, already building shoppable ads.",
   today:[{i:"cart",t:"StreamToCart Ads with Instamart, Oct 2026"},{i:"target",t:"Commerce-signal ads, Apr 2026"},{i:"bag",t:"Shop The Look on Splitsvilla 16"},{i:"pause",t:"Pause ads and Tadka micro-dramas"}],
   why:[{i:"swap",t:"Shop The Look, live",d:"Swap the outfit on screen, then buy"},{i:"cart",t:"Layer for StreamToCart",d:"Variants before add-to-cart"},{i:"layers",t:"One format, every surface",d:"Breaks, pause, micro-dramas"}],
@@ -533,7 +542,7 @@ var PARTNERS=[
   sources:[{t:"StreamToCart Ads (exchange4media)",u:"https://www.exchange4media.com/industry-briefing-news/jiohotstar-launches-streamtocart-ads-transforming-video-breaks-into-digital-storefronts-159543.html"},{t:"Commerce-signal ads (JioStar)",u:"https://www.jiostar.com/news/jiohotstar-launches-industry-first-commerce-signal-led-advertising-to-power-intent-driven-engagement-at-scale/"},{t:"NEWME Shop The Look (MediaNews4U)",u:"https://www.medianews4u.com/?p=2488688"},{t:"JioStar CTV formats",u:"https://ads.jiostar.com/"}]
 },
 {
-  id:"sonyliv", name:"Sony LIV", mono:"SL", logo:"assets/logos/sonyliv.png", group:"OTT video", status:"draft", models:["B"],
+  id:"sonyliv", name:"Sony LIV", mono:"SL", logo:"assets/logos/sonyliv.png", logoFit:"cover", group:"OTT video", status:"draft", models:["B"],
   lede:"Already charges a premium for attention-heavy formats.",
   today:[{i:"pause",t:"Pause ads at 2.5x to 7x usual rates"},{i:"users",t:"KBC Play Along; ad revenue up 80%"},{i:"layers",t:"15+ formats via Google Ad Manager"},{i:"user",t:"New ad sales head, ex-JioHotstar"}],
   why:[{i:"coins",t:"Prices attention already",d:"Flicks fits their premium tier"},{i:"link",t:"Easy to serve",d:"VAST or HTML tag in Ad Manager"},{i:"swap",t:"Play Along swaps",d:"Sponsors let viewers swap"}],
@@ -543,7 +552,7 @@ var PARTNERS=[
   sources:[{t:"Pause ad pricing (afaqs)",u:"https://www.afaqs.com/news/ott-streaming/sony-liv-bets-on-pause-ads-sets-rates-25-5-times-higher-than-usual-7663858"},{t:"KBC 18 ad revenue (MediaNews4U)",u:"https://www.medianews4u.com/kbc-season-18-clocks-80-growth-in-sony-liv-ad-revenue-premium-cpms-rise-50/"},{t:"Sony LIV on Google Ad Manager",u:"https://admanager.google.com/home/resources/sonyliv-grows-ad-impressions-5x-with-ad-manager/"},{t:"Ad sales hire (exchange4media)",u:"https://www.exchange4media.com/index.php/tags/jiohotstar.html"}]
 },
 {
-  id:"zee5", name:"ZEE5", mono:"Z5", logo:"assets/logos/zee5.png", group:"OTT video", status:"draft", models:["B","C"],
+  id:"zee5", name:"ZEE5", mono:"Z5", logo:"assets/logos/zee5.png", logoFit:"cover", group:"OTT video", status:"draft", models:["B","C"],
   lede:"Building commerce ad units and its own audience platform.",
   today:[{i:"target",t:"ZAP audience platform, Nov 2026"},{i:"play",t:"Free5 ad-supported tier"},{i:"spark",t:"Micro-interactive discovery units"},{i:"clapper",t:"Bullet micro-dramas inside ZEE5"}],
   why:[{i:"spark",t:"Ready-made unit",d:"The interactive unit they're building"},{i:"chart",t:"Feeds ZAP",d:"Swap data for targeting"},{i:"swap",t:"Bullet swaps",d:"Products swappable in-story"}],
@@ -563,7 +572,7 @@ var PARTNERS=[
   sources:[{t:"Hungama OTT rebrand (Best Media Info)",u:"https://bestmediainfo.com/mediainfo/mediainfo-digital/hungama-app-rebrands-as-hungama-ott-8696000"},{t:"Hungama tiers (Subger)",u:"https://subger.com/en/service/hungama-play"},{t:"Ad formats (SmartAds, agency page)",u:"https://smartads.in/services/digital/hungama-digital-advertising"}]
 },
 {
-  id:"kuku", name:"Kuku", mono:"KK", logo:"assets/logos/kuku.png", group:"Audio and micro-drama", status:"draft", models:["B","C"],
+  id:"kuku", name:"Kuku", mono:"KK", logo:"assets/logos/kuku.png", logoFit:"cover", group:"Audio and micro-drama", status:"draft", models:["B","C"],
   lede:"Audio and micro-drama, IPO-bound. Only the free drama app runs ads.",
   today:[{i:"lock",t:"Kuku TV: subscription, no ads"},{i:"play",t:"Free Drama app runs ads"},{i:"clapper",t:"Brands join drama storylines"},{i:"chart",t:"Profitable FY26, IPO filed"}],
   why:[{i:"spark",t:"Premium slot",d:"In the Free Drama app"},{i:"swap",t:"Swappable brand moments",d:"Inside the story"}],
@@ -573,7 +582,7 @@ var PARTNERS=[
   sources:[{t:"Kuku TV launch (afaqs)",u:"https://www.afaqs.com/news/ott-streaming/kuku-fm-launches-vertical-microdrama-ott-platform-kuku-tv-8718086"},{t:"Free Drama app, Meta playbook (MediaNews4U)",u:"https://www.medianews4u.com/kuku-tv-sees-1-6x-hhgher-roas-29-lower-cost-per-subscription-with-metas-advantage-report/"},{t:"Brands in micro-dramas (exchange4media)",u:"https://www.exchange4media.com/digital-news/as-microdramas-take-off-brands-move-from-placement-to-participation-157687.html"},{t:"Kuku FY26 (Inc42)",u:"https://inc42.com/buzz/ipo-bound-kuku-technologies-turns-profitable-in-fy26-revenue-surges-6x-to-%E2%82%B91484-cr/"}]
 },
 {
-  id:"pocketfm", name:"Pocket FM", mono:"PF", logo:"assets/logos/pocketfm.png", group:"Audio", status:"draft", models:["B"],
+  id:"pocketfm", name:"Pocket FM", mono:"PF", logo:"assets/logos/pocketfm.png", logoFit:"cover", group:"Audio", status:"draft", models:["B"],
   lede:"Audio series app. Sells video ads around the audio.",
   today:[{i:"x",t:"Closed Pocket TV video app, Jun 2026"},{i:"layers",t:"Ads via InMobi and other networks"},{i:"play",t:"In-stream and out-stream video ads"}],
   why:[{i:"eye",t:"More from screen time",d:"Earns more than plain video"},{i:"gift",t:"Swap to unlock",d:"Natural rewarded action"}],
@@ -593,7 +602,7 @@ var PARTNERS=[
   sources:[{t:"DashReels (afaqs)",u:"https://www.afaqs.com/news/mktg/dashverse-partners-with-vigloo-to-bring-korean-microdrama-to-india-10651199"},{t:"ShortFree (AppGoblin)",u:"https://appgoblin.info/apps/com.dashtoon.video.shortfree"},{t:"Frameo.AI (afaqs)",u:"https://www.afaqs.com/news/media/dashverse-creates-indias-first-completely-ai-generated-microdrama-10065088"}]
 },
 {
-  id:"firstclub", name:"FirstClub", mono:"FC", logo:"assets/logos/firstclub.png", group:"Quick commerce", status:"explore", models:["B"],
+  id:"firstclub", name:"FirstClub", mono:"FC", logo:"assets/logos/firstclub.png", logoFit:"cover", group:"Quick commerce", status:"explore", models:["B"],
   lede:"Premium quick commerce in Bengaluru and Hyderabad.",
   today:[{i:"box",t:"About 4,000 curated products"},{i:"chart",t:"$55M Series B, Jun 2026"},{i:"alert",t:"2024: no plans for ads"}],
   why:[{i:"spark",t:"Discovery that fits curation",d:"Variants without clutter"}],
@@ -627,7 +636,7 @@ var COMPETITORS={
   var byId=function(id){return PARTNERS.filter(function(p){return p.id===id})[0]};
   var monoCls=function(p){return p.status==="built"?" k":""};
   function badge(p,cls){cls=cls?" "+cls:"";
-    if(p._logoOk) return '<span class="mono logo'+cls+'"><img src="'+esc(p.logo)+'" alt="'+esc(p.name)+' logo"></span>';
+    if(p._logoOk) return '<span class="mono logo'+(p.logoFit==="cover"?" cover":"")+cls+'"><img src="'+esc(p.logo)+'" alt="'+esc(p.name)+' logo"></span>';
     return '<span class="mono'+monoCls(p)+cls+'">'+esc(p.mono)+'</span>';}
 
   /* ---------- storage: only fields someone edited are saved ---------- */
@@ -688,7 +697,7 @@ var COMPETITORS={
     var avg=function(a){return a.reduce(function(s,p){return s+yOf[p.id]},0)/a.length};
     var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-top-28};
     var path=function(x1,y1,x2,y2){var m=(x1+x2)/2;return "M"+x1+" "+y1+" C"+m+" "+y1+","+m+" "+y2+","+x2+" "+y2};
-    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: Flicks, three pricing models, and the partners under each"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient></defs>';
+    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: Flicks, three pricing models, and the partners under each"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
     ["A","B","C"].forEach(function(k,i){s+='<path class="lk drawpath" pathLength="1" data-m="'+k+'" style="--d:'+(150+i*80)+'ms" d="'+path(cx+cw,cy,mx,my[k])+'"/>'});
     PARTNERS.forEach(function(p,i){
       s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id])+'"/>';
@@ -699,7 +708,7 @@ var COMPETITORS={
       s+='<g class="nd model" style="--d:'+(200+i*80)+'ms"><rect class="box" x="'+mx+'" y="'+(y-28)+'" width="'+mw+'" height="56" rx="16"/><rect x="'+(mx+12)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#cdc584"/><text x="'+(mx+27)+'" y="'+(y+5)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b0e">'+k+'</text><text x="'+(mx+54)+'" y="'+(y-2)+'" font-size="14" font-weight="500">'+esc(m.name)+'</text><text class="sub" x="'+(mx+54)+'" y="'+(y+15)+'">'+esc(STATUS[m.status])+'</text></g>'});
     PARTNERS.forEach(function(p,i){var y=yOf[p.id], col=p.status==="built"?"#cdc584":p.status==="draft"?"#d9a594":"#8a7c75";
       s+='<a href="#'+p.id+'" class="leaf" data-leaf="'+p.id+'"><g class="nd" style="--d:'+(450+i*60)+'ms"><rect class="box" x="'+lx+'" y="'+(y-23)+'" width="'+lw+'" height="46" rx="14"/>'+
-        (p._logoOk?'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#f5eee8"/><image href="'+esc(p.logo)+'" x="'+(lx+12)+'" y="'+(y-12)+'" width="24" height="24" preserveAspectRatio="xMidYMid meet"/>':'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#1d1817" stroke="rgba(255,236,226,.15)"/><text class="mt" x="'+(lx+24)+'" y="'+(y+4)+'" text-anchor="middle">'+esc(p.mono)+'</text>')+
+        (p._logoOk?(p.logoFit==="cover"?'<image href="'+esc(p.logo)+'" x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" preserveAspectRatio="xMidYMid slice" clip-path="url(#lc)"/>':'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#f5eee8"/><image href="'+esc(p.logo)+'" x="'+(lx+12)+'" y="'+(y-12)+'" width="24" height="24" preserveAspectRatio="xMidYMid meet"/>'):'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#1d1817" stroke="rgba(255,236,226,.15)"/><text class="mt" x="'+(lx+24)+'" y="'+(y+4)+'" text-anchor="middle">'+esc(p.mono)+'</text>')+
         '<text x="'+(lx+52)+'" y="'+(y-1)+'" font-size="14" font-weight="500">'+esc(p.name)+'</text><text class="sub" x="'+(lx+52)+'" y="'+(y+15)+'">'+esc(p.group)+'</text>'+
         '<circle cx="'+(lx+lw-20)+'" cy="'+y+'" r="4.500" fill="'+col+'"/></g></a>'});
     return s+'</svg>';
@@ -799,7 +808,13 @@ var COMPETITORS={
     h+=card(S(),["Demos","Try it live"],demoBlock(p),"demos");
     if(p.id==="osmos"){
       h+=card(S(),["Pricing","Model A · fixed fees"],flowA()+
-        '<div class="grid3">'+[["layers","₹15","Osmos, per 1,000","k"],["flam","₹50","Flam, per 1,000",""],["swap","₹1","Per swap, split 3 ways","c"]].map(function(x){return '<div class="panel lift"><div class="row"><span class="tile '+x[3]+'">'+ic(x[0])+'</span><div><div class="big rose num">'+x[1]+'</div><span class="small">'+x[2]+'</span></div></div></div>'}).join("")+'</div>'+
+        '<div class="grid3 fees">'+
+          '<div class="panel lift fee hl"><span class="tile k">'+ic("layers")+'</span><h3 style="color:var(--khaki)">Partner fee, Osmos</h3><div class="feeamt rose num">₹15</div><p class="small">per 1,000 Flicks impressions, on top of Osmos\'s normal platform fee</p><span class="duo">Fee<b>Fixed</b></span></div>'+
+          '<div class="panel lift fee"><span class="tile">'+ic("flam")+'</span><h3 style="color:var(--rose-2)">Flam fee</h3><div class="feeamt rose num">₹50</div><p class="small">per 1,000 Flicks impressions</p><span class="duo">Fee<b>Fixed</b></span></div>'+
+          '<div class="panel lift fee"><span class="tile c">'+ic("swap")+'</span><h3>Interaction fee</h3><div class="feeamt rose num">₹1</div><p class="small">per swap, paid by the brand</p>'+
+            '<div class="split3" role="img" aria-label="40 paise retailer, 20 paise Osmos, 40 paise Flam"><i style="flex:0 0 40%;background:var(--cream)"></i><i style="flex:0 0 20%;background:var(--khaki)"></i><i style="flex:1;background:var(--rose-2)"></i></div>'+
+            '<p class="small num">40p retailer · 20p Osmos · 40p Flam</p><span class="duo">Fee<b>Optional</b></span></div>'+
+        '</div>'+
         '<div class="note">'+ic("alert")+'<span>'+esc(p.docNote)+'</span></div>'+
         '<details class="xp cta" id="osxp"><summary><span class="tile k">'+ic("sliders")+'</span><span class="ctx"><b>Live Osmos calculator</b><span>Try your own numbers: platform share, prices, swaps</span></span><span class="go"><span class="op">Open calculator</span><span class="cl">Close</span>'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
