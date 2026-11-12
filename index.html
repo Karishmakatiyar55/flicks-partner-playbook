@@ -352,6 +352,8 @@ details.xp.cta[open] .go .cl{display:inline}
 .dform input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--khaki)}
 .dform .err{grid-column:1/-1;font-size:12.5px;color:var(--deep)}
 .dform .err:empty{display:none}
+.sharednote{display:flex;align-items:center;gap:8px;color:var(--khaki)}
+.sharednote svg.i{width:16px;height:16px}
 .empty{width:300px;max-width:100%;height:260px;border-radius:28px;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted);font-size:13.5px;
   background:repeating-linear-gradient(135deg,rgba(255,236,226,.03) 0 10px,transparent 10px 20px);box-shadow:inset 0 0 0 1px var(--line-2)}
 .empty .tile{margin:0 auto 12px}
@@ -631,6 +633,7 @@ var COMPETITORS={
   var $=function(id){return document.getElementById(id)};
   var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
   var ic=function(n,cls){if(n==="flam") return '<span class="fmark" aria-hidden="true"></span>';return '<svg class="i'+(cls?' '+cls:'')+'"><use href="#i-'+(n||"spark")+'"/></svg>'};
+  var SHARED=false;
   var STATUS={built:"Pricing built",draft:"Draft pricing",explore:"Fit to confirm"};
   var chip=function(s){return '<span class="chip st-'+s+'">'+STATUS[s]+'</span>'};
   var byId=function(id){return PARTNERS.filter(function(p){return p.id===id})[0]};
@@ -742,7 +745,7 @@ var COMPETITORS={
       (cur?'<div class="chips"><div class="seg" role="group" aria-label="Frame"><button type="button" data-dev="phone" aria-pressed="'+(st.dev==="phone")+'">'+ic("phone")+'Phone</button><button type="button" data-dev="desk" aria-pressed="'+(st.dev==="desk")+'">'+ic("monitor")+'Desktop</button></div>'+
         '<a class="btn sm" href="'+esc(cur.url)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a></div>':'')+
       '<form class="dform" data-dform="'+p.id+'" novalidate><input name="label" placeholder="Name, e.g. Swiggy" aria-label="Demo name" maxlength="40" autocomplete="off"><input name="url" placeholder="https://your-demo.vercel.app" aria-label="Demo link" inputmode="url" autocomplete="off"><button class="btn primary sm" type="submit">'+ic("plus")+'Add demo</button><span class="err" role="alert"></span></form>'+
-      '<p class="small">New links save in this browser. To share them, turn on Edit page and use Copy changes.</p></div>';
+      (SHARED?'<p class="small sharednote">'+ic("users")+'Demos added here show for everyone who opens this playbook.</p>':'<p class="small">Shared saving isn\'t connected yet, so new links save only in this browser.</p>')+'</div>';
     return '<div class="demo'+(st.dev==="desk"&&cur?' wide':'')+'">'+stage+side+'</div>';
   }
   function wireDemo(){
@@ -935,7 +938,9 @@ var COMPETITORS={
       var idx=q[pa[1]].length-1, sel='.ed[data-path="'+pa[0]+'.'+pa[1]+'.'+idx+(typeof TPL[pa[1]]==="string"?'':'.t')+'"]', el=document.querySelector(sel);
       if(el){el.focus(); var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);} return;}
     if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; rerenderDemo(); return;}
-    if(t.dataset.ddel){var pp=byId(current), rm=pp.demos.splice(+t.dataset.ddel,1)[0]; persist(current,"demos"); rerenderDemo(); toast("Removed "+rm.label); return;}
+    if(t.dataset.ddel){var pp=byId(current), di=+t.dataset.ddel, rmv=pp.demos[di];
+      if(SHARED){t.disabled=true; api("POST",{partner:pp.id,op:"remove",url:rmv.url,base:pp.demos}).then(function(r){pp.demos=r.demos; rerenderDemo(); toast("Removed "+rmv.label+" for everyone");},function(m){t.disabled=false; toast(m);}); return;}
+      pp.demos.splice(di,1); persist(current,"demos"); rerenderDemo(); toast("Removed "+rmv.label); return;}
     if(t.dataset.dev){demoState[current].dev=t.dataset.dev; rerenderDemo(); return;}
     if(t.dataset.jump){jump=t.dataset.jump; var target=t.getAttribute("href"); if(location.hash===target){e.preventDefault(); route();} return;}
   });
@@ -943,9 +948,12 @@ var COMPETITORS={
     var f=e.target; if(!f.dataset||!f.dataset.dform) return; e.preventDefault();
     var label=f.elements.label.value.trim(), url=f.elements.url.value.trim(), err=f.querySelector(".err");
     if(!/^https?:\/\/[^\s.]+\.[^\s]+$/.test(url)){err.textContent="Paste a full link starting with https://"; f.elements.url.focus(); return;}
-    var p=byId(f.dataset.dform); p.demos=p.demos||[]; p.demos.push({label:label||"Demo "+(p.demos.length+1),url:url});
-    demoState[p.id]={i:p.demos.length-1,dev:(demoState[p.id]||{}).dev||"phone"};
-    persist(p.id,"demos"); rerenderDemo(); toast("Demo added");
+    var p=byId(f.dataset.dform); p.demos=p.demos||[];
+    var done=function(){demoState[p.id]={i:p.demos.length-1,dev:(demoState[p.id]||{}).dev||"phone"}; rerenderDemo();};
+    if(SHARED){var btn=f.querySelector("button[type=submit]"); btn.disabled=true; err.textContent="";
+      api("POST",{partner:p.id,op:"add",label:label,url:url,base:p.demos}).then(function(r){p.demos=r.demos; done(); toast("Demo added for everyone");},function(m){btn.disabled=false; err.textContent=m;});
+      return;}
+    p.demos.push({label:label||"Demo "+(p.demos.length+1),url:url}); persist(p.id,"demos"); done(); toast("Demo added in this browser");
   });
   function rerenderDemo(){var p=byId(current), sec=$("demos"); if(!sec) return; var box=sec.querySelector(".demo"); var tmp=document.createElement("div"); tmp.innerHTML=demoBlock(p); box.replaceWith(tmp.firstChild); wireDemo(); var q=$("qfDemos"); if(q) q.textContent=(p.demos||[]).length;}
 
@@ -985,7 +993,36 @@ var COMPETITORS={
     var r=new FileReader(); r.onload=function(){var p=byId(pickFor); p.logo=r.result; p._logoOk=true; persist(p.id,"logo"); rerender(); toast("Logo updated");}; r.readAsDataURL(f);
   });
   $("view").addEventListener("click",function(e){var t=e.target.closest("[data-logo]"); if(t){pickFor=t.dataset.logo; picker.click();}});
-  checkLogos(route);
+  /* ---------- shared demos (Vercel function /api/demos) ---------- */
+  function api(method,body){
+    return new Promise(function(ok,fail){
+      var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){if(ctl)ctl.abort();},6000);
+      fetch("api/demos",{method:method,cache:"no-store",headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined,signal:ctl?ctl.signal:undefined})
+        .then(function(r){return r.json().catch(function(){return {}}).then(function(j){clearTimeout(to); if(r.ok) ok(j); else fail(j.error||"Couldn't save. Try again.");});})
+        .catch(function(){clearTimeout(to); fail("Couldn't reach the server. Check your connection.");});
+    });
+  }
+  function applyShared(map){
+    var changed=false;
+    PARTNERS.forEach(function(p){ if(Array.isArray(map[p.id])){ var a=JSON.stringify(map[p.id]); if(a!==JSON.stringify(p.demos||[])){p.demos=map[p.id]; changed=true;} } });
+    return changed;
+  }
+  function loadShared(cb){
+    api("GET").then(function(j){
+      SHARED=true;
+      PARTNERS.forEach(function(p){ if(overrides[p.id]) delete overrides[p.id].demos; });
+      applyShared(j.demos||{}); cb();
+    },function(){ SHARED=false; cb(); });
+  }
+  var syncing=false;
+  function syncShared(){
+    if(!SHARED||syncing) return; syncing=true;
+    api("GET").then(function(j){ syncing=false; if(applyShared(j.demos||{})){ if(byId(current)) rerenderDemo(); else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
+  }
+  window.addEventListener("hashchange",function(){setTimeout(syncShared,50)});
+  window.addEventListener("focus",syncShared);
+  setInterval(function(){ if(!document.hidden) syncShared(); },30000);
+  loadShared(function(){checkLogos(route)});
 })();
 </script>
 </body>
