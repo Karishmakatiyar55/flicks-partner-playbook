@@ -478,6 +478,7 @@ details.xp.cta[open] .go .cl{display:inline}
 .srcl{display:block;margin-top:auto;font-size:12px;line-height:1.5;color:var(--faint)}
 .srcl .i{width:13px;height:13px;vertical-align:-2px;margin-right:6px}
 .srcl a{color:var(--muted)}
+.srcs .srcnote{display:inline-flex;align-items:center;gap:8px;color:var(--muted)}
 
 /* ---------- edit mode ---------- */
 .ed{border-radius:6px;transition:background .2s,box-shadow .2s;outline:none}
@@ -696,13 +697,13 @@ var PARTNERS=[
 },
 {
   id:"firstclub", deal:{stage:0,note:""}, name:"FirstClub", mono:"FC", logo:"assets/logos/firstclub.png", logoFit:"cover", group:"Quick commerce", status:"explore", models:["B"], bDef:{cpm:150,fcpm:220}, cart:true,
-  lede:"Premium quick commerce in Bengaluru and Hyderabad.",
-  today:[{i:"box",t:"About 4,000 curated products"},{i:"chart",t:"$55M Series B, Jun 2026"},{i:"alert",t:"2024: no plans for ads"}],
-  why:[{i:"spark",t:"Discovery that fits curation",d:"Variants without clutter"}],
-  fits:[{i:"box",t:"Product page",d:"Variant swaps for D2C brands"},{i:"home",t:"Home showcase",d:"One curated brand moment"},{i:"cart",t:"Add to cart",d:"Add the chosen variant in one tap"}],
+  lede:"Premium quick commerce in Bengaluru and Hyderabad. Its Finds reels already sell products from video.",
+  today:[{i:"film",t:"Finds: recipe and product reels mid-app"},{i:"cart",t:"Shoppable cards under each reel add to cart"},{i:"box",t:"About 4,000 curated products"},{i:"spark",t:"Beauty and personal care launched Nov 2026"},{i:"chart",t:"$55M Series B, Jun 2026"},{i:"alert",t:"2024: no plans for ads"}],
+  why:[{i:"film",t:"Finds is already the stage",d:"Reels plus shoppable cards. Flicks makes the reel itself switch to the shopper's pick"},{i:"bag",t:"Branded Finds",d:"A brand sponsors a recipe or routine reel. Shoppers swap the variant and add it to cart"},{i:"spark",t:"Fits the curation",d:"Branded content that looks like Finds, not banner clutter"}],
+  fits:[{i:"film",t:"Finds reels",d:"Swap the brand, flavour or pack in a recipe. The card below follows"},{i:"bag",t:"Beauty routines",d:"Show a shade or regime on different skin types"},{i:"box",t:"Product page",d:"Variant swaps for D2C brands"},{i:"home",t:"Home showcase",d:"One curated brand moment"},{i:"cart",t:"Add to cart",d:"Add the chosen variant in one tap, billed as a CPA"}],
   calc:"B", demos:[],
-  next:["Check if they sell ads now"], risks:["Said they don't want ads"],
-  sources:[{t:"Series B (YourStory)",u:"https://www.yourstory.com/2026/06/firstclub-raises-55-million-series-b-co-led-by-peak-xv-partners-sofina"},{t:"Stores and range (RuntimeWire)",u:"https://runtimewire.com/article/firstclub-series-b-255-million-valuation"},{t:"No ads, 2024 (YourStory)",u:"https://yourstory.com/2024/12/former-flipkart-exec-ayyappans-venture-accel-firstclub"}]
+  next:["Pitch branded Finds: Flicks reels sold per 1,000 plus a CPA","Build a recipe Flicks demo with 2 or 3 swappable ingredient brands","Ask how many Finds views and card taps they see"], risks:["Said in 2024 they don't want ads, so pitch branded Finds as content, not ad slots","Finds is curated, so brands must meet FirstClub's quality bar"],
+  sources:[{t:"Series B (YourStory)",u:"https://www.yourstory.com/2026/06/firstclub-raises-55-million-series-b-co-led-by-peak-xv-partners-sofina"},{t:"Stores and range (RuntimeWire)",u:"https://runtimewire.com/article/firstclub-series-b-255-million-valuation"},{t:"No ads, 2024 (YourStory)",u:"https://yourstory.com/2024/12/former-flipkart-exec-ayyappans-venture-accel-firstclub"},{t:"Beauty launch, Nov 2026 (ThePrint)",u:"https://theprint.in/ani-press-releases/firstclub-reimagines-beauty-the-way-it-reimagined-grocery-bans-100-ingredients-in-new-beauty-personal-care-category/3092125/"},{t:"Finds reels and shoppable cards: seen in the FirstClub app by the Flam team, Nov 2026"}]
 }
 ];
 
@@ -1141,7 +1142,7 @@ var COMPETITORS={
     h+=card(S(),["Plan","Next and watch-outs"],'<div class="grid2"><div class="panel"><div class="row"><span class="tile k">'+ic("arrow")+'</span><h3>Next</h3></div><ul class="mini k">'+listItems(p,"next","check")+'</ul>'+addBtn(p,"next","Add step")+'</div>'+
       '<div class="panel"><div class="row"><span class="tile t">'+ic("alert")+'</span><h3>Watch out</h3></div><ul class="mini t">'+(p.risks.length?listItems(p,"risks","alert"):'<li class="muted">'+ic("check")+'<span>Nothing flagged yet</span></li>')+'</ul>'+addBtn(p,"risks","Add risk")+'</div></div>');
 
-    h+='<details class="xp anim"'+D()+'><summary>'+ic("book")+'Sources ('+p.sources.length+')<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="srcs">'+p.sources.map(function(s){return '<a href="'+esc(s.u)+'" target="_blank" rel="noopener">'+ic("external")+esc(s.t)+'</a>'}).join("")+'</div></div></details>';
+    h+='<details class="xp anim"'+D()+'><summary>'+ic("book")+'Sources ('+p.sources.length+')<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="srcs">'+p.sources.map(function(s){return s.u?'<a href="'+esc(s.u)+'" target="_blank" rel="noopener">'+ic("external")+esc(s.t)+'</a>':'<span class="srcnote">'+ic("eye")+esc(s.t)+'</span>'}).join("")+'</div></div></details>';
     return h;
   }
 
