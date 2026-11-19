@@ -171,6 +171,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{o
 
 /* ---------- overview mind map ---------- */
 .mapwrap{overflow-x:auto;margin:0 -8px;padding:0 8px}
+.mind .spark{pointer-events:none}
 svg.mind{width:100%;min-width:760px;height:auto;display:block}
 svg.mind text{font-family:var(--font);fill:var(--ink)}
 svg.mind .lk{fill:none;stroke:rgba(214,170,150,.32);stroke-width:1.4;transition:stroke .25s,stroke-width .25s}
@@ -861,7 +862,7 @@ var COMPETITORS={
       var dy=y2-y1; if(Math.abs(dy)<1) return "M"+x1+" "+y1+" H"+x2;
       if(tx==null) tx=(x1+x2)/2; var r=Math.min(16,Math.abs(dy)/2,tx-x1,x2-tx), sg=dy>0?1:-1;
       return "M"+x1+" "+y1+" H"+(tx-r)+" Q"+tx+" "+y1+" "+tx+" "+(y1+sg*r)+" V"+(y2-sg*r)+" Q"+tx+" "+y2+" "+(tx+r)+" "+y2+" H"+x2};
-    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: agencies bring brand demand to Flicks, which serves it to platform partners through three pricing models"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
+    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: agencies bring brand demand to Flicks, which serves it to platform partners through three pricing models"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath><filter id="sparkglow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="3"/></filter><filter id="coreglow" x="-40%" y="-60%" width="180%" height="220%"><feGaussianBlur stdDeviation="14"/></filter></defs>';
     if(AG.length){
       var hd=function(x,t,u){return '<text class="sub" x="'+x+'" y="18" font-size="11" letter-spacing="1.2">'+t+'<tspan fill="#8a7c75" letter-spacing="0">  '+u+'</tspan></text>'};
       s+=hd(ax+4,"DEMAND","brings the brands")+hd(mx+4,"HOW IT IS SOLD","")+hd(lx+4,"SUPPLY","runs the Flicks");
@@ -872,6 +873,20 @@ var COMPETITORS={
       s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id],mx+mw+38)+'"/>';
       if(p.models.indexOf("C")>0) s+='<path class="lk dash" data-p="'+p.id+'" d="'+path(mx+mw,my.C,lx,yOf[p.id],mx+mw+74)+'"/>';
     });
+    var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(!calm){ // small lights travelling from demand to supply
+      var P=7.5, spark=function(d,a,b,begin,col,dim){var f=function(n){return Math.round(n*1000)/1000}, kt="0;"+f(a)+";"+f(b)+";1";
+        return '<g class="spark" opacity="0"><circle r="7" fill="'+col+'" opacity="'+(dim?.3:.55)+'" filter="url(#sparkglow)"/><circle r="'+(dim?1.6:2.1)+'" fill="#fff1e8"/>'+
+          '<animateMotion dur="'+P+'s" begin="'+f(begin)+'s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="'+kt+'" path="'+d+'"/>'+
+          '<animate attributeName="opacity" dur="'+P+'s" begin="'+f(begin)+'s" repeatCount="indefinite" values="0;0;'+(dim?.6:1)+';'+(dim?.6:1)+';0;0" keyTimes="0;'+f(a)+";"+f(a+.03)+";"+f(b-.03)+";"+f(b)+';1"/></g>'};
+      AG.forEach(function(p,i){s+=spark(path(ax+aw,yOf[p.id],cx,cy),0,.14,i*.5,"#ff8a4c")});
+      KEYS.forEach(function(k,i){s+=spark(path(cx+cw,cy,mx,my[k]),.13,.36,i*.25,"#ff8a4c")});
+      PL.forEach(function(p,i){
+        s+=spark(path(mx+mw,my[p.models[0]],lx,yOf[p.id],mx+mw+38),.36,.82,(i%5)*.45,"#f0b9a6");
+        if(p.models.indexOf("C")>0) s+=spark(path(mx+mw,my.C,lx,yOf[p.id],mx+mw+74),.4,.9,1.2+(i%4)*.6,"#cdc584",true);
+      });
+      s+='<rect x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22" fill="#ff7a3c" filter="url(#coreglow)" opacity=".22"><animate attributeName="opacity" values=".14;.38;.14" dur="4.2s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1"/></rect>';
+    }
     s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">'+(AG.length?"demand to supply":"partner models")+'</text></g>';
     KEYS.forEach(function(k,i){var m=MODELS[k],y=my[k];
       s+='<g class="nd model" style="--d:'+(200+i*80)+'ms"><rect class="box" x="'+mx+'" y="'+(y-28)+'" width="'+mw+'" height="56" rx="16"/><rect x="'+(mx+12)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#cdc584"/><text x="'+(mx+27)+'" y="'+(y+5)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b0e">'+k+'</text><text x="'+(mx+54)+'" y="'+(y-2)+'" font-size="14" font-weight="500">'+esc(m.name)+'</text><text class="sub" x="'+(mx+54)+'" y="'+(y+15)+'">'+esc(STATUS[m.status])+'</text></g>'});
