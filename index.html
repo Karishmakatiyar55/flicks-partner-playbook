@@ -588,8 +588,10 @@ body.editing .edonly.iconbtn{display:inline-grid!important}
 var MODELS={
   A:{name:"Platform partner",icon:"layers",status:"built"},
   B:{name:"Premium Spot",icon:"tv",status:"draft"},
-  C:{name:"Swap Partner",icon:"film",status:"draft"}
+  C:{name:"Swap Partner",icon:"film",status:"draft"},
+  D:{name:"Agency partner",icon:"users",status:"built"}
 };
+var D_DEFAULTS={cpm:200,share:25,cost:100,commit:2,booked:1.5};
 var B_DEFAULTS={cpm:200,fcpm:280,imps:20,flam:50,itr:8,ifee:1,fs:40,on:false,atc:1,afee:3,afs:30,cartOn:true};
 var C_DEFAULTS={norm:100,swap:150,eps:20,views:50,sr:5,sfee:1,build:50,vfee:20,fs:40};
 
@@ -704,6 +706,19 @@ var PARTNERS=[
   calc:"B", demos:[],
   next:["Pitch branded Finds: Flicks reels sold per 1,000 plus a CPA","Build a recipe Flicks demo with 2 or 3 swappable ingredient brands","Ask how many Finds views and card taps they see"], risks:["Said in 2024 they don't want ads, so pitch branded Finds as content, not ad slots","Finds is curated, so brands must meet FirstClub's quality bar"],
   sources:[{t:"Series B (YourStory)",u:"https://www.yourstory.com/2026/06/firstclub-raises-55-million-series-b-co-led-by-peak-xv-partners-sofina"},{t:"Stores and range (RuntimeWire)",u:"https://runtimewire.com/article/firstclub-series-b-255-million-valuation"},{t:"No ads, 2024 (YourStory)",u:"https://yourstory.com/2024/12/former-flipkart-exec-ayyappans-venture-accel-firstclub"},{t:"Beauty launch, Nov 2026 (ThePrint)",u:"https://theprint.in/ani-press-releases/firstclub-reimagines-beauty-the-way-it-reimagined-grocery-bans-100-ingredients-in-new-beauty-personal-care-category/3092125/"},{t:"Finds reels and shoppable cards: seen in the FirstClub app by the Flam team, Nov 2026"}]
+},
+{
+  id:"wpp", kind:"agency", deal:{stage:0,note:""}, name:"WPP Media", mono:"W", logo:"assets/logos/wpp-media.png", logoFit:"cover", group:"Media agency network", status:"built", models:["D"],
+  lede:"Brings the brands. An agency network that plans and buys media for advertisers, so it can put Flicks budgets onto the platforms in this playbook.",
+  today:[{i:"users",t:"Plans and buys media for brands"},{i:"layers",t:"Mindshare, Wavemaker, EssenceMediacom"},{i:"edit",t:"Was GroupM until May 2025"},{i:"coins",t:"$60bn+ media a year, 80+ markets"},{i:"bag",t:"EssenceMediacom runs GCPL's India media since 2025"},{i:"globe",t:"GCPL added 7 more markets, Sep 2026"}],
+  lists:[{i:"layers",t:"Agencies inside WPP Media",items:["Mindshare","Wavemaker","EssenceMediacom"]},
+         {i:"bag",t:"Advertisers named in press",items:["Godrej Consumer Products (GCPL)","Maruti Suzuki","Reckitt","PhonePe","Coca-Cola","Amazon","Unilever"]}],
+  why:[{i:"users",t:"Brands in bulk",d:"One agency deal reaches many advertisers. A group like GCPL has many brands to run"},{i:"calendar",t:"Committed spend",d:"A quarterly commitment makes Flicks demand predictable"},{i:"store",t:"Fills partner slots",d:"Agency budgets are the demand for Osmos retailers, Noon and streaming"}],
+  fits:[{i:"store",t:"Retail media",d:"FMCG variant swaps on Osmos retailer apps"},{i:"tv",t:"Streaming",d:"Premium Spot and Swap Partner on OTT"},{i:"rocket",t:"Quick commerce",d:"Branded Finds reels on FirstClub"},{i:"globe",t:"Gulf marketplace",d:"Noon, for brands with GCC budgets"},{i:"play",t:"Audio and micro-drama",d:"Kuku, Pocket FM, Dashverse"}],
+  calc:"D", demos:[],
+  next:["Map the agency's FMCG advertisers to Osmos retailers","Take one multi-brand group, such as GCPL, to one platform first","Track bookings against the quarterly commitment","Line up other agency groups on the same model"],
+  risks:["The agency takes its share first, so Flam's margin depends on run cost","Agree one rule for a shortfall: carry forward or pay","Platform fees come out of Flam's run cost"],
+  sources:[{t:"GroupM becomes WPP Media (exchange4media)",u:"https://www.exchange4media.com/advertising-news/wpp-replaces-groupm-as-wpp-media-143884.html"},{t:"$60bn media, 80+ markets (BestMediaInfo)",u:"https://bestmediainfo.com/mediainfo/advertising/groupm-is-now-wpp-media-mindshare-wavemaker-essencemediacom-to-continue-9315811"},{t:"India agency brands (Storyboard18)",u:"https://storyboard18.com/advertising/wpp-india-organizing-the-big-five-creative-media-digital-data-and-delivery-69615.htm"},{t:"GCPL India mandate, 2025 (Manifest)",u:"https://manifest-media.in/advertising/160225/godrej-consumer-products-assigns-its-media-duties-to-essencemediacom.html"},{t:"GCPL global mandate, Sep 2026 (exchange4media)",u:"https://www.exchange4media.com/advertising-news/godrej-consumer-products-names-wpp-media-as-global-media-agency-partner-157833.html"},{t:"Global clients (afaqs)",u:"https://www.afaqs.com/news/advertising/groupm-to-wpp-media-a-quick-recap-of-a-22-year-era-9064253"},{t:"India client wins (Social Samosa)",u:"https://www.socialsamosa.com/experts-speak/groupms-shakeup-possible-impact-workforce-9063005"}]
 }
 ];
 
@@ -783,7 +798,8 @@ var COMPETITORS={
     var t=function(n){return '<span class="mono t">'+ic(n)+'</span>'};
     $("nav").innerHTML='<span class="ind" id="ind"></span>'+
       '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+'</div>'+
-      '<div class="navgroup"><h4>Partners</h4>'+PARTNERS.map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
+      '<div class="navgroup"><h4>Partners</h4>'+PARTNERS.filter(function(p){return p.kind!=="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
+      '<div class="navgroup"><h4>Agencies</h4>'+PARTNERS.filter(function(p){return p.kind==="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Plan</h4>'+link("rollout","Pilot plan",t("calendar"))+link("competitors","Competitors",t("shield"))+'</div>';
     requestAnimationFrame(moveInd);
   }
@@ -814,18 +830,19 @@ var COMPETITORS={
     var row=62, top=34, W=1000, H=top*2+PARTNERS.length*row;
     var cx=30, cw=170, mx=320, mw=240, lx=680, lw=300, cy=H/2;
     var yOf={}; PARTNERS.forEach(function(p,i){yOf[p.id]=top+i*row+row/2});
-    var prim={A:[],B:[],C:[]}; PARTNERS.forEach(function(p){prim[p.models[0]].push(p)});
+    var prim={A:[],B:[],C:[],D:[]}, KEYS=["A","B","C","D"]; PARTNERS.forEach(function(p){prim[p.models[0]].push(p)});
     var avg=function(a){return a.reduce(function(s,p){return s+yOf[p.id]},0)/a.length};
-    var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-top-28};
+    var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-top-28, D:prim.D.length?avg(prim.D):H-top-28};
+    if(prim.D.length) my.C=(my.B+my.D)/2;
     var path=function(x1,y1,x2,y2){var m=(x1+x2)/2;return "M"+x1+" "+y1+" C"+m+" "+y1+","+m+" "+y2+","+x2+" "+y2};
-    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: Flicks, three pricing models, and the partners under each"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
-    ["A","B","C"].forEach(function(k,i){s+='<path class="lk drawpath" pathLength="1" data-m="'+k+'" style="--d:'+(150+i*80)+'ms" d="'+path(cx+cw,cy,mx,my[k])+'"/>'});
+    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: Flicks, four pricing models, and the partners under each"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
+    KEYS.forEach(function(k,i){s+='<path class="lk drawpath" pathLength="1" data-m="'+k+'" style="--d:'+(150+i*80)+'ms" d="'+path(cx+cw,cy,mx,my[k])+'"/>'});
     PARTNERS.forEach(function(p,i){
       s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id])+'"/>';
       if(p.models.indexOf("C")>0) s+='<path class="lk dash" data-p="'+p.id+'" d="'+path(mx+mw,my.C,lx,yOf[p.id])+'"/>';
     });
     s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">partner models</text></g>';
-    ["A","B","C"].forEach(function(k,i){var m=MODELS[k],y=my[k];
+    KEYS.forEach(function(k,i){var m=MODELS[k],y=my[k];
       s+='<g class="nd model" style="--d:'+(200+i*80)+'ms"><rect class="box" x="'+mx+'" y="'+(y-28)+'" width="'+mw+'" height="56" rx="16"/><rect x="'+(mx+12)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#cdc584"/><text x="'+(mx+27)+'" y="'+(y+5)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b0e">'+k+'</text><text x="'+(mx+54)+'" y="'+(y-2)+'" font-size="14" font-weight="500">'+esc(m.name)+'</text><text class="sub" x="'+(mx+54)+'" y="'+(y+15)+'">'+esc(STATUS[m.status])+'</text></g>'});
     PARTNERS.forEach(function(p,i){var y=yOf[p.id], col=p.status==="built"?"#cdc584":p.status==="draft"?"#d9a594":"#8a7c75";
       s+='<a href="#'+p.id+'" class="leaf" data-leaf="'+p.id+'"><g class="nd" style="--d:'+(450+i*60)+'ms"><rect class="box" x="'+lx+'" y="'+(y-23)+'" width="'+lw+'" height="46" rx="14"/>'+
@@ -839,7 +856,7 @@ var COMPETITORS={
     var built=PARTNERS.filter(function(p){return p.status==="built"}).length, draft=PARTNERS.filter(function(p){return p.status==="draft"}).length;
     var h='<header class="phead anim"><div class="left"><span class="eyebrow">Flicks partner playbook</span><h1 class="rose">Where Flicks plugs in</h1><p class="lede">Partners, pricing models and live demos in one place.</p></div>'+
       '<div class="stats">'+[[PARTNERS.length,"Partners"],[built,"Pricing built"],[draft,"Draft pricing"],[demoCount(),"Live demos"]].map(function(x){return '<div class="stat"><b class="num rose" data-count="'+x[0]+'">'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join("")+'</div></header>';
-    h+=card("01",["Map","Three models, "+PARTNERS.length+" partners"],'<div class="mapwrap">'+mindmap()+'</div><div class="chips small">'+chip("built")+chip("draft")+chip("explore")+'<span class="duo">Dashed line<b>also Model C</b></span><span class="small">Hover a partner to trace it. Click to open.</span></div>');
+    h+=card("01",["Map","Four models, "+PARTNERS.length+" partners"],'<div class="mapwrap">'+mindmap()+'</div><div class="chips small">'+chip("built")+chip("draft")+chip("explore")+'<span class="duo">Dashed line<b>also Model C</b></span><span class="small">Hover a partner to trace it. Click to open.</span></div>');
     h+=card("02",["Partners","Pick one"],'<div class="pcards">'+PARTNERS.map(function(p,i){
       var n=(p.demos||[]).length;
       return '<a class="pcard anim" style="--d:'+(250+i*50)+'ms" href="#'+p.id+'"><div class="top">'+badge(p)+'<div><div class="nm">'+esc(p.name)+'</div><div class="gp">'+esc(p.group)+'</div></div><span class="go">'+ic("arrow")+'</span></div>'+
@@ -1015,6 +1032,54 @@ var COMPETITORS={
   function flowB(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","per 1,000","w1")+fnode("tv","Publisher","–","c",true,"w2")+wire("–","Flam fee + swap share","w3")+fnode("flam","Flam","earns","")+'</div>'}
   function flowA(){return '<div class="mflow">'+fnode("tag","Brand","pays the slot","t")+wire("Price","set by retailer")+fnode("store","Retailer","keeps media money","c")+wire("₹65","+ normal fee")+fnode("layers","Osmos","keeps ₹15","k",true)+wire("₹50","passed on")+fnode("flam","Flam","fixed fee","")+'</div>'}
   function flowC(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","sponsorship + swaps","cw1")+fnode("tv","Publisher","–","c",true,"cw2")+wire("–","build + views + swap share","cw3")+fnode("flam","Flam","earns","")+'</div>'}
+  function flowD(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","per 1,000","dw1")+fnode("users","Agency","–","k",true,"dw2")+wire("–","passed on","dw3")+fnode("flam","Flam","–","",false,"dw4")+wire("–","run cost","dw5")+fnode("store","Platforms","media and serving","c")+'</div>'}
+  function calcD(){
+    return '<div class="calc" id="calcD"><div class="controls">'+
+      '<div class="group"><h3>'+ic("tag")+'The campaign</h3>'+ctl("d-cpm","Brand pays, per 1,000",50,600,5,"₹")+ctl("d-share","Agency keeps",0,60,1,"","%")+'</div>'+
+      '<div class="group"><h3>'+ic("lock")+'Flam delivery</h3>'+ctl("d-cost","Flam run cost, per 1,000",20,300,5,"₹")+'</div>'+
+      '<div class="group"><h3>'+ic("calendar")+'Quarterly commitment</h3>'+ctl("d-commit","Agency commits, per quarter",0.25,20,0.25,"₹","crore")+ctl("d-booked","Booked this quarter",0,20,0.25,"₹","crore")+'</div>'+
+      '<button class="btn" type="button" id="d-reset">'+ic("reset")+'Reset to examples</button>'+
+      '</div><div class="results"><p class="small" id="d-ctx"></p><div class="tiles">'+
+      '<div class="mtile lead"><span class="who"><i class="dot8 b-flam"></i>Flam margin / quarter</span><span class="now num rose" id="dm-f"></span><span class="was num" id="dm-f0"></span><span class="tagx num" id="dm-fx"></span></div>'+
+      '<div class="mtile"><span class="who"><i class="dot8 b-pub"></i>Agency keeps / quarter</span><span class="now num" id="dm-a"></span><span class="was num" id="dm-a0"></span></div>'+
+      '<div class="mtile"><span class="who"><i class="dot8 b-brand"></i>Brands pay / quarter</span><span class="now num" id="dm-b"></span><span class="was num" id="dm-b0"></span></div>'+
+      '</div><details class="xp" open><summary>'+ic("book")+'How each number is built<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="tablewrap"><table class="rcpt num"><thead><tr><th>Where the money goes</th><th>Per 1,000</th><th>This quarter</th></tr></thead><tbody>'+
+      '<tr><td>Brand pays</td><td id="dt-b1"></td><td id="dt-bq"></td></tr><tr><td id="dt-al">Agency keeps</td><td id="dt-a1"></td><td id="dt-aq"></td></tr><tr><td>Flam receives</td><td id="dt-n1"></td><td id="dt-nq"></td></tr><tr><td>Minus Flam run cost</td><td id="dt-c1"></td><td id="dt-cq"></td></tr><tr class="tot"><td>Flam margin</td><td id="dt-m1"></td><td id="dt-mq"></td></tr>'+
+      '<tr class="grp"><td colspan="3"><i class="dot8 b-pub"></i>Quarterly commitment</td></tr><tr><td>Committed</td><td></td><td id="dt-q1"></td></tr><tr><td>Booked</td><td></td><td id="dt-q2"></td></tr><tr class="tot"><td>Shortfall</td><td></td><td id="dt-q3"></td></tr><tr><td>If carried forward: next quarter\'s target</td><td></td><td id="dt-q4"></td></tr><tr><td id="dt-q5l">If paid instead: Flam\'s share of the gap</td><td></td><td id="dt-q5"></td></tr>'+
+      '</tbody></table></div><p class="small" id="dt-be" style="margin-top:10px"></p></div></details></div></div>';
+  }
+  function wireD(pid){
+    var P=byId(pid), DEF={}; for(var k0 in D_DEFAULTS) DEF[k0]=D_DEFAULTS[k0]; if(P.dDef) for(var k1 in P.dDef) DEF[k1]=P.dDef[k1];
+    var IDS=["cpm","share","cost","commit","booked"], KEY="flicks-playbook-d1-"+pid, dv={}; for(var k in DEF) dv[k]=DEF[k];
+    try{var saved=JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) for(var s2 in saved) dv[s2]=saved[s2];}catch(e){}
+    IDS.forEach(function(id){$("d-"+id).value=dv[id]});
+    var V=function(id){return FlamFields.val("d-"+id)};
+    var money=function(v){var a=Math.abs(v),sg=v<0?"−":"";
+      if(a>=1e7) return sg+"₹"+(Math.round(a/1e5)/100).toLocaleString("en-IN")+" crore";
+      if(a>=1e5) return sg+"₹"+(Math.round(a/1e4)/10).toLocaleString("en-IN")+" lakh";
+      return sg+"₹"+(Math.round(a*100)/100).toLocaleString("en-IN");};
+    var count=function(v){return v>=1e7?(Math.round(v/1e5)/100).toLocaleString("en-IN")+" crore":(Math.round(v/1e4)/10).toLocaleString("en-IN")+" lakh"};
+    var set=function(id,t){var el=$(id); if(el) el.textContent=t};
+    function calc(){
+      var cpm=V("cpm"), sh=Math.min(V("share"),100)/100, cost=V("cost"), commit=V("commit")*1e7, booked=V("booked")*1e7;
+      var a1=cpm*sh, n1=cpm-a1, m1=n1-cost, k=cpm>0?booked/cpm:0, imps=k*1000;
+      var aq=a1*k, nq=n1*k, cq=cost*k, mq=m1*k, gap=Math.max(commit-booked,0);
+      set("d-ctx","Example quarter: "+money(booked)+" booked at ₹"+cpm+" per 1,000 is "+count(imps)+" Flicks impressions.");
+      set("dw1","₹"+cpm); set("dw2","keeps "+money(a1)); set("dw3",money(n1)); set("dw4","margin "+money(m1)); set("dw5",money(cost));
+      set("dt-b1",money(cpm)); set("dt-bq",money(booked)); set("dt-al","Agency keeps, "+Math.round(sh*100)+"%"); set("dt-a1",money(a1)); set("dt-aq",money(aq));
+      set("dt-n1",money(n1)); set("dt-nq",money(nq)); set("dt-c1",money(-cost)); set("dt-cq",money(-cq)); set("dt-m1",money(m1)); set("dt-mq",money(mq));
+      $("dt-m1").className=$("dt-mq").className=m1>=0?"up":"down";
+      set("dt-q1",money(commit)); set("dt-q2",money(booked)); set("dt-q3",gap>0?money(gap):"None"); set("dt-q4",gap>0?money(commit+gap):money(commit));
+      set("dt-q5l","If paid instead: Flam\'s share of the gap, "+Math.round((1-sh)*100)+"%"); set("dt-q5",gap>0?money(gap*(1-sh)):"₹0");
+      set("dt-be",cpm>0?"Flam keeps a margin while the agency share stays under "+Math.max(0,Math.floor((1-cost/cpm)*100))+"%. Today it is "+Math.round(sh*100)+"%.":"");
+      set("dm-f",money(mq)); set("dm-f0",money(m1)+" per 1,000"); set("dm-fx",n1>0?Math.round(m1/n1*100)+"% of what Flam receives":""); $("dm-fx").className="tagx num "+(m1>=0?"good":"bad");
+      set("dm-a",money(aq)); set("dm-a0",money(a1)+" per 1,000"); set("dm-b",money(booked)); set("dm-b0",gap>0?money(gap)+" short of the commitment":"commitment met");
+      var o={}; IDS.forEach(function(id){o[id]=V(id)}); try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
+    }
+    FlamFields.make($("calcD"),calc);
+    $("d-reset").addEventListener("click",function(){IDS.forEach(function(id){FlamFields.setVal("d-"+id,DEF[id])}); calc(); toast("Back to example numbers");});
+    calc();
+  }
   function calcC(){
     return '<div class="calc" id="calcC"><div class="controls">'+
       '<div class="group"><h3>'+ic("coins")+'Sponsorship prices</h3>'+ctl("c-norm","Normal sponsor tier",5,500,5,"₹","lakh")+ctl("c-swap","Swap Partner tier",5,800,5,"₹","lakh")+'</div>'+
@@ -1130,6 +1195,8 @@ var COMPETITORS={
         '<div class="note">'+ic("alert")+'<span>'+esc(p.docNote)+'</span></div>'+
         '<details class="xp cta" id="osxp"><summary><span class="tile k">'+ic("sliders")+'</span><span class="ctx"><b>Live Osmos calculator</b><span>Try your own numbers: platform share, prices, swaps</span></span><span class="go"><span class="op">Open calculator</span><span class="cl">Close</span>'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
+    } else if(p.calc==="D"){
+      h+=card(S(),["Pricing","Agency partner · brand budgets"],'<div class="note">'+ic("users")+'<span><b>Agency partner:</b> the agency sells Flicks to its brands at a price per 1,000, keeps its share, and passes the rest to Flam. Flam runs the campaign on partner platforms and keeps what is left after its run cost. The agency commits a spend each quarter; a shortfall is carried forward or paid. Numbers are examples; type or drag any value.</span></div>'+flowD()+calcD());
     } else {
       var hasC=p.models.indexOf("C")>=0, pm=pmState[p.id]||(hasC?"C":"B"); pmState[p.id]=pm;
       var paneB='<div class="pmpane" data-pane="B"'+(pm==="B"?'':' hidden')+'><div class="note">'+ic("tv")+'<span><b>Premium Spot:</b> '+(p.cart?'Flicks sold in their display and video slots on CPM, at a premium tier, plus a CPA: the brand pays each time a shopper adds a Flicks variant to the cart. Flam takes a fixed fee per 1,000 and a share of the CPA.':'Flicks sold in their ad slots (breaks, pause, banners) on CPM, at a premium tier. Flam takes a fixed fee per 1,000.')+(p.cur==="AED"?' Prices in AED.':'')+' Numbers are examples; type or drag any value.</span></div>'+flowB()+calcB(p)+'</div>';
@@ -1226,7 +1293,7 @@ var COMPETITORS={
     applyEditing();
     countUp();
     if(id==="cases"&&!p) wireCases();
-    if(p){ if(p.calc==="B") wireB(p.id); if(p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
+    if(p){ if(p.calc==="B") wireB(p.id); if(p.calc==="D") wireD(p.id); if(p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
     wireMind();
     if(jump){var el=$(jump); jump=null; if(el) setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},300);} else window.scrollTo(0,0);
   }
