@@ -457,6 +457,15 @@ details.xp.cta[open] .go .cl{display:inline}
 .dnow i:nth-child(2){animation-delay:.2s;margin-left:-3px}.dnow i:nth-child(3){animation-delay:.4s;margin-left:-3px;margin-right:2px}
 @keyframes deq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
 @media(prefers-reduced-motion:reduce){.dnow i{animation:none}}
+.dedbtn svg.i{width:13px;height:13px}
+.dedbtn:hover{background:rgba(255,209,194,.16);color:var(--accent)}
+.dedit{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1.6fr);gap:8px;align-items:center;padding:10px;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--accent)}
+.dedit input{min-width:0;border:0;border-radius:10px;padding:9px 12px;background:#0a0807;color:var(--ink);font:inherit;font-size:13.5px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.dedit input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--accent)}
+.dedit .btn{grid-row:2}.dedit .btn.primary{grid-column:2;justify-self:start}.dedit .btn:not(.primary){grid-column:3;justify-self:start}
+.dedit .err{grid-column:1/-1;font-size:12.5px;color:var(--deep)}
+.dedit .err:empty{display:none}
+@media(max-width:560px){.dedit{grid-template-columns:auto minmax(0,1fr)}.dedit input[name=url]{grid-column:1/-1}.dedit .btn{grid-row:auto}.dedit .btn.primary{grid-column:1/span 2}.dedit .btn:not(.primary){grid-column:1/span 2}}
 .dadd{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:20px;border-top:1px dashed var(--line-2)}
 .dlab2{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .dlab2 .i{width:13px;height:13px}
@@ -954,7 +963,9 @@ var COMPETITORS={
       : '<div class="stage"><div class="empty"><div><span class="tile">'+ic("phone")+'</span>'+(p.demoPending?esc(p.demoPending):"No demo yet")+'<br><span class="small">Add a link to play it here</span></div></div></div>';
     var side='<div class="dside">'+
       (ds.length?'<div class="dhead"><span class="duo">Demos<b>'+ds.length+'</b></span><span class="small">'+(ds.length>1?'Tap one to play it':'Playing now')+'</span></div>'+
-        '<div class="dlist" role="tablist" aria-label="Demos">'+ds.map(function(x,i){var on=i===st.i;return '<div class="ditem'+(on?' on':'')+'"><button class="dpick" role="tab" type="button" aria-selected="'+on+'" data-dtab="'+i+'"><span class="dnum num">'+(i+1)+'</span><span class="dlabel">'+esc(x.label)+'</span>'+(on?'<span class="dnow"><i></i><i></i><i></i>Playing</span>':'<span class="dgo">'+ic("play")+'Play</span>')+'</button><button class="iconbtn" type="button" data-ddel="'+i+'" aria-label="Remove '+esc(x.label)+' demo">'+ic("x")+'</button></div>'}).join("")+'</div>':'')+
+        '<div class="dlist" role="tablist" aria-label="Demos">'+ds.map(function(x,i){var on=i===st.i;
+          if(st.edit===i) return '<form class="dedit" data-dedit-form="'+p.id+'" data-i="'+i+'" novalidate><span class="dnum num">'+(i+1)+'</span><input name="label" value="'+esc(x.label)+'" maxlength="40" placeholder="Name" aria-label="Demo name" autocomplete="off"><input name="url" value="'+esc(x.url)+'" placeholder="https://…" aria-label="Demo link" inputmode="url" autocomplete="off"><button class="btn primary sm" type="submit">'+ic("check")+'Save</button><button class="btn sm" type="button" data-dcancel="1">Cancel</button><span class="err" role="alert"></span></form>';
+          return '<div class="ditem'+(on?' on':'')+'"><button class="dpick" role="tab" type="button" aria-selected="'+on+'" data-dtab="'+i+'"><span class="dnum num">'+(i+1)+'</span><span class="dlabel">'+esc(x.label)+'</span>'+(on?'<span class="dnow"><i></i><i></i><i></i>Playing</span>':'<span class="dgo">'+ic("play")+'Play</span>')+'</button><button class="iconbtn dedbtn" type="button" data-dedit="'+i+'" aria-label="Edit '+esc(x.label)+' demo" title="Edit name and link">'+ic("edit")+'</button><button class="iconbtn" type="button" data-ddel="'+i+'" aria-label="Remove '+esc(x.label)+' demo" title="Remove">'+ic("x")+'</button></div>'}).join("")+'</div>':'')+
       (cur?'<div class="chips"><div class="seg" role="group" aria-label="Frame"><button type="button" data-dev="phone" aria-pressed="'+(st.dev==="phone")+'">'+ic("phone")+'Phone</button><button type="button" data-dev="desk" aria-pressed="'+(st.dev==="desk")+'">'+ic("monitor")+'Desktop</button></div>'+
         '<a class="btn sm" href="'+esc(cur.url)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a></div><span class="vp" id="vpLabel"></span>':'')+
       '<div class="dadd"><span class="dlab2">'+ic("plus")+'Add a new demo</span><form class="dform" data-dform="'+p.id+'" novalidate><input name="label" placeholder="Name, e.g. Swiggy" aria-label="Demo name" maxlength="40" autocomplete="off"><input name="url" placeholder="https://your-demo.vercel.app" aria-label="Demo link" inputmode="url" autocomplete="off"><button class="btn primary sm" type="submit">'+ic("plus")+'Add demo</button><span class="err" role="alert"></span></form>'+
@@ -1402,7 +1413,9 @@ var COMPETITORS={
       if(el){el.focus(); var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);} return;}
     if(current==="cases"&&caseClick(t)) return;
     if(brandClick(t)) return;
-    if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; rerenderDemo(); return;}
+    if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; demoState[current].edit=null; rerenderDemo(); return;}
+    if(t.dataset.dedit!=null){demoState[current].edit=+t.dataset.dedit; rerenderDemo(); var fi=document.querySelector(".dedit input[name=label]"); if(fi){fi.focus(); fi.select();} return;}
+    if(t.dataset.dcancel){demoState[current].edit=null; rerenderDemo(); return;}
     if(t.dataset.stage!=null){var dp=byId(current); if(dp) saveDeal(dp,+t.dataset.stage,($("dnote")||{}).value||dealOf(dp).note); return;}
     if(t.dataset.ddel){var pp=byId(current), di=+t.dataset.ddel, rmv=pp.demos[di];
       if(SHARED){t.disabled=true; api("POST",{partner:pp.id,op:"remove",url:rmv.url,base:pp.demos}).then(function(r){pp.demos=r.demos; rerenderDemo(); toast("Removed "+rmv.label+" for everyone");},function(m){t.disabled=false; toast(m);}); return;}
@@ -1411,7 +1424,16 @@ var COMPETITORS={
     if(t.dataset.jump){jump=t.dataset.jump; var target=t.getAttribute("href"); if(location.hash===target){e.preventDefault(); route();} return;}
   });
   $("view").addEventListener("submit",function(e){
-    var f=e.target; if(!f.dataset||!f.dataset.dform) return; e.preventDefault();
+    var f=e.target;
+    if(f.dataset&&f.dataset.deditForm){ e.preventDefault();
+      var ep=byId(f.dataset.deditForm), ei=+f.dataset.i, old=ep.demos[ei], el=f.elements.label.value.trim()||old.label, eu=f.elements.url.value.trim(), ee=f.querySelector(".err");
+      if(!/^https?:\/\/[^\s.]+\.[^\s]+$/.test(eu)){ee.textContent="Paste a full link starting with https://"; f.elements.url.focus(); return;}
+      var fin=function(){demoState[ep.id].edit=null; demoState[ep.id].i=Math.min(ei,ep.demos.length-1); rerenderDemo();};
+      if(el===old.label&&eu===old.url){fin(); return;}
+      if(SHARED){var sb=f.querySelector("button[type=submit]"); sb.disabled=true; ee.textContent="";
+        api("POST",{partner:ep.id,op:"edit",old:old.url,label:el,url:eu,base:ep.demos}).then(function(r){ep.demos=r.demos; fin(); toast("Demo updated for everyone");},function(m){sb.disabled=false; ee.textContent=m;}); return;}
+      ep.demos[ei]={label:el,url:eu}; persist(ep.id,"demos"); fin(); toast("Demo updated in this browser"); return; }
+    if(!f.dataset||!f.dataset.dform) return; e.preventDefault();
     var label=f.elements.label.value.trim(), url=f.elements.url.value.trim(), err=f.querySelector(".err");
     if(!/^https?:\/\/[^\s.]+\.[^\s]+$/.test(url)){err.textContent="Paste a full link starting with https://"; f.elements.url.focus(); return;}
     var p=byId(f.dataset.dform); p.demos=p.demos||[];
@@ -1549,7 +1571,7 @@ var COMPETITORS={
     api("GET").then(function(j){ syncing=false;
       var nc=Array.isArray(j.cases)?j.cases:[]; if(JSON.stringify(nc)!==JSON.stringify(SHARED_CASES)){ SHARED_CASES=nc; var ae=document.activeElement; if(current==="cases"&&!(ae&&ae.closest&&ae.closest("#cform"))&&!caseState.armed) drawCases(); }
       var bj=JSON.stringify(j.brands||{}); if(bj!==LAST_BRANDS){ LAST_BRANDS=bj; var be=document.activeElement, busy=(be&&be.closest&&be.closest(".bform"))||brandArmed; if(!busy){ applyBrands(j.brands); if(byId(current)||current==="brands") drawBrands(); else if(current==="overview") rerender(); } else LAST_BRANDS=""; }
-      if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
+      if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ if((demoState[current]||{}).edit==null) rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
   }
   window.addEventListener("hashchange",function(){setTimeout(syncShared,50)});
   window.addEventListener("focus",syncShared);

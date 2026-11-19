@@ -7,6 +7,7 @@
 // POST /api/demos  {partner, op:"remove", url, base}
 //   "base" is the partner's current list on the page; it seeds storage the first
 //   time a partner is changed, so demos written in the code are kept.
+// POST /api/demos  {partner, op:"edit", old, label, url, base}   old = the demo's current link
 // POST /api/demos  {partner, op:"stage", stage:0-3, note}
 //   Deal stage tracker. GET also returns { stages: { partnerId: {stage,note} } }.
 //
@@ -226,11 +227,16 @@ module.exports = async (req, res) => {
       if (list.length >= MAX_PER_PARTNER) return res.status(400).json({ error: "Too many demos for this partner" });
       const label = String(body.label || "").trim().slice(0, 40) || "Demo " + (list.length + 1);
       list.push({ label, url: body.url });
+    } else if (op === "edit") {
+      if (!isUrl(body.url)) return res.status(400).json({ error: "Paste a full link starting with https://" });
+      const i = list.findIndex((d) => d.url === body.old);
+      if (i < 0) return res.status(400).json({ error: "That demo was changed by someone else. Refresh and try again." });
+      list[i] = { label: String(body.label || "").trim().slice(0, 40) || list[i].label, url: body.url };
     } else if (op === "remove") {
       const i = list.findIndex((d) => d.url === body.url);
       if (i >= 0) list.splice(i, 1);
     } else {
-      return res.status(400).json({ error: "op must be add, remove or stage" });
+      return res.status(400).json({ error: "op must be add, edit, remove or stage" });
     }
 
     all[partner] = list;
