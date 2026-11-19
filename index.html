@@ -852,12 +852,15 @@ var COMPETITORS={
   function mindmap(){
     var AG=PARTNERS.filter(function(p){return p.kind==="agency"}), PL=PARTNERS.filter(function(p){return p.kind!=="agency"});
     var row=62, top=AG.length?52:34, W=1000, H=top+34+Math.max(PL.length,AG.length)*row;
-    var ax=6, aw=200, cx=AG.length?252:30, cw=AG.length?136:170, mx=AG.length?432:320, mw=AG.length?222:240, lx=AG.length?698:680, lw=AG.length?296:300, cy=top+(H-top-34)/2;
+    var ax=6, aw=200, cx=AG.length?246:30, cw=AG.length?136:170, mx=AG.length?442:290, mw=AG.length?212:230, lx=764, lw=230, cy=top+(H-top-34)/2;
     var yOf={}; PL.forEach(function(p,i){yOf[p.id]=top+i*row+row/2}); AG.forEach(function(p,i){yOf[p.id]=cy+(i-(AG.length-1)/2)*row});
     var prim={A:[],B:[],C:[]}, KEYS=["A","B","C"]; PL.forEach(function(p){prim[p.models[0]].push(p)});
     var avg=function(a){return a.reduce(function(s,p){return s+yOf[p.id]},0)/a.length};
     var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-34-28};
-    var path=function(x1,y1,x2,y2){var m=(x1+x2)/2;return "M"+x1+" "+y1+" C"+m+" "+y1+","+m+" "+y2+","+x2+" "+y2};
+    var path=function(x1,y1,x2,y2,tx){ // straight runs with one rounded bend at each turn
+      var dy=y2-y1; if(Math.abs(dy)<1) return "M"+x1+" "+y1+" H"+x2;
+      if(tx==null) tx=(x1+x2)/2; var r=Math.min(16,Math.abs(dy)/2,tx-x1,x2-tx), sg=dy>0?1:-1;
+      return "M"+x1+" "+y1+" H"+(tx-r)+" Q"+tx+" "+y1+" "+tx+" "+(y1+sg*r)+" V"+(y2-sg*r)+" Q"+tx+" "+y2+" "+(tx+r)+" "+y2+" H"+x2};
     var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: agencies bring brand demand to Flicks, which serves it to platform partners through three pricing models"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
     if(AG.length){
       var hd=function(x,t,u){return '<text class="sub" x="'+x+'" y="18" font-size="11" letter-spacing="1.2">'+t+'<tspan fill="#8a7c75" letter-spacing="0">  '+u+'</tspan></text>'};
@@ -866,8 +869,8 @@ var COMPETITORS={
     AG.forEach(function(p,i){s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(60+i*60)+'ms" d="'+path(ax+aw,yOf[p.id],cx,cy)+'"/>'});
     KEYS.forEach(function(k,i){s+='<path class="lk drawpath" pathLength="1" data-m="'+k+'" style="--d:'+(150+i*80)+'ms" d="'+path(cx+cw,cy,mx,my[k])+'"/>'});
     PL.forEach(function(p,i){
-      s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id])+'"/>';
-      if(p.models.indexOf("C")>0) s+='<path class="lk dash" data-p="'+p.id+'" d="'+path(mx+mw,my.C,lx,yOf[p.id])+'"/>';
+      s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id],mx+mw+38)+'"/>';
+      if(p.models.indexOf("C")>0) s+='<path class="lk dash" data-p="'+p.id+'" d="'+path(mx+mw,my.C,lx,yOf[p.id],mx+mw+74)+'"/>';
     });
     s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">'+(AG.length?"demand to supply":"partner models")+'</text></g>';
     KEYS.forEach(function(k,i){var m=MODELS[k],y=my[k];
