@@ -203,6 +203,28 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 .s0 .dbar i.on{background:var(--taupe)} .s1 .dbar i.on,.s2 .dbar i.on{background:var(--rose-2)} .s3 .dbar i.on{background:var(--khaki)}
 .s1 .dlab,.s2 .dlab{color:var(--rose-1)} .s3 .dlab{color:var(--khaki)}
 .deal{display:flex;flex-direction:column;gap:16px}
+#brandbox,.brows{display:flex;flex-direction:column;gap:10px}
+#brandbox{gap:16px}
+.brow{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.brow>b{flex:1;min-width:0;font-weight:500;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow.s3{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)}
+.bsteps{display:flex;gap:4px;padding:3px;border-radius:999px;background:#0a0807;box-shadow:inset 0 0 0 1px var(--line)}
+.bsteps button{border:0;background:transparent;color:var(--faint);font:inherit;font-size:12.5px;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+.bsteps button:hover{color:var(--ink)}
+.bsteps button.done{color:var(--rose-1)}
+.bsteps button.cur{background:linear-gradient(180deg,var(--rose-1),var(--rose-2));color:#2a1d18}
+.s3 .bsteps button.cur{background:var(--khaki);color:var(--khaki-ink)}
+.bform{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.bform.wide{grid-template-columns:minmax(0,.7fr) minmax(0,1fr) auto}
+.bform input,.bform select{min-width:0;border:0;border-radius:12px;padding:11px 14px;background:rgba(255,236,226,.04);box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink);font:inherit;font-size:14px}
+.bform select option{background:#16110f;color:#f4dbd1}
+.bform input:focus,.bform select:focus{outline:none;box-shadow:inset 0 0 0 1px var(--khaki)}
+.bform .err{grid-column:1/-1;margin:0;font-size:12.5px;color:var(--deep)}
+.bform .err:empty{display:none}
+.bnone{margin:0}
+.bhead{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;margin-right:auto}
+.bhead b{font-weight:500;font-size:16px}
+@media(max-width:640px){.brow{flex-wrap:wrap}.brow>b{flex:1 1 60%}.bsteps{order:3;flex:1 1 100%}.bsteps button{flex:1;padding:6px 4px;font-size:11.5px}.bform,.bform.wide{grid-template-columns:minmax(0,1fr)}}
 #cases{display:flex;flex-direction:column;gap:18px}
 .clist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:10px}
 .citem{position:relative;display:flex;align-items:center;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);transition:box-shadow .25s,transform .25s var(--ease)}
@@ -731,6 +753,7 @@ var ROLLOUT=[
 /* Case studies added in code: {id:"c1", title:"…", kind:"pdf", url:"assets/case-studies/file.pdf", name:"file.pdf"} or {id:"c2", title:"…", kind:"link", url:"https://…"}.
    Ones added on the page are stored in shared storage. */
 var CASES=[];
+var BSTAGES=["Pitched","In talks","Building","Live"];
 var STAGES=[{t:"Not started",i:"flag"},{t:"In talks",i:"users"},{t:"Closing",i:"target"},{t:"Won",i:"check"}];
 var COMPETITORS={
   direct:[
@@ -797,7 +820,7 @@ var COMPETITORS={
       return '<a class="nav" href="#'+id+'"'+(id===cur?' aria-current="page"':'')+'>'+mono+'<span>'+esc(label)+'</span>'+(st?'<span class="sd st-'+st+'"></span>':'')+'</a>'};
     var t=function(n){return '<span class="mono t">'+ic(n)+'</span>'};
     $("nav").innerHTML='<span class="ind" id="ind"></span>'+
-      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+'</div>'+
+      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+link("brands","Brands",t("bag"))+'</div>'+
       '<div class="navgroup"><h4>Partners</h4>'+PARTNERS.filter(function(p){return p.kind!=="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Agencies</h4>'+PARTNERS.filter(function(p){return p.kind==="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Plan</h4>'+link("rollout","Pilot plan",t("calendar"))+link("competitors","Competitors",t("shield"))+'</div>';
@@ -827,40 +850,47 @@ var COMPETITORS={
 
   /* ---------- overview ---------- */
   function mindmap(){
-    var row=62, top=34, W=1000, H=top*2+PARTNERS.length*row;
-    var cx=30, cw=170, mx=320, mw=240, lx=680, lw=300, cy=H/2;
-    var yOf={}; PARTNERS.forEach(function(p,i){yOf[p.id]=top+i*row+row/2});
-    var prim={A:[],B:[],C:[],D:[]}, KEYS=["A","B","C","D"]; PARTNERS.forEach(function(p){prim[p.models[0]].push(p)});
+    var AG=PARTNERS.filter(function(p){return p.kind==="agency"}), PL=PARTNERS.filter(function(p){return p.kind!=="agency"});
+    var row=62, top=AG.length?52:34, W=1000, H=top+34+Math.max(PL.length,AG.length)*row;
+    var ax=6, aw=200, cx=AG.length?252:30, cw=AG.length?136:170, mx=AG.length?432:320, mw=AG.length?222:240, lx=AG.length?698:680, lw=AG.length?296:300, cy=top+(H-top-34)/2;
+    var yOf={}; PL.forEach(function(p,i){yOf[p.id]=top+i*row+row/2}); AG.forEach(function(p,i){yOf[p.id]=cy+(i-(AG.length-1)/2)*row});
+    var prim={A:[],B:[],C:[]}, KEYS=["A","B","C"]; PL.forEach(function(p){prim[p.models[0]].push(p)});
     var avg=function(a){return a.reduce(function(s,p){return s+yOf[p.id]},0)/a.length};
-    var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-top-28, D:prim.D.length?avg(prim.D):H-top-28};
-    if(prim.D.length) my.C=(my.B+my.D)/2;
+    var my={A:prim.A.length?avg(prim.A):top+30, B:prim.B.length?avg(prim.B):cy, C:H-34-28};
     var path=function(x1,y1,x2,y2){var m=(x1+x2)/2;return "M"+x1+" "+y1+" C"+m+" "+y1+","+m+" "+y2+","+x2+" "+y2};
-    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: Flicks, four pricing models, and the partners under each"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
+    var s='<svg class="mind" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mind map: agencies bring brand demand to Flicks, which serves it to platform partners through three pricing models"><defs><linearGradient id="coreg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a201d"/><stop offset="1" stop-color="#16110f"/></linearGradient><clipPath id="lc" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".3"/></clipPath></defs>';
+    if(AG.length){
+      var hd=function(x,t,u){return '<text class="sub" x="'+x+'" y="18" font-size="11" letter-spacing="1.2">'+t+'<tspan fill="#8a7c75" letter-spacing="0">  '+u+'</tspan></text>'};
+      s+=hd(ax+4,"DEMAND","brings the brands")+hd(mx+4,"HOW IT IS SOLD","")+hd(lx+4,"SUPPLY","runs the Flicks");
+    }
+    AG.forEach(function(p,i){s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(60+i*60)+'ms" d="'+path(ax+aw,yOf[p.id],cx,cy)+'"/>'});
     KEYS.forEach(function(k,i){s+='<path class="lk drawpath" pathLength="1" data-m="'+k+'" style="--d:'+(150+i*80)+'ms" d="'+path(cx+cw,cy,mx,my[k])+'"/>'});
-    PARTNERS.forEach(function(p,i){
+    PL.forEach(function(p,i){
       s+='<path class="lk drawpath" pathLength="1" data-p="'+p.id+'" style="--d:'+(400+i*60)+'ms" d="'+path(mx+mw,my[p.models[0]],lx,yOf[p.id])+'"/>';
       if(p.models.indexOf("C")>0) s+='<path class="lk dash" data-p="'+p.id+'" d="'+path(mx+mw,my.C,lx,yOf[p.id])+'"/>';
     });
-    s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">partner models</text></g>';
+    s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">'+(AG.length?"demand to supply":"partner models")+'</text></g>';
     KEYS.forEach(function(k,i){var m=MODELS[k],y=my[k];
       s+='<g class="nd model" style="--d:'+(200+i*80)+'ms"><rect class="box" x="'+mx+'" y="'+(y-28)+'" width="'+mw+'" height="56" rx="16"/><rect x="'+(mx+12)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#cdc584"/><text x="'+(mx+27)+'" y="'+(y+5)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b0e">'+k+'</text><text x="'+(mx+54)+'" y="'+(y-2)+'" font-size="14" font-weight="500">'+esc(m.name)+'</text><text class="sub" x="'+(mx+54)+'" y="'+(y+15)+'">'+esc(STATUS[m.status])+'</text></g>'});
-    PARTNERS.forEach(function(p,i){var y=yOf[p.id], col=p.status==="built"?"#cdc584":p.status==="draft"?"#d9a594":"#8a7c75";
-      s+='<a href="#'+p.id+'" class="leaf" data-leaf="'+p.id+'"><g class="nd" style="--d:'+(450+i*60)+'ms"><rect class="box" x="'+lx+'" y="'+(y-23)+'" width="'+lw+'" height="46" rx="14"/>'+
-        (p._logoOk?(p.logoFit==="cover"?'<image href="'+esc(p.logo)+'" x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" preserveAspectRatio="xMidYMid slice" clip-path="url(#lc)"/>':'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#f5eee8"/><image href="'+esc(p.logo)+'" x="'+(lx+12)+'" y="'+(y-12)+'" width="24" height="24" preserveAspectRatio="xMidYMid meet"/>'):'<rect x="'+(lx+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#1d1817" stroke="rgba(255,236,226,.15)"/><text class="mt" x="'+(lx+24)+'" y="'+(y+4)+'" text-anchor="middle">'+esc(p.mono)+'</text>')+
-        '<text x="'+(lx+52)+'" y="'+(y-1)+'" font-size="14" font-weight="500">'+esc(p.name)+'</text><text class="sub" x="'+(lx+52)+'" y="'+(y+15)+'">'+esc(p.group)+'</text>'+
-        '<circle cx="'+(lx+lw-20)+'" cy="'+y+'" r="4.500" fill="'+col+'"/></g></a>'});
+    var leaf=function(p,x,w,i,agency){var y=yOf[p.id], col=p.status==="built"?"#cdc584":p.status==="draft"?"#d9a594":"#8a7c75";
+      return '<a href="#'+p.id+'" class="leaf" data-leaf="'+p.id+'"><g class="nd" style="--d:'+((agency?40:450)+i*60)+'ms"><rect class="box" x="'+x+'" y="'+(y-23)+'" width="'+w+'" height="46" rx="14"/>'+
+        (p._logoOk?(p.logoFit==="cover"?'<image href="'+esc(p.logo)+'" x="'+(x+9)+'" y="'+(y-15)+'" width="30" height="30" preserveAspectRatio="xMidYMid slice" clip-path="url(#lc)"/>':'<rect x="'+(x+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#f5eee8"/><image href="'+esc(p.logo)+'" x="'+(x+12)+'" y="'+(y-12)+'" width="24" height="24" preserveAspectRatio="xMidYMid meet"/>'):'<rect x="'+(x+9)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#1d1817" stroke="rgba(255,236,226,.15)"/><text class="mt" x="'+(x+24)+'" y="'+(y+4)+'" text-anchor="middle">'+esc(p.mono)+'</text>')+
+        '<text x="'+(x+50)+'" y="'+(y-1)+'" font-size="14" font-weight="500">'+esc(p.name)+'</text><text class="sub" x="'+(x+50)+'" y="'+(y+15)+'">'+esc(agency?"Model D · "+MODELS.D.name:p.group)+'</text>'+
+        (agency?'':'<circle cx="'+(x+w-20)+'" cy="'+y+'" r="4.500" fill="'+col+'"/>')+'</g></a>'};
+    AG.forEach(function(p,i){s+=leaf(p,ax,aw,i,true)});
+    PL.forEach(function(p,i){s+=leaf(p,lx,lw,i,false)});
     return s+'</svg>';
   }
   function wcol(icon,title,items,cls){return '<div class="panel lift"><div class="row"><span class="tile '+cls+'">'+ic(icon)+'</span><h3>'+title+'</h3></div><ul class="mini '+cls+'">'+items.map(function(x){return '<li>'+ic(x[0])+'<span>'+esc(x[1])+'</span></li>'}).join("")+'</ul></div>'}
   function overview(){
     var built=PARTNERS.filter(function(p){return p.status==="built"}).length, draft=PARTNERS.filter(function(p){return p.status==="draft"}).length;
     var h='<header class="phead anim"><div class="left"><span class="eyebrow">Flicks partner playbook</span><h1 class="rose">Where Flicks plugs in</h1><p class="lede">Partners, pricing models and live demos in one place.</p></div>'+
-      '<div class="stats">'+[[PARTNERS.length,"Partners"],[built,"Pricing built"],[draft,"Draft pricing"],[demoCount(),"Live demos"]].map(function(x){return '<div class="stat"><b class="num rose" data-count="'+x[0]+'">'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join("")+'</div></header>';
-    h+=card("01",["Map","Four models, "+PARTNERS.length+" partners"],'<div class="mapwrap">'+mindmap()+'</div><div class="chips small">'+chip("built")+chip("draft")+chip("explore")+'<span class="duo">Dashed line<b>also Model C</b></span><span class="small">Hover a partner to trace it. Click to open.</span></div>');
+      '<div class="stats">'+[[PARTNERS.length,"Partners"],[built,"Pricing built"],[PARTNERS.reduce(function(n,p){return n+liveCount(p)},0),"Brands live"],[demoCount(),"Live demos"]].map(function(x){return '<div class="stat"><b class="num rose" data-count="'+x[0]+'">'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join("")+'</div></header>';
+    h+=card("01",["Map","Demand in, Flicks out"],'<div class="mapwrap">'+mindmap()+'</div><div class="chips small">'+chip("built")+chip("draft")+chip("explore")+'<span class="duo">Dashed line<b>also Model C</b></span><span class="duo">Left<b>agencies bring brands</b></span><span class="small">Hover a partner to trace it. Click to open.</span></div>');
     h+=card("02",["Partners","Pick one"],'<div class="pcards">'+PARTNERS.map(function(p,i){
       var n=(p.demos||[]).length;
       return '<a class="pcard anim" style="--d:'+(250+i*50)+'ms" href="#'+p.id+'"><div class="top">'+badge(p)+'<div><div class="nm">'+esc(p.name)+'</div><div class="gp">'+esc(p.group)+'</div></div><span class="go">'+ic("arrow")+'</span></div>'+
-        dealMini(p)+'<div class="chips">'+chip(p.status)+p.models.map(function(m){return '<span class="mpill">'+m+'</span>'}).join("")+'<span class="mpill">'+ic("phone")+n+'</span></div></a>'}).join("")+'</div>');
+        dealMini(p)+'<div class="chips">'+chip(p.status)+p.models.map(function(m){return '<span class="mpill">'+m+'</span>'}).join("")+'<span class="mpill">'+ic("phone")+n+'</span><span class="mpill">'+ic("bag")+brandsOf(p).length+(liveCount(p)?' · '+liveCount(p)+' live':'')+'</span></div></a>'}).join("")+'</div>');
     h+=card("03",["Win-win","What each side gets"],'<div class="grid3">'+
       wcol("users","Brands",[["spark","New formats"],["target","Premium placements"],["edit","One creative in, Flicks out"],["chart","Swap-level analytics"]],"")+
       wcol("tv","Publishers",[["coins","Higher price per ad"],["layers","Cross-sell bundles"],["grid","Better inventory use"],["users","Brands spend more"]],"k")+
@@ -1171,6 +1201,7 @@ var COMPETITORS={
     var n=1, S=function(){return String(n++).padStart(2,"0")};
 
     h+='<section class="card anim deal"'+D()+'><div class="colhead"><span class="duo">Deal<b>Stage</b></span><span class="small">Tap a step to update it</span></div><div id="dealbox">'+dealFull(p)+'</div></section>';
+    h+='<section class="card anim" id="brandsec"'+D()+'><div id="brandbox">'+brandBox(p)+'</div></section>';
     h+=card(S(),["Today","What they run now"],'<div class="facts">'+p.today.map(function(f,i){return '<div class="fact">'+delBtn(p,"today",i)+'<span class="tile sm">'+ic(f.i)+'</span>'+E(p,"today."+i+".t",f.t)+'</div>'}).join("")+'</div>'+addBtn(p,"today","Add fact")+
       (p.retailersIN?'<div class="grid2"><div class="panel"><div class="row"><span class="tile sm c">'+ic("store")+'</span><h3>Retailers in India</h3></div><div class="chips">'+p.retailersIN.map(function(r){return '<span class="mpill">'+esc(r)+'</span>'}).join("")+'</div></div><div class="panel"><div class="row"><span class="tile sm c">'+ic("globe")+'</span><h3>Outside India</h3></div><div class="chips">'+p.retailersINTL.map(function(r){return '<span class="mpill">'+esc(r)+'</span>'}).join("")+'</div></div></div>':'')+
       (p.lists?'<div class="grid2">'+p.lists.map(function(l){return '<div class="panel"><div class="row"><span class="tile sm c">'+ic(l.i)+'</span><h3>'+esc(l.t)+'</h3></div><div class="chips">'+l.items.map(function(r){return '<span class="mpill">'+esc(r)+'</span>'}).join("")+'</div></div>'}).join("")+'</div>':''));
@@ -1285,10 +1316,10 @@ var COMPETITORS={
   function route(){
     var id=(location.hash||"#overview").slice(1);
     var p=byId(id);
-    if(!p && ["overview","rollout","competitors","demos","cases"].indexOf(id)<0) id="overview";
+    if(!p && ["overview","rollout","competitors","demos","cases","brands"].indexOf(id)<0) id="overview";
     current=p?p.id:id; d=0;
     drawNav(current);
-    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():id==="cases"?casesPage():overview();
+    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():id==="cases"?casesPage():id==="brands"?brandsPage():overview();
     document.title=(p?p.name+" · ":"")+"Flicks Partner Playbook";
     applyEditing();
     countUp();
@@ -1323,6 +1354,7 @@ var COMPETITORS={
       var idx=q[pa[1]].length-1, sel='.ed[data-path="'+pa[0]+'.'+pa[1]+'.'+idx+(typeof TPL[pa[1]]==="string"?'':'.t')+'"]', el=document.querySelector(sel);
       if(el){el.focus(); var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);} return;}
     if(current==="cases"&&caseClick(t)) return;
+    if(brandClick(t)) return;
     if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; rerenderDemo(); return;}
     if(t.dataset.stage!=null){var dp=byId(current); if(dp) saveDeal(dp,+t.dataset.stage,($("dnote")||{}).value||dealOf(dp).note); return;}
     if(t.dataset.ddel){var pp=byId(current), di=+t.dataset.ddel, rmv=pp.demos[di];
@@ -1366,6 +1398,59 @@ var COMPETITORS={
     var r=new FileReader(); r.onload=function(){var p=byId(pickFor); p.logo=r.result; p._logoOk=true; persist(p.id,"logo"); rerender(); toast("Logo updated");}; r.readAsDataURL(f);
   });
   $("view").addEventListener("click",function(e){var t=e.target.closest("[data-logo]"); if(t){pickFor=t.dataset.logo; picker.click();}});
+  /* ---------- brand tracker ---------- */
+  var LOCAL_BRANDS_KEY="flicks-playbook-brands", LAST_BRANDS="{}", brandArmed=null, brandPick="";
+  var brandsOf=function(p){return Array.isArray(p.brands)?p.brands:[]};
+  var liveCount=function(p){return brandsOf(p).filter(function(b){return b.stage===3}).length};
+  function applyBrands(map){map=map||{}; PARTNERS.forEach(function(p){p.brands=Array.isArray(map[p.id])?map[p.id]:[]});}
+  function localBrands(){try{var m=JSON.parse(localStorage.getItem(LOCAL_BRANDS_KEY)||"{}");return m&&typeof m==="object"?m:{}}catch(e){return {}}}
+  function brandRows(p){var bs=brandsOf(p);
+    if(!bs.length) return '<p class="small bnone">No brands yet. Add the first one.</p>';
+    return '<div class="brows">'+bs.map(function(b){var armed=brandArmed===p.id+"."+b.id;
+      return '<div class="brow s'+b.stage+'"><b>'+esc(b.name)+'</b><div class="bsteps" role="group" aria-label="Stage for '+esc(b.name)+'">'+BSTAGES.map(function(t,i){return '<button type="button" data-bp="'+p.id+'" data-bid="'+esc(b.id)+'" data-bstage="'+i+'" class="'+(i<b.stage?'done':i===b.stage?'cur':'')+'" aria-pressed="'+(i===b.stage)+'">'+esc(t)+'</button>'}).join("")+'</div>'+
+        '<button type="button" class="iconbtn crm'+(armed?' armed':'')+'" data-bp="'+p.id+'" data-brm="'+esc(b.id)+'" aria-label="Remove '+esc(b.name)+'">'+(armed?'Remove?':ic("x"))+'</button></div>'}).join("")+'</div>';}
+  function brandBox(p){var n=brandsOf(p).length, l=liveCount(p);
+    return '<div class="colhead"><span class="duo">Brands<b>'+n+'</b></span><span class="duo">Live<b>'+l+'</b></span><span class="small">Tap a stage to move a brand</span></div>'+brandRows(p)+
+      '<form class="bform" data-bp="'+p.id+'" novalidate><input name="name" maxlength="60" placeholder="Add a brand, e.g. the brand you are talking to" aria-label="Brand name"><button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
+      '<p class="small">'+(SHARED?ic("users")+' Anyone on the team can add brands and move stages. Everyone sees the change. ':'Shared saving isn\'t connected, so this saves only in this browser. ')+'The playbook is on a public link, so anyone with it can see these names.</p>';}
+  function brandsPage(){
+    var all=PARTNERS.reduce(function(n,p){return n+brandsOf(p).length},0), per=BSTAGES.map(function(_,i){return PARTNERS.reduce(function(n,p){return n+brandsOf(p).filter(function(b){return b.stage===i}).length},0)});
+    var withB=PARTNERS.filter(function(p){return brandsOf(p).length});
+    return '<header class="phead anim"><div class="left"><span class="eyebrow">Tracker</span><h1 class="rose">Brands</h1><p class="lede">Every brand in conversation, by partner and stage.</p></div>'+
+      '<div class="stats">'+BSTAGES.map(function(t,i){return '<div class="stat"><b class="num rose">'+per[i]+'</b><span>'+esc(t)+'</span></div>'}).join("")+'</div></header>'+
+      '<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Add<b>Brand</b></span><span class="small">'+all+' tracked so far</span></div>'+
+      '<form class="bform wide" novalidate><select name="partner" aria-label="Partner"><option value="">Choose a partner</option>'+PARTNERS.map(function(p){return '<option value="'+p.id+'"'+(brandPick===p.id?' selected':'')+'>'+esc(p.name)+'</option>'}).join("")+'</select><input name="name" maxlength="60" placeholder="Brand name" aria-label="Brand name"><button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
+      '<p class="small">'+(SHARED?ic("users")+' Anyone on the team can add brands and move stages. Everyone sees the change. ':'Shared saving isn\'t connected, so this saves only in this browser. ')+'The playbook is on a public link, so anyone with it can see these names.</p></section>'+
+      (withB.length?withB.map(function(p){return '<section class="card anim"'+D()+'><div class="colhead"><a class="bhead" href="#'+p.id+'">'+badge(p)+'<b>'+esc(p.name)+'</b></a><span class="duo">Brands<b>'+brandsOf(p).length+'</b></span><span class="duo">Live<b>'+liveCount(p)+'</b></span></div>'+brandRows(p)+'</section>'}).join(""):'');
+  }
+  function drawBrands(){
+    if(current==="brands"){var y=window.scrollY; $("view").innerHTML=brandsPage(); window.scrollTo(0,y); return;}
+    var p=byId(current), box=$("brandbox"); if(p&&box) box.innerHTML=brandBox(p);
+  }
+  function brandOp(p,body,msg,onErr){
+    var done=function(list){p.brands=list; LAST_BRANDS=""; brandArmed=null; drawBrands(); if(msg) toast(msg+(SHARED?" · saved for everyone":""));};
+    if(SHARED){ body.partner=p.id; api("POST",body).then(function(r){done(r.brands||[])},function(m){ if(onErr) onErr(m); else toast(m); }); return; }
+    var list=brandsOf(p).slice(), i=list.findIndex(function(b){return b.id===body.id});
+    if(body.op==="brand-add"){ if(list.some(function(b){return b.name.toLowerCase()===body.name.toLowerCase()})){ if(onErr) onErr(body.name+" is already on this list"); return; } list.push({id:"l"+Date.now().toString(36),name:body.name,stage:0}); }
+    else if(i>=0){ if(body.op==="brand-remove") list.splice(i,1); else list[i]={id:list[i].id,name:list[i].name,stage:body.stage}; }
+    var m=localBrands(); m[p.id]=list; try{localStorage.setItem(LOCAL_BRANDS_KEY,JSON.stringify(m))}catch(e){}
+    done(list);
+  }
+  function brandClick(t){
+    var p=t.dataset.bp&&byId(t.dataset.bp); if(!p) return false;
+    if(t.dataset.bstage!=null){ brandOp(p,{op:"brand-stage",id:t.dataset.bid,stage:+t.dataset.bstage},BSTAGES[+t.dataset.bstage]); return true; }
+    if(t.dataset.brm){ var k=p.id+"."+t.dataset.brm; if(brandArmed!==k){brandArmed=k; drawBrands(); return true;} brandOp(p,{op:"brand-remove",id:t.dataset.brm},"Removed"); return true; }
+    return false;
+  }
+  function brandSubmit(f){
+    var err=f.querySelector(".err"), pid=f.dataset.bp||(f.partner&&f.partner.value), p=pid&&byId(pid), name=f.name.value.replace(/\s+/g," ").trim();
+    err.textContent="";
+    if(!p){err.textContent="Choose a partner."; return;}
+    if(!name){err.textContent="Type a brand name."; return;}
+    brandPick=f.dataset.bp?"":pid;
+    brandOp(p,{op:"brand-add",name:name},"Added "+name,function(m){err.textContent=m});
+  }
+
   /* ---------- deal stage ---------- */
   function drawDeal(){var p=byId(current), box=$("dealbox"); if(p&&box) box.innerHTML=dealFull(p);}
   function saveDeal(p,stage,note){
@@ -1375,7 +1460,7 @@ var COMPETITORS={
       api("POST",{partner:p.id,op:"stage",stage:stage,note:note}).then(function(r){p.deal=r.deal; done();},function(m){bs.forEach(function(b){b.disabled=false}); toast(m);}); return; }
     p.deal={stage:stage,note:note}; persist(p.id,"deal"); done();
   }
-  $("view").addEventListener("submit",function(e){ if(e.target.id==="cform"){ e.preventDefault(); addCase(e.target); return; } if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
+  $("view").addEventListener("submit",function(e){ if(e.target.id==="cform"){ e.preventDefault(); addCase(e.target); return; } if(e.target.classList.contains("bform")){ e.preventDefault(); brandSubmit(e.target); return; } if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
 
   /* ---------- shared demos (Vercel function /api/demos) ---------- */
   function api(method,body,ms){
@@ -1398,14 +1483,16 @@ var COMPETITORS={
       SHARED=true;
       PARTNERS.forEach(function(p){ if(overrides[p.id]){ delete overrides[p.id].demos; if(overrides[p.id].deal){ p.deal=JSON.parse(JSON.stringify(byIdOrig(p.id).deal||{stage:0,note:""})); delete overrides[p.id].deal; } } });
       SHARED_CASES=Array.isArray(j.cases)?j.cases:[];
+      applyBrands(j.brands); LAST_BRANDS=JSON.stringify(j.brands||{});
       applyShared(j.demos||{},j.stages); cb();
-    },function(){ SHARED=false; cb(); });
+    },function(){ SHARED=false; applyBrands(localBrands()); cb(); });
   }
   var syncing=false;
   function syncShared(){
     if(!SHARED||syncing) return; syncing=true;
     api("GET").then(function(j){ syncing=false;
       var nc=Array.isArray(j.cases)?j.cases:[]; if(JSON.stringify(nc)!==JSON.stringify(SHARED_CASES)){ SHARED_CASES=nc; var ae=document.activeElement; if(current==="cases"&&!(ae&&ae.closest&&ae.closest("#cform"))&&!caseState.armed) drawCases(); }
+      var bj=JSON.stringify(j.brands||{}); if(bj!==LAST_BRANDS){ LAST_BRANDS=bj; var be=document.activeElement, busy=(be&&be.closest&&be.closest(".bform"))||brandArmed; if(!busy){ applyBrands(j.brands); if(byId(current)||current==="brands") drawBrands(); else if(current==="overview") rerender(); } else LAST_BRANDS=""; }
       if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
   }
   window.addEventListener("hashchange",function(){setTimeout(syncShared,50)});

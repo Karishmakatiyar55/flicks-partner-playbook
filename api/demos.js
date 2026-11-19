@@ -10,6 +10,11 @@
 // POST /api/demos  {partner, op:"stage", stage:0-3, note}
 //   Deal stage tracker. GET also returns { stages: { partnerId: {stage,note} } }.
 //
+// Brand tracker. GET also returns { brands: { partnerId: [{id,name,stage}] } }.
+// POST /api/demos  {partner, op:"brand-add", name}
+// POST /api/demos  {partner, op:"brand-stage", id, stage:0-3}
+// POST /api/demos  {partner, op:"brand-remove", id}
+//
 // Case studies. GET also returns { cases: [{id,title,kind,url,name,size}] }.
 // POST /api/demos  {op:"case-add", title, kind:"link", url}
 // PDFs up to 20 MB go up in pieces (a Vercel function call carries at most 4.5 MB):
@@ -23,6 +28,8 @@
 const KEY = "flicks-playbook:demos";
 const STAGE_KEY = "flicks-playbook:stages";
 const CASES_KEY = "flicks-playbook:cases";
+const BRANDS_KEY = "flicks-playbook:brands";
+const MAX_BRANDS = 100;
 const FILE_KEY = (id) => "flicks-playbook:case-file:" + id;
 const MAX_PDF = 20 * 1024 * 1024;
 const PART = 2.5 * 1024 * 1024;           // raw bytes per piece
@@ -94,8 +101,8 @@ module.exports = async (req, res) => {
         res.setHeader("Content-Disposition", (q.get("download") ? "attachment" : "inline") + '; filename="' + name + '"');
         return res.end(buf);
       }
-      const [demos, stages, cases] = await Promise.all([readAll(s), readAll(s, STAGE_KEY), readCases(s)]);
-      return res.status(200).json({ demos, stages, cases });
+      const [demos, stages, cases, brands] = await Promise.all([readAll(s), readAll(s, STAGE_KEY), readCases(s), readAll(s, BRANDS_KEY)]);
+      return res.status(200).json({ demos, stages, cases, brands });
     }
 
     if (req.method !== "POST") return res.status(405).json({ error: "Use GET or POST" });
@@ -173,6 +180,30 @@ module.exports = async (req, res) => {
       return res.status(200).json({ cases });
     }
     if (!/^[a-z0-9-]{1,40}$/.test(partner || "")) return res.status(400).json({ error: "Unknown partner" });
+
+    if (op === "brand-add" || op === "brand-stage" || op === "brand-remove") {
+      const all = await readAll(s, BRANDS_KEY);
+      const list = Array.isArray(all[partner]) ? all[partner] : [];
+      if (op === "brand-add") {
+        const name = String(body.name || "").replace(/\s+/g, " ").trim().slice(0, 60);
+        if (!name) return res.status(400).json({ error: "Type a brand name" });
+        if (list.some((b) => b.name.toLowerCase() === name.toLowerCase())) return res.status(400).json({ error: name + " is already on this list" });
+        if (list.length >= MAX_BRANDS) return res.status(400).json({ error: "Too many brands" });
+        list.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, stage: 0 });
+      } else {
+        const i = list.findIndex((b) => b.id === body.id);
+        if (i < 0) return res.status(200).json({ brands: list });
+        if (op === "brand-remove") list.splice(i, 1);
+        else {
+          const stage = Number(body.stage);
+          if (!Number.isInteger(stage) || stage < 0 || stage > 3) return res.status(400).json({ error: "Unknown stage" });
+          list[i].stage = stage;
+        }
+      }
+      all[partner] = list;
+      await redis(s, ["SET", BRANDS_KEY, JSON.stringify(all)]);
+      return res.status(200).json({ brands: list });
+    }
 
     if (op === "stage") {
       const stage = Number(body.stage);
