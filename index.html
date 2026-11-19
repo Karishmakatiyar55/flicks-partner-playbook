@@ -207,7 +207,13 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 #brandbox,.brows{display:flex;flex-direction:column;gap:10px}
 #brandbox{gap:16px}
 .brow{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
-.brow>b{flex:1;min-width:0;font-weight:500;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow{padding-left:12px}
+.blogo{flex:none;width:34px;height:34px;border-radius:10px;object-fit:contain;background:#f5eee8;padding:4px;box-shadow:inset 0 0 0 1px var(--line-2)}
+.blogo.mono{display:grid;place-items:center;padding:0;background:#1d1817;color:var(--rose-1);font-size:14px;font-weight:500}
+.bname{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.bname b{font-weight:500;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bname a{font-size:12px;color:var(--faint);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bname a:hover{color:var(--rose-1)}
 .brow.s3{box-shadow:inset 0 0 0 1px rgba(205,197,132,.55)}
 .bsteps{display:flex;gap:4px;padding:3px;border-radius:999px;background:#0a0807;box-shadow:inset 0 0 0 1px var(--line)}
 .bsteps button{border:0;background:transparent;color:var(--faint);font:inherit;font-size:12.5px;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
@@ -215,8 +221,8 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 .bsteps button.done{color:var(--rose-1)}
 .bsteps button.cur{background:linear-gradient(180deg,var(--rose-1),var(--rose-2));color:#2a1d18}
 .s3 .bsteps button.cur{background:var(--khaki);color:var(--khaki-ink)}
-.bform{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
-.bform.wide{grid-template-columns:minmax(0,.7fr) minmax(0,1fr) auto}
+.bform{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr) auto;gap:8px;align-items:center}
+.bform.wide{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) minmax(0,.8fr) auto}
 .bform input,.bform select{min-width:0;border:0;border-radius:12px;padding:11px 14px;background:rgba(255,236,226,.04);box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink);font:inherit;font-size:14px}
 .bform select option{background:#16110f;color:#f4dbd1}
 .bform input:focus,.bform select:focus{outline:none;box-shadow:inset 0 0 0 1px var(--khaki)}
@@ -225,7 +231,7 @@ svg.mind .model rect.box{stroke:rgba(205,197,132,.5)}
 .bnone{margin:0}
 .bhead{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;margin-right:auto}
 .bhead b{font-weight:500;font-size:16px}
-@media(max-width:640px){.brow{flex-wrap:wrap}.brow>b{flex:1 1 60%}.bsteps{order:3;flex:1 1 100%}.bsteps button{flex:1;padding:6px 4px;font-size:11.5px}.bform,.bform.wide{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){.brow{flex-wrap:wrap}.bname{flex:1 1 50%}.bsteps{order:3;flex:1 1 100%}.bsteps button{flex:1;padding:6px 4px;font-size:11.5px}.bform,.bform.wide{grid-template-columns:minmax(0,1fr)}}
 #cases{display:flex;flex-direction:column;gap:18px}
 .clist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:10px}
 .citem{position:relative;display:flex;align-items:center;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2);transition:box-shadow .25s,transform .25s var(--ease)}
@@ -887,7 +893,7 @@ var COMPETITORS={
       });
       s+='<rect x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22" fill="#ff7a3c" filter="url(#coreglow)" opacity=".22"><animate attributeName="opacity" values=".14;.38;.14" dur="4.2s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1"/></rect>';
     }
-    s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><text x="'+(cx+cw/2)+'" y="'+(cy-3)+'" text-anchor="middle" font-size="20" font-weight="500" fill="#f4dbd1">Flicks</text><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+18)+'" text-anchor="middle">'+(AG.length?"demand to supply":"partner models")+'</text></g>';
+    s+='<g class="nd core" style="--d:60ms"><rect class="box" x="'+cx+'" y="'+(cy-36)+'" width="'+cw+'" height="72" rx="22"/><image href="assets/flicks-logo.png" x="'+(cx+cw/2-50)+'" y="'+(cy-28)+'" width="100" height="38.5" preserveAspectRatio="xMidYMid meet"><title>Flicks</title></image><text class="sub" x="'+(cx+cw/2)+'" y="'+(cy+26)+'" text-anchor="middle">'+(AG.length?"demand to supply":"partner models")+'</text></g>';
     KEYS.forEach(function(k,i){var m=MODELS[k],y=my[k];
       s+='<g class="nd model" style="--d:'+(200+i*80)+'ms"><rect class="box" x="'+mx+'" y="'+(y-28)+'" width="'+mw+'" height="56" rx="16"/><rect x="'+(mx+12)+'" y="'+(y-15)+'" width="30" height="30" rx="9" fill="#cdc584"/><text x="'+(mx+27)+'" y="'+(y+5)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b0e">'+k+'</text><text x="'+(mx+54)+'" y="'+(y-2)+'" font-size="14" font-weight="500">'+esc(m.name)+'</text><text class="sub" x="'+(mx+54)+'" y="'+(y+15)+'">'+esc(STATUS[m.status])+'</text></g>'});
     var leaf=function(p,x,w,i,agency){var y=yOf[p.id], col=p.status==="built"?"#cdc584":p.status==="draft"?"#d9a594":"#8a7c75";
@@ -1418,6 +1424,12 @@ var COMPETITORS={
   $("view").addEventListener("click",function(e){var t=e.target.closest("[data-logo]"); if(t){pickFor=t.dataset.logo; picker.click();}});
   /* ---------- brand tracker ---------- */
   var LOCAL_BRANDS_KEY="flicks-playbook-brands", LAST_BRANDS="{}", brandArmed=null, brandPick="";
+  var cleanSite=function(v){return String(v||"").trim().toLowerCase().replace(/^[a-z]+:\/\//,"").replace(/^www\./,"").split(/[\/?#:]/)[0]};
+  var siteOk=function(d){return /^(?=.{4,100}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(d)};
+  var siteName=function(d){var l=d.split(".")[0];return l.charAt(0).toUpperCase()+l.slice(1)};
+  window.blogoErr=function(img){ if(!img.dataset.f){img.dataset.f="1"; img.src="https://icons.duckduckgo.com/ip3/"+img.dataset.site+".ico"; return;} var m=document.createElement("span"); m.className="blogo mono"; m.textContent=(img.alt||"?").charAt(0).toUpperCase(); img.replaceWith(m); };
+  var blogo=function(b){return b.site?'<img class="blogo" src="https://www.google.com/s2/favicons?sz=128&domain='+encodeURIComponent(b.site)+'" data-site="'+esc(b.site)+'" alt="'+esc(b.name)+'" loading="lazy" referrerpolicy="no-referrer" onerror="blogoErr(this)">':'<span class="blogo mono">'+esc(b.name.charAt(0).toUpperCase())+'</span>'};
+  var SITE_FIELDS='<input name="site" maxlength="120" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Brand website, e.g. nykaa.com" aria-label="Brand website"><input name="name" maxlength="60" placeholder="Name (optional)" aria-label="Brand name, optional">';
   var brandsOf=function(p){return Array.isArray(p.brands)?p.brands:[]};
   var liveCount=function(p){return brandsOf(p).filter(function(b){return b.stage===3}).length};
   function applyBrands(map){map=map||{}; PARTNERS.forEach(function(p){p.brands=Array.isArray(map[p.id])?map[p.id]:[]});}
@@ -1425,11 +1437,11 @@ var COMPETITORS={
   function brandRows(p){var bs=brandsOf(p);
     if(!bs.length) return '<p class="small bnone">No brands yet. Add the first one.</p>';
     return '<div class="brows">'+bs.map(function(b){var armed=brandArmed===p.id+"."+b.id;
-      return '<div class="brow s'+b.stage+'"><b>'+esc(b.name)+'</b><div class="bsteps" role="group" aria-label="Stage for '+esc(b.name)+'">'+BSTAGES.map(function(t,i){return '<button type="button" data-bp="'+p.id+'" data-bid="'+esc(b.id)+'" data-bstage="'+i+'" class="'+(i<b.stage?'done':i===b.stage?'cur':'')+'" aria-pressed="'+(i===b.stage)+'">'+esc(t)+'</button>'}).join("")+'</div>'+
+      return '<div class="brow s'+b.stage+'">'+blogo(b)+'<span class="bname"><b>'+esc(b.name)+'</b>'+(b.site?'<a href="https://'+esc(b.site)+'" target="_blank" rel="noopener">'+esc(b.site)+'</a>':'')+'</span><div class="bsteps" role="group" aria-label="Stage for '+esc(b.name)+'">'+BSTAGES.map(function(t,i){return '<button type="button" data-bp="'+p.id+'" data-bid="'+esc(b.id)+'" data-bstage="'+i+'" class="'+(i<b.stage?'done':i===b.stage?'cur':'')+'" aria-pressed="'+(i===b.stage)+'">'+esc(t)+'</button>'}).join("")+'</div>'+
         '<button type="button" class="iconbtn crm'+(armed?' armed':'')+'" data-bp="'+p.id+'" data-brm="'+esc(b.id)+'" aria-label="Remove '+esc(b.name)+'">'+(armed?'Remove?':ic("x"))+'</button></div>'}).join("")+'</div>';}
   function brandBox(p){var n=brandsOf(p).length, l=liveCount(p);
     return '<div class="colhead"><span class="duo">Brands<b>'+n+'</b></span><span class="duo">Live<b>'+l+'</b></span><span class="small">Tap a stage to move a brand</span></div>'+brandRows(p)+
-      '<form class="bform" data-bp="'+p.id+'" novalidate><input name="name" maxlength="60" placeholder="Add a brand, e.g. the brand you are talking to" aria-label="Brand name"><button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
+      '<form class="bform" data-bp="'+p.id+'" novalidate>'+SITE_FIELDS+'<button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
       '<p class="small">'+(SHARED?ic("users")+' Anyone on the team can add brands and move stages. Everyone sees the change. ':'Shared saving isn\'t connected, so this saves only in this browser. ')+'The playbook is on a public link, so anyone with it can see these names.</p>';}
   function brandsPage(){
     var all=PARTNERS.reduce(function(n,p){return n+brandsOf(p).length},0), per=BSTAGES.map(function(_,i){return PARTNERS.reduce(function(n,p){return n+brandsOf(p).filter(function(b){return b.stage===i}).length},0)});
@@ -1437,7 +1449,7 @@ var COMPETITORS={
     return '<header class="phead anim"><div class="left"><span class="eyebrow">Tracker</span><h1 class="rose">Brands</h1><p class="lede">Every brand in conversation, by partner and stage.</p></div>'+
       '<div class="stats">'+BSTAGES.map(function(t,i){return '<div class="stat"><b class="num rose">'+per[i]+'</b><span>'+esc(t)+'</span></div>'}).join("")+'</div></header>'+
       '<section class="card anim"'+D()+'><div class="colhead"><span class="duo">Add<b>Brand</b></span><span class="small">'+all+' tracked so far</span></div>'+
-      '<form class="bform wide" novalidate><select name="partner" aria-label="Partner"><option value="">Choose a partner</option>'+PARTNERS.map(function(p){return '<option value="'+p.id+'"'+(brandPick===p.id?' selected':'')+'>'+esc(p.name)+'</option>'}).join("")+'</select><input name="name" maxlength="60" placeholder="Brand name" aria-label="Brand name"><button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
+      '<form class="bform wide" novalidate><select name="partner" aria-label="Partner"><option value="">Choose a partner</option>'+PARTNERS.map(function(p){return '<option value="'+p.id+'"'+(brandPick===p.id?' selected':'')+'>'+esc(p.name)+'</option>'}).join("")+'</select>'+SITE_FIELDS+'<button class="btn sm primary" type="submit">'+ic("plus")+'Add brand</button><p class="err"></p></form>'+
       '<p class="small">'+(SHARED?ic("users")+' Anyone on the team can add brands and move stages. Everyone sees the change. ':'Shared saving isn\'t connected, so this saves only in this browser. ')+'The playbook is on a public link, so anyone with it can see these names.</p></section>'+
       (withB.length?withB.map(function(p){return '<section class="card anim"'+D()+'><div class="colhead"><a class="bhead" href="#'+p.id+'">'+badge(p)+'<b>'+esc(p.name)+'</b></a><span class="duo">Brands<b>'+brandsOf(p).length+'</b></span><span class="duo">Live<b>'+liveCount(p)+'</b></span></div>'+brandRows(p)+'</section>'}).join(""):'');
   }
@@ -1449,7 +1461,7 @@ var COMPETITORS={
     var done=function(list){p.brands=list; LAST_BRANDS=""; brandArmed=null; drawBrands(); if(msg) toast(msg+(SHARED?" · saved for everyone":""));};
     if(SHARED){ body.partner=p.id; api("POST",body).then(function(r){done(r.brands||[])},function(m){ if(onErr) onErr(m); else toast(m); }); return; }
     var list=brandsOf(p).slice(), i=list.findIndex(function(b){return b.id===body.id});
-    if(body.op==="brand-add"){ if(list.some(function(b){return b.name.toLowerCase()===body.name.toLowerCase()})){ if(onErr) onErr(body.name+" is already on this list"); return; } list.push({id:"l"+Date.now().toString(36),name:body.name,stage:0}); }
+    if(body.op==="brand-add"){ if(list.some(function(b){return b.site===body.site})){ if(onErr) onErr(body.site+" is already on this list"); return; } list.push({id:"l"+Date.now().toString(36),name:body.name||siteName(body.site),site:body.site,stage:0}); }
     else if(i>=0){ if(body.op==="brand-remove") list.splice(i,1); else list[i]={id:list[i].id,name:list[i].name,stage:body.stage}; }
     var m=localBrands(); m[p.id]=list; try{localStorage.setItem(LOCAL_BRANDS_KEY,JSON.stringify(m))}catch(e){}
     done(list);
@@ -1461,12 +1473,12 @@ var COMPETITORS={
     return false;
   }
   function brandSubmit(f){
-    var err=f.querySelector(".err"), pid=f.dataset.bp||(f.partner&&f.partner.value), p=pid&&byId(pid), name=f.name.value.replace(/\s+/g," ").trim();
+    var err=f.querySelector(".err"), pid=f.dataset.bp||(f.partner&&f.partner.value), p=pid&&byId(pid), name=f.name.value.replace(/\s+/g," ").trim(), site=cleanSite(f.site.value);
     err.textContent="";
     if(!p){err.textContent="Choose a partner."; return;}
-    if(!name){err.textContent="Type a brand name."; return;}
+    if(!siteOk(site)){err.textContent="Paste the brand's website, like nykaa.com. The logo comes from it."; return;}
     brandPick=f.dataset.bp?"":pid;
-    brandOp(p,{op:"brand-add",name:name},"Added "+name,function(m){err.textContent=m});
+    brandOp(p,{op:"brand-add",site:site,name:name},"Added "+(name||siteName(site)),function(m){err.textContent=m});
   }
 
   /* ---------- deal stage ---------- */

@@ -10,8 +10,9 @@
 // POST /api/demos  {partner, op:"stage", stage:0-3, note}
 //   Deal stage tracker. GET also returns { stages: { partnerId: {stage,note} } }.
 //
-// Brand tracker. GET also returns { brands: { partnerId: [{id,name,stage}] } }.
-// POST /api/demos  {partner, op:"brand-add", name}
+// Brand tracker. GET also returns { brands: { partnerId: [{id,name,site,stage}] } }.
+// POST /api/demos  {partner, op:"brand-add", site, name}   site = the brand's website; name is optional
+//   Only the domain is stored. The page shows the brand's logo from that domain.
 // POST /api/demos  {partner, op:"brand-stage", id, stage:0-3}
 // POST /api/demos  {partner, op:"brand-remove", id}
 //
@@ -185,11 +186,13 @@ module.exports = async (req, res) => {
       const all = await readAll(s, BRANDS_KEY);
       const list = Array.isArray(all[partner]) ? all[partner] : [];
       if (op === "brand-add") {
-        const name = String(body.name || "").replace(/\s+/g, " ").trim().slice(0, 60);
-        if (!name) return res.status(400).json({ error: "Type a brand name" });
-        if (list.some((b) => b.name.toLowerCase() === name.toLowerCase())) return res.status(400).json({ error: name + " is already on this list" });
+        const site = String(body.site || "").trim().toLowerCase().replace(/^[a-z]+:\/\//, "").replace(/^www\./, "").split(/[\/?#:]/)[0];
+        if (!/^(?=.{4,100}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(site)) return res.status(400).json({ error: "Paste the brand's website, like nykaa.com" });
+        const label = site.split(".")[0];
+        const name = String(body.name || "").replace(/\s+/g, " ").trim().slice(0, 60) || label.charAt(0).toUpperCase() + label.slice(1);
+        if (list.some((b) => b.site === site)) return res.status(400).json({ error: site + " is already on this list" });
         if (list.length >= MAX_BRANDS) return res.status(400).json({ error: "Too many brands" });
-        list.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, stage: 0 });
+        list.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, site, stage: 0 });
       } else {
         const i = list.findIndex((b) => b.id === body.id);
         if (i < 0) return res.status(200).json({ brands: list });
