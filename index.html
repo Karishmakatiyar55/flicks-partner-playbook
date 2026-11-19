@@ -1427,8 +1427,11 @@ var COMPETITORS={
   var cleanSite=function(v){return String(v||"").trim().toLowerCase().replace(/^[a-z]+:\/\//,"").replace(/^www\./,"").split(/[\/?#:]/)[0]};
   var siteOk=function(d){return /^(?=.{4,100}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(d)};
   var siteName=function(d){var l=d.split(".")[0];return l.charAt(0).toUpperCase()+l.slice(1)};
-  window.blogoErr=function(img){ if(!img.dataset.f){img.dataset.f="1"; img.src="https://icons.duckduckgo.com/ip3/"+img.dataset.site+".ico"; return;} var m=document.createElement("span"); m.className="blogo mono"; m.textContent=(img.alt||"?").charAt(0).toUpperCase(); img.replaceWith(m); };
-  var blogo=function(b){return b.site?'<img class="blogo" src="https://www.google.com/s2/favicons?sz=128&domain='+encodeURIComponent(b.site)+'" data-site="'+esc(b.site)+'" alt="'+esc(b.name)+'" loading="lazy" referrerpolicy="no-referrer" onerror="blogoErr(this)">':'<span class="blogo mono">'+esc(b.name.charAt(0).toUpperCase())+'</span>'};
+  // Logo sources, tried in order. Google answers with a 16px globe when it has no logo, so that counts as a miss.
+  window.blogoErr=function(img){ var d=img.dataset.site, n=+(img.dataset.f||0)+1, next=[null,"https://"+d+"/apple-touch-icon.png","https://www."+d+"/apple-touch-icon.png","https://"+d+"/favicon.ico","https://www."+d+"/favicon.ico"][n];
+    if(next){img.dataset.f=n; img.src=next; return;} var m=document.createElement("span"); m.className="blogo mono"; m.textContent=(img.alt||"?").charAt(0).toUpperCase(); img.replaceWith(m); };
+  window.blogoOk=function(img){ if(!img.dataset.f&&img.naturalWidth<=16) window.blogoErr(img); };
+  var blogo=function(b){return b.site?'<img class="blogo" src="https://www.google.com/s2/favicons?sz=128&domain='+encodeURIComponent(b.site)+'" data-site="'+esc(b.site)+'" alt="'+esc(b.name)+'" referrerpolicy="no-referrer" onload="blogoOk(this)" onerror="blogoErr(this)">':'<span class="blogo mono">'+esc(b.name.charAt(0).toUpperCase())+'</span>'};
   var SITE_FIELDS='<input name="site" maxlength="120" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Brand website, e.g. nykaa.com" aria-label="Brand website"><input name="name" maxlength="60" placeholder="Name (optional)" aria-label="Brand name, optional">';
   var brandsOf=function(p){return Array.isArray(p.brands)?p.brands:[]};
   var liveCount=function(p){return brandsOf(p).filter(function(b){return b.stage===3}).length};
