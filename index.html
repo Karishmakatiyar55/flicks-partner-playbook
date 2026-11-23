@@ -1160,16 +1160,16 @@ var COMPETITORS={
   function metersF(){
     var m=function(step,icon,title,amt,unit,who,tag){return '<div class="panel lift fee"><span class="fstepn">'+step+'</span><span class="tile c">'+ic(icon)+'</span><h3>'+title+'</h3><div class="feeamt rose num">'+amt+'</div><p class="small">'+unit+'</p><span class="duo">'+who+'<b>'+tag+'</b></span></div>'};
     return '<div class="grid3 fees">'+
-      m("1 · See","eye","Flam's CPM","₹50","per 1,000 views. A fixed fee, added on top of JioHotstar's own CPM. Flam keeps all of it","Every brand","Fixed")+
-      m("2 · Explore","swap","Swap fee","₹1","the brand pays this each time a viewer swaps a variant. Split between JioHotstar and Flam","Optional","Shared")+
-      m("3 · Act","cart","CPC","₹5","the brand pays this each time a viewer clicks Buy, Order or Add to cart. Split between JioHotstar and Flam","Optional","Shared")+
-      m("Big brands","film","Build fee","₹50k","per swap moment Flam builds inside a show, when the brand also sponsors that show","Sponsors","Fixed")+'</div>';
+      m("1 · See","eye","Flam's CPM","₹50","per 1,000 views, on top of JioHotstar's CPM","Every brand","Fixed")+
+      m("2 · Explore","swap","Swap fee","₹1","each time a viewer swaps a variant","Optional","Shared")+
+      m("3 · Act","cart","CPC","₹5","each time a viewer clicks Buy or Order","Optional","Shared")+
+      m("Big brands","film","Build fee","₹50k","per swap moment built inside a sponsored show","Sponsors","Fixed")+'</div>';
   }
   function calcF(p){
     var N=esc(p.name);
     return '<div class="calc" id="calcF"><div class="controls">'+
-      '<div class="group"><h3>'+ic("eye")+'1 · See: CPM</h3><p class="small">Which '+N+' inventory is the ad on?</p><div class="finv" role="group" aria-label="Inventory">'+Object.keys(F_INV).map(function(k){return '<button type="button" data-finv="'+k+'">'+esc(F_INV[k].t)+'</button>'}).join("")+'</div><p class="small" id="f-range"></p>'+
-        ctl("f-cpm",N+"'s CPM: its price per 1,000 views",100,12000,10,"₹")+ctl("f-flam","Flam's CPM: fixed fee per 1,000 views, added on top",10,200,5,"₹")+'<p class="fsum num" id="f-sum"></p>'+ctl("f-imps","Views the campaign buys",1,1000,1,"","lakh")+'</div>'+
+      '<div class="group"><h3>'+ic("eye")+'1 · See: CPM</h3><div class="finv" role="group" aria-label="Inventory">'+Object.keys(F_INV).map(function(k){return '<button type="button" data-finv="'+k+'">'+esc(F_INV[k].t)+'</button>'}).join("")+'</div><p class="small" id="f-range"></p>'+
+        ctl("f-cpm",N+"'s CPM, per 1,000 views",100,12000,10,"₹")+ctl("f-flam","Flam's CPM, fixed, per 1,000 views",10,200,5,"₹")+'<p class="fsum num" id="f-sum"></p>'+ctl("f-imps","Views the campaign buys",1,1000,1,"","lakh")+'</div>'+
       '<div class="group"><label class="switch" for="f-swOn">2 · Explore: swap fee <input id="f-swOn" type="checkbox"></label>'+ctl("f-sr","Viewers who swap a variant",0.5,30,0.5,"","%")+ctl("f-sfee","Brand pays for each swap",0.25,10,0.25,"₹")+ctl("f-fsS","Flam's share of the swap fees",0,100,5,"","%")+'</div>'+
       '<div class="group"><label class="switch" for="f-ckOn">3 · Act: CPC <input id="f-ckOn" type="checkbox"></label>'+ctl("f-cr","Viewers who click Buy or Order",0.1,10,0.1,"","%")+ctl("f-cpc","Brand pays for each click (CPC)",1,50,0.5,"₹")+ctl("f-fsC","Flam's share of the click fees",0,100,5,"","%")+'</div>'+
       '<div class="group"><label class="switch" for="f-bigOn">Big brands only: show sponsorship <input id="f-bigOn" type="checkbox"></label>'+ctl("f-spons","Sponsorship fee the brand pays "+N,5,1000,5,"₹","lakh")+ctl("f-moments","Swap moments Flam builds in the show",1,60,1)+ctl("f-build","Flam's build fee for each moment",10,300,5,"₹","k")+'</div>'+
@@ -1201,8 +1201,8 @@ var COMPETITORS={
       var b1=cpm+flam+sw+ck, f1=flam+fsS*sw+fsC*ck, p1=cpm+(1-fsS)*sw+(1-fsC)*ck;
       var B=b1*k+spons, F=f1*k+build, PJ=p1*k+spons-build, P0=cpm*k;
       document.querySelectorAll("[data-finv]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.finv===inv))});
-      set("f-range",F_INV[inv].t+" usually sells at "+F_INV[inv].r+" per 1,000 views. This is an agency's estimate, not "+P.name+"'s own rate card.");
-      set("f-sum","Brand's CPM = "+money(cpm)+" + "+money(flam)+" = "+money(cpm+flam)+" per 1,000 views");
+      set("f-range","Usual CPM: "+F_INV[inv].r+" (estimate)");
+      set("f-sum","Brand's CPM = "+money(cpm)+" + "+money(flam)+" = "+money(cpm+flam));
       $("f-funnel").innerHTML='<div class="fst a"><b class="num">1,000</b><span>people see the Flicks</span><em class="num">brand pays '+money(cpm+flam)+' CPM</em></div>'+
         '<div class="fst b'+(swOn?'':' off')+'"><b class="num">'+n1(swaps)+'</b><span>of them swap a variant</span><em class="num">'+(swOn?'brand pays '+money(sw)+' in swap fees':'swap fee is off')+'</em></div>'+
         '<div class="fst c'+(ckOn?'':' off')+'"><b class="num">'+n1(clicks)+'</b><span>of them click Buy</span><em class="num">'+(ckOn?'brand pays '+money(ck)+' in click fees':'CPC is off')+'</em></div>';
@@ -1214,10 +1214,10 @@ var COMPETITORS={
         (swOn?row((100-pS)+"% of the swap fees",(1-fsS)*sw,(1-fsS)*sw*k):"")+(ckOn?row((100-pC)+"% of the click fees",(1-fsC)*ck,(1-fsC)*ck*k):"")+(big?row("Sponsorship, minus Flam's build fees",null,spons-build):"")+row("Total",p1,PJ,"tot")+
         grp("b-flam","Flam earns")+row("Its fixed CPM, in full",flam,flam*k)+(swOn?row(pS+"% of the swap fees",fsS*sw,fsS*sw*k):"")+(ckOn?row(pC+"% of the click fees",fsC*ck,fsC*ck*k):"")+(big?row("Build fees: "+V("moments")+" moments × "+money(V("build")*1e3),null,build):"")+row("Total",f1,F,"tot");
       $("f-rows").innerHTML=h;
-      set("fm-p",money(PJ)); set("fm-p0",money(P0)+" is what the same slot earns without Flicks"); set("fm-px",(PJ-P0>=0?"+":"")+money(PJ-P0)+" extra from Flicks"); $("fm-px").className="tagx num "+(PJ-P0>=0?"good":"bad");
-      set("fm-f",money(F)); set("fm-f0",money(flam*k)+" of it is the fixed CPM");
-      set("fm-b",money(B)); set("fm-b0",ckOn&&clicks>0?"works out to "+money(B/(clicks*k))+" per click":money(b1)+" per 1,000 views");
-      set("f-be",swOn||ckOn||big?"The CPM is never shared: "+P.name+" keeps its CPM and Flam keeps its fixed CPM. Only swap fees and click fees are split.":"With swap fee and CPC both off, "+P.name+" earns the same as a normal ad. Turn one on to give it a share.");
+      set("fm-p",money(PJ)); set("fm-p0",money(P0)+" without Flicks"); set("fm-px",(PJ-P0>=0?"+":"")+money(PJ-P0)+" extra"); $("fm-px").className="tagx num "+(PJ-P0>=0?"good":"bad");
+      set("fm-f",money(F)); set("fm-f0",money(flam*k)+" is fixed CPM");
+      set("fm-b",money(B)); set("fm-b0",ckOn&&clicks>0?money(B/(clicks*k))+" per click":money(b1)+" per 1,000 views");
+      set("f-be",swOn||ckOn||big?"":"With swap fee and CPC both off, "+P.name+" earns the same as a normal ad.");
       var o={inv:inv}; NUM.forEach(function(id){o[id]=V(id)}); SW.forEach(function(id){o[id]=$("f-"+id).checked}); try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
     }
     FlamFields.make($("calcF"),calc);
@@ -1392,7 +1392,7 @@ var COMPETITORS={
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
     } else if(p.calc==="F"){
       h+=card(S(),["Pricing","One funnel: see, explore, act"],
-        '<div class="note">'+ic("coins")+'<span><b>How it works:</b> every brand pays a CPM for views: JioHotstar\'s CPM plus Flam\'s fixed CPM. The CPM is not shared. A brand can also pay per swap (a viewer exploring variants) and per click on Buy (a viewer taking action); those two fees are split between JioHotstar and Flam. Numbers are examples; type or drag any value.</span></div>'+
+        '<div class="note">'+ic("coins")+'<span>Every brand pays a CPM, which is not shared. Swap fees and click fees are optional and shared. Numbers are examples.</span></div>'+
         metersF()+'<h3 class="fh">Try the numbers</h3>'+calcF(p));
     } else if(p.calc==="D"){
       h+=card(S(),["Pricing","Agency partner · brand budgets"],'<div class="note">'+ic("users")+'<span><b>Agency partner:</b> the agency sells Flicks to its brands at a price per 1,000, keeps its share, and passes the rest to Flam. Flam runs the campaign on partner platforms and keeps what is left after its run cost. The agency commits a spend each quarter; a shortfall is carried forward or paid. Numbers are examples; type or drag any value.</span></div>'+flowD()+calcD());
