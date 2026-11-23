@@ -204,6 +204,14 @@ svg.mind .model rect.box{stroke:rgba(255,209,194,.5)}
 .s0 .dbar i.on{background:var(--taupe)} .s1 .dbar i.on,.s2 .dbar i.on{background:var(--rose-2)} .s3 .dbar i.on{background:var(--accent)}
 .s1 .dlab,.s2 .dlab{color:var(--rose-1)} .s3 .dlab{color:var(--accent)}
 .deal{display:flex;flex-direction:column;gap:16px}
+#deckbox{display:flex;flex-direction:column;gap:14px}
+.deckv{position:relative;width:100%;border-radius:18px;overflow:hidden;background:#0a0807;box-shadow:inset 0 0 0 1px var(--line-2),0 30px 60px rgba(0,0,0,.45)}
+.deckv iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;background:#fff;z-index:1}
+.deckempty{display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.deckempty div{display:flex;flex-direction:column;gap:2px}
+.deckempty b{font-weight:500}
+.deckform{grid-template-columns:minmax(0,1fr) auto}
+.armedbtn{background:var(--deep);color:#1a0f0b;box-shadow:none}
 .fh{margin:14px 0 0;font-size:16px;font-weight:500;color:var(--cream)}
 .fstepn{align-self:flex-start;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .ftable{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
@@ -891,7 +899,7 @@ var COMPETITORS={
       return '<a class="nav" href="#'+id+'"'+(id===cur?' aria-current="page"':'')+'>'+mono+'<span>'+esc(label)+'</span>'+(st?'<span class="sd st-'+st+'"></span>':'')+'</a>'};
     var t=function(n){return '<span class="mono t">'+ic(n)+'</span>'};
     $("nav").innerHTML='<span class="ind" id="ind"></span>'+
-      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+link("brands","Brands",t("bag"))+'</div>'+
+      '<div class="navgroup"><h4>Start</h4>'+link("overview","Overview",t("map"))+link("demos","Demos",t("phone"))+link("cases","Case studies",t("book"))+link("brands","Brands",t("bag"))+link("decks","Decks",t("monitor"))+'</div>'+
       '<div class="navgroup"><h4>Partners</h4>'+PARTNERS.filter(function(p){return p.kind!=="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Agencies</h4>'+PARTNERS.filter(function(p){return p.kind==="agency"}).map(function(p){return link(p.id,p.name,''+badge(p)+'',p.status)}).join("")+'</div>'+
       '<div class="navgroup"><h4>Plan</h4>'+link("rollout","Pilot plan",t("calendar"))+link("competitors","Competitors",t("shield"))+'</div>';
@@ -1375,6 +1383,8 @@ var COMPETITORS={
     h+=card(S(),["Value","Why Flicks, for them"],'<div class="grid3">'+p.why.map(function(w,i){return '<div class="panel lift">'+delBtn(p,"why",i)+'<span class="tile">'+ic(w.i)+'</span>'+E(p,"why."+i+".t",w.t,"h3")+E(p,"why."+i+".d",w.d,"p","small")+'</div>'}).join("")+'</div>'+addBtn(p,"why","Add point"));
 
     h+=card(S(),["Demos","Try it live"],demoBlock(p),"demos");
+    deckEdit=false; deckArmed=false;
+    h+=card(S(),["Deck","The pitch deck"],'<div id="deckbox">'+deckBox(p)+'</div>',"deck");
     if(p.id==="osmos"){
       h+=card(S(),["Pricing","Model A · fixed fees"],flowA()+
         '<div class="grid3 fees">'+
@@ -1484,15 +1494,15 @@ var COMPETITORS={
   function route(){
     var id=(location.hash||"#overview").slice(1);
     var p=byId(id);
-    if(!p && ["overview","rollout","competitors","demos","cases","brands"].indexOf(id)<0) id="overview";
+    if(!p && ["overview","rollout","competitors","demos","cases","brands","decks"].indexOf(id)<0) id="overview";
     current=p?p.id:id; d=0;
     drawNav(current);
-    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():id==="cases"?casesPage():id==="brands"?brandsPage():overview();
+    $("view").innerHTML = p?partner(p):id==="rollout"?rollout():id==="competitors"?competitors():id==="demos"?demosHub():id==="cases"?casesPage():id==="brands"?brandsPage():id==="decks"?decksPage():overview();
     document.title=(p?p.name+" · ":"")+"Flicks Partner Playbook";
     applyEditing();
     countUp();
     if(id==="cases"&&!p) wireCases();
-    if(p){ if(p.calc==="B") wireB(p.id); if(p.calc==="D") wireD(p.id); if(p.calc==="F") wireF(p.id); if(p.calc!=="F"&&p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
+    if(p){ if(p.calc==="B") wireB(p.id); if(p.calc==="D") wireD(p.id); if(p.calc==="F") wireF(p.id); if(p.calc!=="F"&&p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); fitDeck(); var dfr=$("deckframe"); if(dfr) dfr.addEventListener("load",function(){var l=document.querySelector("#deckv .loader"); if(l) l.style.opacity="0";}); }
     wireMind();
     if(jump){var el=$(jump); jump=null; if(el) setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},300);} else window.scrollTo(0,0);
   }
@@ -1523,6 +1533,7 @@ var COMPETITORS={
       if(el){el.focus(); var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);} return;}
     if(current==="cases"&&caseClick(t)) return;
     if(brandClick(t)) return;
+    if(deckClick(t)) return;
     if(t.dataset.dtab){demoState[current].i=+t.dataset.dtab; demoState[current].edit=null; rerenderDemo(); return;}
     if(t.dataset.dedit!=null){demoState[current].edit=+t.dataset.dedit; rerenderDemo(); var fi=document.querySelector(".dedit input[name=label]"); if(fi){fi.focus(); fi.select();} return;}
     if(t.dataset.dcancel){demoState[current].edit=null; rerenderDemo(); return;}
@@ -1577,6 +1588,53 @@ var COMPETITORS={
     var r=new FileReader(); r.onload=function(){var p=byId(pickFor); p.logo=r.result; p._logoOk=true; persist(p.id,"logo"); rerender(); toast("Logo updated");}; r.readAsDataURL(f);
   });
   $("view").addEventListener("click",function(e){var t=e.target.closest("[data-logo]"); if(t){pickFor=t.dataset.logo; picker.click();}});
+  /* ---------- decks ---------- */
+  var LOCAL_DECKS_KEY="flicks-playbook-decks", LAST_DECKS="{}", deckEdit=false, deckArmed=false, DECK_W=1440, DECK_H=810;
+  function applyDecks(map){map=map||{}; PARTNERS.forEach(function(p){p.deck=typeof map[p.id]==="string"?map[p.id]:""});}
+  function localDecks(){try{var m=JSON.parse(localStorage.getItem(LOCAL_DECKS_KEY)||"{}");return m&&typeof m==="object"?m:{}}catch(e){return {}}}
+  // Some tools only show inside a page through their embed address.
+  function deckEmbed(u){
+    var m=u.match(/^https:\/\/docs\.google\.com\/presentation\/d\/(e\/)?([^\/?#]+)/); if(m) return "https://docs.google.com/presentation/d/"+(m[1]||"")+m[2]+"/embed?start=false&loop=false&rm=minimal";
+    m=u.match(/^https:\/\/www\.canva\.com\/design\/([^\/?#]+)\/([^\/?#]+)\/(view|watch)/); if(m) return "https://www.canva.com/design/"+m[1]+"/"+m[2]+"/view?embed";
+    if(/^https:\/\/(www\.)?figma\.com\/(deck|slides|proto|design|file)\//.test(u)) return "https://www.figma.com/embed?embed_host=share&url="+encodeURIComponent(u);
+    return u;
+  }
+  function deckBox(p){
+    var note='<p class="small">'+(SHARED?ic("users")+' Anyone on the team can add or change the deck link. Everyone sees it. ':'Shared saving isn\'t connected, so this saves only in this browser. ')+'The playbook is on a public link.</p>';
+    if(p.deck&&!deckEdit) return '<div class="cbar"><span class="small">'+ic("link")+esc(host(p.deck))+'</span><span class="chips"><a class="btn sm primary" href="'+esc(p.deck)+'" target="_blank" rel="noopener">'+ic("external")+'Open full screen</a><button class="btn sm" type="button" data-deckedit="1">'+ic("edit")+'Change link</button><button class="btn sm'+(deckArmed?' armedbtn':'')+'" type="button" data-deckrm="1">'+(deckArmed?'Remove?':ic("x")+'Remove')+'</button></span></div>'+
+      '<div class="deckv" id="deckv"><div class="loader"></div><iframe id="deckframe" src="'+esc(deckEmbed(p.deck))+'" title="'+esc(p.name)+' deck" width="'+DECK_W+'" height="'+DECK_H+'" allow="autoplay; fullscreen; clipboard-write" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>'+
+      '<p class="small">Shown as a '+DECK_W+' × '+DECK_H+' web page. If it stays blank, the deck\'s site doesn\'t allow showing inside another page: use Open full screen.</p>';
+    return (p.deck?'':'<div class="deckempty"><span class="tile">'+ic("monitor")+'</span><div><b>No deck yet</b><span class="small">Paste the deck\'s link to show it here, in web view.</span></div></div>')+
+      '<form class="bform deckform" data-deckform="'+p.id+'" novalidate><input name="url" type="url" inputmode="url" autocomplete="off" value="'+esc(p.deck||"")+'" placeholder="Deck link, https://…" aria-label="Deck link"><span class="chips"><button class="btn sm primary" type="submit">'+ic("check")+(p.deck?'Save link':'Add deck')+'</button>'+(p.deck?'<button class="btn sm" type="button" data-deckcancel="1">Cancel</button>':'')+'</span><p class="err"></p></form>'+note;
+  }
+  function fitDeck(){var v=$("deckv"), f=$("deckframe"); if(!v||!f) return; var sc=v.clientWidth/DECK_W; f.style.transform="scale("+sc+")"; v.style.height=Math.round(DECK_H*sc)+"px";}
+  function drawDeck(){var p=byId(current), box=$("deckbox"); if(!p||!box) return; box.innerHTML=deckBox(p); fitDeck(); var f=$("deckframe"); if(f) f.addEventListener("load",function(){var l=document.querySelector("#deckv .loader"); if(l) l.style.opacity="0";});}
+  window.addEventListener("resize",fitDeck);
+  function saveDeck(p,url,onErr){
+    var done=function(){p.deck=url; LAST_DECKS=""; deckEdit=false; deckArmed=false; if(current==="decks"){$("view").innerHTML=decksPage();} else drawDeck(); toast((url?"Deck saved":"Deck removed")+(SHARED?" for everyone":""));};
+    if(SHARED){api("POST",{partner:p.id,op:"deck",url:url}).then(done,function(m){ if(onErr) onErr(m); else toast(m); }); return;}
+    var m=localDecks(); if(url) m[p.id]=url; else delete m[p.id]; try{localStorage.setItem(LOCAL_DECKS_KEY,JSON.stringify(m))}catch(e){} done();
+  }
+  function deckClick(t){
+    var p=byId(current); if(!p) return false;
+    if(t.dataset.deckedit){deckEdit=true; deckArmed=false; drawDeck(); var i=document.querySelector(".deckform input"); if(i){i.focus(); i.select();} return true;}
+    if(t.dataset.deckcancel){deckEdit=false; drawDeck(); return true;}
+    if(t.dataset.deckrm){ if(!deckArmed){deckArmed=true; drawDeck(); return true;} saveDeck(p,""); return true;}
+    return false;
+  }
+  function deckSubmit(f){
+    var p=byId(f.dataset.deckform), u=f.url.value.trim(), err=f.querySelector(".err"); err.textContent="";
+    if(!/^https?:\/\/[^\s.]+\.[^\s]+$/.test(u)){err.textContent="Paste a full link starting with https://"; f.url.focus(); return;}
+    var b=f.querySelector("button[type=submit]"); b.disabled=true; saveDeck(p,u,function(m){b.disabled=false; err.textContent=m;});
+  }
+  function decksPage(){
+    var have=PARTNERS.filter(function(p){return p.deck}).length;
+    return '<header class="phead anim"><div class="left"><span class="eyebrow">Pitch</span><h1 class="rose">Decks</h1><p class="lede">One deck link per partner, shown in web view on its page.</p></div>'+
+      '<div class="stats" style="grid-template-columns:repeat(2,minmax(min(120px,100%),1fr))"><div class="stat"><b class="num rose">'+have+'</b><span>Decks added</span></div><div class="stat"><b class="num rose">'+(PARTNERS.length-have)+'</b><span>Still to add</span></div></div></header>'+
+      '<section class="card anim"'+D()+'><div class="brows">'+PARTNERS.map(function(p){return '<div class="brow'+(p.deck?' s3':'')+'">'+badge(p)+'<span class="bname"><b>'+esc(p.name)+'</b>'+(p.deck?'<a href="'+esc(p.deck)+'" target="_blank" rel="noopener">'+esc(host(p.deck))+'</a>':'<a>No deck yet</a>')+'</span><span class="chips">'+
+        (p.deck?'<a class="btn sm primary" href="#'+p.id+'" data-jump="deck">'+ic("monitor")+'View deck</a><a class="btn sm" href="'+esc(p.deck)+'" target="_blank" rel="noopener">'+ic("external")+'Full screen</a>':'<a class="btn sm" href="#'+p.id+'" data-jump="deck">'+ic("plus")+'Add deck</a>')+'</span></div>'}).join("")+'</div></section>';
+  }
+
   /* ---------- brand tracker ---------- */
   var LOCAL_BRANDS_KEY="flicks-playbook-brands", LAST_BRANDS="{}", brandArmed=null, brandPick="";
   var cleanSite=function(v){return String(v||"").trim().toLowerCase().replace(/^[a-z]+:\/\//,"").replace(/^www\./,"").split(/[\/?#:]/)[0]};
@@ -1648,7 +1706,7 @@ var COMPETITORS={
       api("POST",{partner:p.id,op:"stage",stage:stage,note:note}).then(function(r){p.deal=r.deal; done();},function(m){bs.forEach(function(b){b.disabled=false}); toast(m);}); return; }
     p.deal={stage:stage,note:note}; persist(p.id,"deal"); done();
   }
-  $("view").addEventListener("submit",function(e){ if(e.target.id==="cform"){ e.preventDefault(); addCase(e.target); return; } if(e.target.classList.contains("bform")){ e.preventDefault(); brandSubmit(e.target); return; } if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
+  $("view").addEventListener("submit",function(e){ if(e.target.id==="cform"){ e.preventDefault(); addCase(e.target); return; } if(e.target.dataset&&e.target.dataset.deckform){ e.preventDefault(); deckSubmit(e.target); return; } if(e.target.classList.contains("bform")){ e.preventDefault(); brandSubmit(e.target); return; } if(e.target.id!=="sform") return; e.preventDefault(); var p=byId(current); if(p) saveDeal(p,dealOf(p).stage,$("dnote").value); });
 
   /* ---------- shared demos (Vercel function /api/demos) ---------- */
   function api(method,body,ms){
@@ -1672,14 +1730,16 @@ var COMPETITORS={
       PARTNERS.forEach(function(p){ if(overrides[p.id]){ delete overrides[p.id].demos; if(overrides[p.id].deal){ p.deal=JSON.parse(JSON.stringify(byIdOrig(p.id).deal||{stage:0,note:""})); delete overrides[p.id].deal; } } });
       SHARED_CASES=Array.isArray(j.cases)?j.cases:[];
       applyBrands(j.brands); LAST_BRANDS=JSON.stringify(j.brands||{});
+      applyDecks(j.decks); LAST_DECKS=JSON.stringify(j.decks||{});
       applyShared(j.demos||{},j.stages); cb();
-    },function(){ SHARED=false; applyBrands(localBrands()); cb(); });
+    },function(){ SHARED=false; applyBrands(localBrands()); applyDecks(localDecks()); cb(); });
   }
   var syncing=false;
   function syncShared(){
     if(!SHARED||syncing) return; syncing=true;
     api("GET").then(function(j){ syncing=false;
       var nc=Array.isArray(j.cases)?j.cases:[]; if(JSON.stringify(nc)!==JSON.stringify(SHARED_CASES)){ SHARED_CASES=nc; var ae=document.activeElement; if(current==="cases"&&!(ae&&ae.closest&&ae.closest("#cform"))&&!caseState.armed) drawCases(); }
+      var dj=JSON.stringify(j.decks||{}); if(dj!==LAST_DECKS){ if(deckEdit||deckArmed||(document.activeElement&&document.activeElement.closest&&document.activeElement.closest(".deckform"))) LAST_DECKS=""; else { LAST_DECKS=dj; applyDecks(j.decks); if(byId(current)) drawDeck(); else if(current==="decks") $("view").innerHTML=decksPage(); } }
       var bj=JSON.stringify(j.brands||{}); if(bj!==LAST_BRANDS){ LAST_BRANDS=bj; var be=document.activeElement, busy=(be&&be.closest&&be.closest(".bform"))||brandArmed; if(!busy){ applyBrands(j.brands); if(byId(current)||current==="brands") drawBrands(); else if(current==="overview") rerender(); } else LAST_BRANDS=""; }
       if(applyShared(j.demos||{},j.stages)){ if(byId(current)){ if((demoState[current]||{}).edit==null) rerenderDemo(); if(!document.activeElement||document.activeElement.id!=="dnote") drawDeal(); } else if(current==="demos"||current==="overview") rerender(); } },function(){syncing=false;});
   }

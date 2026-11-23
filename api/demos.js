@@ -17,6 +17,9 @@
 // POST /api/demos  {partner, op:"brand-stage", id, stage:0-3}
 // POST /api/demos  {partner, op:"brand-remove", id}
 //
+// Decks. GET also returns { decks: { partnerId: url } }.
+// POST /api/demos  {partner, op:"deck", url}   an empty url removes the deck
+//
 // Case studies. GET also returns { cases: [{id,title,kind,url,name,size}] }.
 // POST /api/demos  {op:"case-add", title, kind:"link", url}
 // PDFs up to 20 MB go up in pieces (a Vercel function call carries at most 4.5 MB):
@@ -31,6 +34,7 @@ const KEY = "flicks-playbook:demos";
 const STAGE_KEY = "flicks-playbook:stages";
 const CASES_KEY = "flicks-playbook:cases";
 const BRANDS_KEY = "flicks-playbook:brands";
+const DECKS_KEY = "flicks-playbook:decks";
 const MAX_BRANDS = 100;
 const FILE_KEY = (id) => "flicks-playbook:case-file:" + id;
 const MAX_PDF = 20 * 1024 * 1024;
@@ -103,8 +107,8 @@ module.exports = async (req, res) => {
         res.setHeader("Content-Disposition", (q.get("download") ? "attachment" : "inline") + '; filename="' + name + '"');
         return res.end(buf);
       }
-      const [demos, stages, cases, brands] = await Promise.all([readAll(s), readAll(s, STAGE_KEY), readCases(s), readAll(s, BRANDS_KEY)]);
-      return res.status(200).json({ demos, stages, cases, brands });
+      const [demos, stages, cases, brands, decks] = await Promise.all([readAll(s), readAll(s, STAGE_KEY), readCases(s), readAll(s, BRANDS_KEY), readAll(s, DECKS_KEY)]);
+      return res.status(200).json({ demos, stages, cases, brands, decks });
     }
 
     if (req.method !== "POST") return res.status(405).json({ error: "Use GET or POST" });
@@ -183,6 +187,14 @@ module.exports = async (req, res) => {
     }
     if (!/^[a-z0-9-]{1,40}$/.test(partner || "")) return res.status(400).json({ error: "Unknown partner" });
 
+    if (op === "deck") {
+      const url = String(body.url || "").trim();
+      if (url && (!isUrl(url) || url.length > 600)) return res.status(400).json({ error: "Paste a full link starting with https://" });
+      const decks = await readAll(s, DECKS_KEY);
+      if (url) decks[partner] = url; else delete decks[partner];
+      await redis(s, ["SET", DECKS_KEY, JSON.stringify(decks)]);
+      return res.status(200).json({ deck: url });
+    }
     if (op === "brand-add" || op === "brand-stage" || op === "brand-remove") {
       const all = await readAll(s, BRANDS_KEY);
       const list = Array.isArray(all[partner]) ? all[partner] : [];
