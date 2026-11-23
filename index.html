@@ -204,6 +204,27 @@ svg.mind .model rect.box{stroke:rgba(255,209,194,.5)}
 .s0 .dbar i.on{background:var(--taupe)} .s1 .dbar i.on,.s2 .dbar i.on{background:var(--rose-2)} .s3 .dbar i.on{background:var(--accent)}
 .s1 .dlab,.s2 .dlab{color:var(--rose-1)} .s3 .dlab{color:var(--accent)}
 .deal{display:flex;flex-direction:column;gap:16px}
+.fh{margin:14px 0 0;font-size:16px;font-weight:500;color:var(--cream)}
+.fstepn{align-self:flex-start;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ftable{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
+.ftable th{text-align:left;font-weight:500;font-size:12.5px;color:var(--muted);padding:0 14px 10px 0;border-bottom:1px solid var(--line-2)}
+.ftable td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted);line-height:1.45}
+.ftable td b{font-weight:500;color:var(--ink);white-space:nowrap}
+.ftable td:last-child{color:var(--cream)}
+.ftable .fdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px;background:var(--accent)}
+.ftable .k2 .fdot{background:var(--rose-2)} .ftable .k0 .fdot{background:var(--faint)} .ftable .k0 td:last-child{color:var(--faint)}
+.finv{display:flex;flex-wrap:wrap;gap:6px}
+.finv button{border:0;border-radius:999px;padding:7px 12px;background:transparent;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer;transition:all .25s}
+.finv button:hover{color:var(--ink)}
+.finv button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:none;font-weight:600}
+.funnel{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:14px}
+.fst{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:10px;padding:12px 18px;border-radius:14px;background:linear-gradient(90deg,rgba(255,209,194,.16),rgba(255,209,194,.05));box-shadow:inset 0 0 0 1px var(--line-2);transition:width .4s var(--ease),opacity .3s}
+.fst.a{width:100%} .fst.b{width:84%} .fst.c{width:68%}
+.fst b{font-size:20px;font-weight:500}
+.fst span{font-size:13px;color:var(--muted)}
+.fst em{font-style:normal;font-size:13px;color:var(--cream)}
+.fst.off{opacity:.4}
+@media(max-width:640px){.fst.b,.fst.c{width:100%}.fst{grid-template-columns:auto 1fr}.fst em{grid-column:1/-1}}
 #brandbox,.brows{display:flex;flex-direction:column;gap:10px}
 #brandbox{gap:16px}
 .brow{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -651,6 +672,17 @@ var MODELS={
   C:{name:"Swap Partner",icon:"film",status:"draft"},
   D:{name:"Agency partner",icon:"users",status:"built"}
 };
+var F_DEFAULTS={inv:"vod",cpm:400,addon:80,flam:50,imps:20,swOn:true,sr:8,sfee:1,ckOn:true,cr:1,cpc:5,fs:40,bigOn:false,spons:50,moments:20,build:50};
+var F_INV={reg:{t:"Regional",r:"₹180 to ₹650",d:300},vod:{t:"Shows and movies",r:"₹180 to ₹1,250",d:400},ctv:{t:"Connected TV",r:"₹800 to ₹3,000+",d:1200},sport:{t:"Live sport",r:"₹1,400 to ₹11,200+",d:2500}};
+var F_FORMATS=[
+  {f:"Pre-roll video",w:"Before the stream starts, on mobile and TV. 6 to 20 seconds, can't be skipped",s:"CPM",x:"Swap before the show starts",ok:1},
+  {f:"Mid-roll video",w:"Inside the stream, in the ad break. Can't be skipped",s:"CPM",x:"Swap inside the break",ok:1},
+  {f:"Pause ad",w:"When a viewer pauses, on connected TV",s:"CPM",x:"Paused frame becomes a swap",ok:1},
+  {f:"Fence ad and banners",w:"Below the player in portrait, and across the app",s:"CPM or CPC",x:"Swap with a Buy button under the player",ok:1},
+  {f:"Masthead",w:"Top of the app's home screen",s:"Per day or CPM",x:"Swappable masthead",ok:1},
+  {f:"Roadblock",w:"All placements in a slot or a day",s:"Per day",x:"Big brands only",ok:2},
+  {f:"Sponsorship",w:"Inside a show: title, co-powered, partner tiers",s:"Fixed fee per season",x:"Swap moments in the show. Big brands only",ok:2},
+  {f:"Live-sport impact formats",w:"Squeeze-ups and L-bands during live matches",s:"Per exposure",x:"Not a Flicks format yet",ok:0}];
 var D_DEFAULTS={cpm:200,share:25,cost:100,commit:2,booked:1.5};
 var B_DEFAULTS={cpm:200,fcpm:280,imps:20,flam:50,itr:8,ifee:1,fs:40,on:false,atc:1,afee:3,afs:30,cartOn:true};
 var C_DEFAULTS={norm:100,swap:150,eps:20,views:50,sr:5,sfee:1,build:50,vfee:20,fs:40};
@@ -688,14 +720,14 @@ var PARTNERS=[
 },
 {
   id:"jiohotstar", deal:{stage:1,note:"Conversation open"}, name:"JioHotstar", mono:"JH", logo:"assets/logos/jiohotstar.png", logoFit:"cover", group:"OTT video", status:"draft", models:["B","C"], bDef:{cpm:200,fcpm:280}, cDef:{}, cShow:"a reality show season, like Splitsvilla",
-  lede:"India's biggest streamer, already building shoppable ads.",
-  today:[{i:"cart",t:"StreamToCart Ads with Instamart, Oct 2026"},{i:"target",t:"Commerce-signal ads, Apr 2026"},{i:"bag",t:"Shop The Look on Splitsvilla 16"},{i:"pause",t:"Pause ads and Tadka micro-dramas"}],
+  lede:"India's biggest streamer. Sells its ad slots on CPM and is already building shoppable ads.",
+  today:[{i:"play",t:"Pre-roll and mid-roll video, sold on CPM"},{i:"pause",t:"Pause ads and CTV billboards on TV"},{i:"coins",t:"Self-serve for small brands, prepaid"},{i:"cart",t:"StreamToCart Ads with Instamart, Oct 2026"},{i:"target",t:"Commerce-signal ads, Apr 2026"},{i:"bag",t:"Shop The Look on Splitsvilla 16"}],
   why:[{i:"swap",t:"Shop The Look, live",d:"Swap the outfit on screen, then buy"},{i:"cart",t:"Layer for StreamToCart",d:"Variants before add-to-cart"},{i:"layers",t:"One format, every surface",d:"Breaks, pause, micro-dramas"}],
-  fits:[{i:"film",t:"In-show swap",d:"Outfit, jewellery, makeup"},{i:"play",t:"Ad break",d:"Linked to StreamToCart"},{i:"pause",t:"Pause ad",d:"Paused frame becomes a swap"},{i:"clapper",t:"Tadka episodes",d:"In-story product swaps"}],
-  calc:"B", modelC:true, demos:[{label:"JioHotstar",url:"https://flicks-jiohotstar-demo-aifr.vercel.app"}],
+  fits:[{i:"play",t:"Pre-roll",d:"Swap before the show starts"},{i:"tv",t:"Mid-roll",d:"Swap inside the ad break"},{i:"pause",t:"Pause ad",d:"Paused frame becomes a swap"},{i:"home",t:"Masthead",d:"Swappable home-screen banner"},{i:"film",t:"In-show swap",d:"Sponsor moments: outfit, jewellery, makeup"},{i:"clapper",t:"Tadka episodes",d:"In-story product swaps"}],
+  calc:"F", modelC:true, demos:[{label:"JioHotstar",url:"https://flicks-jiohotstar-demo-aifr.vercel.app"}],
   next:["Lead with the in-show swap demo","Position as a layer on StreamToCart"],
   risks:["Builds formats in-house; show what their stack can't do"],
-  sources:[{t:"Splitsvilla X6 sponsor tiers (MediaInfoline)",u:"https://www.mediainfoline.com/ott/mtv-splitsvilla-x6-returns-on-jiohotstar-with-latest-sponsor-line-up"},{t:"Sponsorship tier pricing (exchange4media)",u:"https://www.exchange4media.com/tags/sponsors.html"},{t:"OTT ad rate card (Central Bureau of Communication)",u:"https://cbcindia.gov.in/cbc/public/uploads/website_advisory/NotificationofthefinalpanelofempanelledOver-the-TopOTTPlatformsafteracceptanceofL-1RateCard-reg-1654-advisoryFile.pdf"},{t:"StreamToCart Ads (exchange4media)",u:"https://www.exchange4media.com/industry-briefing-news/jiohotstar-launches-streamtocart-ads-transforming-video-breaks-into-digital-storefronts-159543.html"},{t:"Commerce-signal ads (JioStar)",u:"https://www.jiostar.com/news/jiohotstar-launches-industry-first-commerce-signal-led-advertising-to-power-intent-driven-engagement-at-scale/"},{t:"NEWME Shop The Look (MediaNews4U)",u:"https://www.medianews4u.com/?p=2488688"},{t:"JioStar CTV formats",u:"https://ads.jiostar.com/"}]
+  sources:[{t:"Splitsvilla X6 sponsor tiers (MediaInfoline)",u:"https://www.mediainfoline.com/ott/mtv-splitsvilla-x6-returns-on-jiohotstar-with-latest-sponsor-line-up"},{t:"Sponsorship tier pricing (exchange4media)",u:"https://www.exchange4media.com/tags/sponsors.html"},{t:"OTT ad rate card (Central Bureau of Communication)",u:"https://cbcindia.gov.in/cbc/public/uploads/website_advisory/NotificationofthefinalpanelofempanelledOver-the-TopOTTPlatformsafteracceptanceofL-1RateCard-reg-1654-advisoryFile.pdf"},{t:"StreamToCart Ads (exchange4media)",u:"https://www.exchange4media.com/industry-briefing-news/jiohotstar-launches-streamtocart-ads-transforming-video-breaks-into-digital-storefronts-159543.html"},{t:"Commerce-signal ads (JioStar)",u:"https://www.jiostar.com/news/jiohotstar-launches-industry-first-commerce-signal-led-advertising-to-power-intent-driven-engagement-at-scale/"},{t:"NEWME Shop The Look (MediaNews4U)",u:"https://www.medianews4u.com/?p=2488688"},{t:"JioStar CTV formats",u:"https://ads.jiostar.com/"},{t:"Pre-roll, mid-roll and fence ad specs (JioHotstar Ads)",u:"https://ads.hotstar.com/ad-formats"},{t:"Self-serve FAQ (JioHotstar Ads)",u:"https://ads.hotstar.com/frequently-asked-questions/"},{t:"CPM ranges by inventory, agency estimate (J9 Business)",u:"https://www.j9e.in/blog/jio-hotstar-ads-cost-2026"},{t:"Masthead, roadblock and CPC banners, reseller listing (The Media Ant)",u:"https://www.themediaant.com/digital/jiohotstar-advertising"}]
 },
 {
   id:"sonyliv", deal:{stage:1,note:"Conversation open"}, name:"Sony LIV", mono:"SL", logo:"assets/logos/sonyliv.png", logoFit:"cover", group:"OTT video", status:"draft", models:["B","C"], bDef:{cpm:200,fcpm:280}, cDef:{views:40}, cShow:"a season of Shark Tank India",
@@ -1120,6 +1152,77 @@ var COMPETITORS={
   function flowB(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","per 1,000","w1")+fnode("tv","Publisher","–","c",true,"w2")+wire("–","Flam fee + swap share","w3")+fnode("flam","Flam","earns","")+'</div>'}
   function flowA(){return '<div class="mflow">'+fnode("tag","Brand","pays the slot","t")+wire("Price","set by retailer")+fnode("store","Retailer","keeps media money","c")+wire("₹65","+ normal fee")+fnode("layers","Osmos","keeps ₹15","k",true)+wire("₹50","passed on")+fnode("flam","Flam","fixed fee","")+'</div>'}
   function flowC(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","sponsorship + swaps","cw1")+fnode("tv","Publisher","–","c",true,"cw2")+wire("–","build + views + swap share","cw3")+fnode("flam","Flam","earns","")+'</div>'}
+  function formatsF(){
+    return '<div class="tablewrap"><table class="ftable"><thead><tr><th>JioHotstar format</th><th>Where it shows</th><th>How it is sold</th><th>As a Flicks</th></tr></thead><tbody>'+
+      F_FORMATS.map(function(r){return '<tr class="k'+r.ok+'"><td><b>'+esc(r.f)+'</b></td><td>'+esc(r.w)+'</td><td><span class="mpill">'+esc(r.s)+'</span></td><td><i class="fdot"></i>'+esc(r.x)+'</td></tr>'}).join("")+'</tbody></table></div>';
+  }
+  function metersF(){
+    var m=function(step,icon,title,amt,unit,who,tag){return '<div class="panel lift fee"><span class="fstepn">'+step+'</span><span class="tile c">'+ic(icon)+'</span><h3>'+title+'</h3><div class="feeamt rose num">'+amt+'</div><p class="small">'+unit+'</p><span class="duo">'+who+'<b>'+tag+'</b></span></div>'};
+    return '<div class="grid3 fees">'+
+      m("1 · See","eye","CPM","₹50","Flam's fixed fee per 1,000 Flicks views, on top of JioHotstar's own CPM for the slot","Every brand","Always")+
+      m("2 · Explore","swap","Swap fee","₹1","each time a viewer swaps the product, model or scene. The viewer is exploring variants","Every brand","Optional")+
+      m("3 · Act","cart","CPC","₹5","each click on Buy, Order or Add to cart. The viewer is taking the final action","Every brand","Optional")+
+      m("Big brands","film","Sponsor fee","₹50k","Flam's build fee per swap moment, when a brand also buys a show sponsorship","Sponsors","Add-on")+'</div>';
+  }
+  function calcF(p){
+    return '<div class="calc" id="calcF"><div class="controls">'+
+      '<div class="group"><h3>'+ic("tv")+'1 · See: the ad slot</h3><div class="finv" role="group" aria-label="Inventory">'+Object.keys(F_INV).map(function(k){return '<button type="button" data-finv="'+k+'">'+esc(F_INV[k].t)+'</button>'}).join("")+'</div><p class="small" id="f-range"></p>'+
+        ctl("f-cpm","JioHotstar's CPM for the slot",100,12000,10,"₹")+ctl("f-addon","Flicks add-on, per 1,000",0,500,5,"₹")+ctl("f-flam","Flam's fixed fee, per 1,000",10,200,5,"₹")+ctl("f-imps","Flicks views in the campaign",1,1000,1,"","lakh")+'</div>'+
+      '<div class="group"><label class="switch" for="f-swOn">2 · Explore: swap fee <input id="f-swOn" type="checkbox"></label>'+ctl("f-sr","Viewers who swap",0.5,30,0.5,"","%")+ctl("f-sfee","Brand pays per swap",0.25,10,0.25,"₹")+'</div>'+
+      '<div class="group"><label class="switch" for="f-ckOn">3 · Act: CPC <input id="f-ckOn" type="checkbox"></label>'+ctl("f-cr","Viewers who click Buy or Order",0.1,10,0.1,"","%")+ctl("f-cpc","CPC: brand pays per click",1,50,0.5,"₹")+ctl("f-fs","Flam's share of swap and click fees",0,100,5,"","%")+'</div>'+
+      '<div class="group"><label class="switch" for="f-bigOn">Big brand: show sponsorship <input id="f-bigOn" type="checkbox"></label>'+ctl("f-spons","Sponsorship the brand adds",5,1000,5,"₹","lakh")+ctl("f-moments","Swap moments in the show",1,60,1)+ctl("f-build","Flam build fee per moment",10,300,5,"₹","k")+'</div>'+
+      '<button class="btn" type="button" id="f-reset">'+ic("reset")+'Reset to examples</button>'+
+      '</div><div class="results"><div class="funnel" id="f-funnel"></div><div class="tiles">'+
+      '<div class="mtile lead"><span class="who"><i class="dot8 b-pub"></i>'+esc(p.name)+' earns</span><span class="now num rose" id="fm-p"></span><span class="was num" id="fm-p0"></span><span class="tagx num" id="fm-px"></span></div>'+
+      '<div class="mtile"><span class="who"><i class="dot8 b-flam"></i>Flam earns</span><span class="now num" id="fm-f"></span><span class="was num" id="fm-f0"></span></div>'+
+      '<div class="mtile"><span class="who"><i class="dot8 b-brand"></i>Brand pays</span><span class="now num" id="fm-b"></span><span class="was num" id="fm-b0"></span></div>'+
+      '</div><details class="xp" open><summary>'+ic("book")+'How each number is built<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="tablewrap"><table class="rcpt num"><thead><tr><th>Where the money goes</th><th>Per 1,000 views</th><th>Whole campaign</th></tr></thead><tbody id="f-rows"></tbody></table></div><p class="small" id="f-be" style="margin-top:10px"></p></div></details></div></div>';
+  }
+  function wireF(pid){
+    var P=byId(pid), DEF={}; for(var k0 in F_DEFAULTS) DEF[k0]=F_DEFAULTS[k0];
+    var NUM=["cpm","addon","flam","imps","sr","sfee","cr","cpc","fs","spons","moments","build"], SW=["swOn","ckOn","bigOn"], KEY="flicks-playbook-f1-"+pid, dv={}; for(var k in DEF) dv[k]=DEF[k];
+    try{var saved=JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) for(var s2 in saved) dv[s2]=saved[s2];}catch(e){}
+    NUM.forEach(function(id){$("f-"+id).value=dv[id]}); SW.forEach(function(id){$("f-"+id).checked=!!dv[id]});
+    var inv=F_INV[dv.inv]?dv.inv:"vod";
+    var V=function(id){return FlamFields.val("f-"+id)};
+    var money=function(v){var a=Math.abs(v),sg=v<0?"−":"";
+      if(a>=1e7) return sg+"₹"+(Math.round(a/1e5)/100).toLocaleString("en-IN")+" crore";
+      if(a>=1e5) return sg+"₹"+(Math.round(a/1e3)/100).toLocaleString("en-IN")+" lakh";
+      return sg+"₹"+(Math.round(a*100)/100).toLocaleString("en-IN");};
+    var n1=function(v){return (Math.round(v*10)/10).toLocaleString("en-IN")};
+    var set=function(id,t){var el=$(id); if(el) el.textContent=t};
+    function calc(){
+      var cpm=V("cpm"), addon=V("addon"), flam=V("flam"), k=V("imps")*100, swOn=$("f-swOn").checked, ckOn=$("f-ckOn").checked, big=$("f-bigOn").checked;
+      var swaps=swOn?V("sr")*10:0, sw=swaps*V("sfee"), clicks=ckOn?V("cr")*10:0, ck=clicks*V("cpc"), fs=Math.min(V("fs"),100)/100;
+      var spons=big?V("spons")*1e5:0, build=big?V("moments")*V("build")*1e3:0;
+      [["sr","sfee"],["cr","cpc"],["spons","moments","build"]].forEach(function(g,i){var on=[swOn,ckOn,big][i]; g.forEach(function(id){$("f-"+id).disabled=!on; $("n-f-"+id).disabled=!on})});
+      $("f-fs").disabled=$("n-f-fs").disabled=!(swOn||ckOn);
+      var b1=cpm+addon+sw+ck, f1=flam+fs*(sw+ck), p1=cpm+(addon-flam)+(1-fs)*(sw+ck);
+      var B=b1*k+spons, F=f1*k+build, PJ=p1*k+spons-build, P0=cpm*k;
+      document.querySelectorAll("[data-finv]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.finv===inv))});
+      set("f-range",F_INV[inv].t+": published CPM range "+F_INV[inv].r+". An agency's estimate, not JioHotstar's rate card.");
+      $("f-funnel").innerHTML='<div class="fst a"><b class="num">1,000</b><span>see it</span><em class="num">'+money(cpm+addon)+' CPM</em></div>'+
+        '<div class="fst b'+(swOn?'':' off')+'"><b class="num">'+n1(swaps)+'</b><span>explore: swap</span><em class="num">'+(swOn?money(sw)+' in swap fees':'off')+'</em></div>'+
+        '<div class="fst c'+(ckOn?'':' off')+'"><b class="num">'+n1(clicks)+'</b><span>act: click Buy</span><em class="num">'+(ckOn?money(ck)+' in CPC':'off')+'</em></div>';
+      var row=function(l,a,b,c){return '<tr'+(c?' class="'+c+'"':'')+'><td>'+l+'</td><td>'+(a==null?'':money(a))+'</td><td>'+money(b)+'</td></tr>'}, grp=function(c,t){return '<tr class="grp"><td colspan="3"><i class="dot8 '+c+'"></i>'+t+'</td></tr>'};
+      var h=grp("b-brand","Brand pays")+row("Ad slot, JioHotstar's CPM",cpm,cpm*k)+row("Flicks add-on",addon,addon*k)+
+        (swOn?row("Swaps: "+n1(swaps)+" × "+money(V("sfee")),sw,sw*k):"")+(ckOn?row("Clicks: "+n1(clicks)+" × "+money(V("cpc")),ck,ck*k):"")+(big?row("Show sponsorship",null,spons):"")+row("Total",b1,B,"tot")+
+        grp("b-pub",esc(P.name)+" keeps")+row("Ad slot CPM, same as today",cpm,cpm*k)+row("Flicks add-on, after Flam's fee",addon-flam,(addon-flam)*k)+
+        ((swOn||ckOn)?row(Math.round((1-fs)*100)+"% of swap and click fees",(1-fs)*(sw+ck),(1-fs)*(sw+ck)*k):"")+(big?row("Sponsorship, after Flam's build fees",null,spons-build):"")+row("Total",p1,PJ,"tot")+
+        grp("b-flam","Flam earns")+row("Fixed fee",flam,flam*k)+((swOn||ckOn)?row(Math.round(fs*100)+"% of swap and click fees",fs*(sw+ck),fs*(sw+ck)*k):"")+(big?row("Build fees: "+V("moments")+" moments × "+money(V("build")*1e3),null,build):"")+row("Total",f1,F,"tot");
+      $("f-rows").innerHTML=h;
+      set("fm-p",money(PJ)); set("fm-p0","would earn "+money(P0)+" from a normal ad"); set("fm-px",(PJ-P0>=0?"+":"")+money(PJ-P0)+" more"); $("fm-px").className="tagx num "+(PJ-P0>=0?"good":"bad");
+      set("fm-f",money(F)); set("fm-f0",money(f1)+" per 1,000 views"+(big?" plus build fees":""));
+      set("fm-b",money(B)); set("fm-b0",ckOn&&clicks>0?money(B/(clicks*k))+" per click, all in":money(b1)+" per 1,000 views");
+      set("f-be",addon<flam?"The Flicks add-on is below Flam's fee, so JioHotstar earns less on the slot itself. Raise the add-on to at least "+money(flam)+".":"Small brands pay steps 1 to 3 only. The sponsorship switch is for big brands that also buy into a show.");
+      var o={inv:inv}; NUM.forEach(function(id){o[id]=V(id)}); SW.forEach(function(id){o[id]=$("f-"+id).checked}); try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
+    }
+    FlamFields.make($("calcF"),calc);
+    SW.forEach(function(id){$("f-"+id).addEventListener("input",calc)});
+    document.querySelectorAll("[data-finv]").forEach(function(b){b.addEventListener("click",function(){inv=b.dataset.finv; FlamFields.setVal("f-cpm",F_INV[inv].d); calc();})});
+    $("f-reset").addEventListener("click",function(){inv=DEF.inv; NUM.forEach(function(id){FlamFields.setVal("f-"+id,DEF[id])}); SW.forEach(function(id){$("f-"+id).checked=!!DEF[id]}); calc(); toast("Back to example numbers");});
+    calc();
+  }
   function flowD(){return '<div class="mflow">'+fnode("tag","Brand","pays","t")+wire("–","per 1,000","dw1")+fnode("users","Agency","–","k",true,"dw2")+wire("–","passed on","dw3")+fnode("flam","Flam","–","",false,"dw4")+wire("–","run cost","dw5")+fnode("store","Platforms","media and serving","c")+'</div>'}
   function calcD(){
     return '<div class="calc" id="calcD"><div class="controls">'+
@@ -1284,6 +1387,10 @@ var COMPETITORS={
         '<div class="note">'+ic("alert")+'<span>'+esc(p.docNote)+'</span></div>'+
         '<details class="xp cta" id="osxp"><summary><span class="tile k">'+ic("sliders")+'</span><span class="ctx"><b>Live Osmos calculator</b><span>Try your own numbers: platform share, prices, swaps</span></span><span class="go"><span class="op">Open calculator</span><span class="cl">Close</span>'+ic("chev")+'</span></summary><div class="xpbody"><iframe class="embedframe" id="osmosframe" title="Osmos partner model page"></iframe><a class="btn sm" style="margin-top:12px" href="osmos.html" target="_blank" rel="noopener">'+ic("external")+'Open on its own</a></div></details>');
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
+    } else if(p.calc==="F"){
+      h+=card(S(),["Pricing","One funnel: see, explore, act"],
+        '<div class="note">'+ic("coins")+'<span><b>How it works:</b> every brand pays a CPM for the views. A brand can add a fee per swap (viewers exploring variants) and a CPC per click on Buy (viewers taking action). Big brands that sponsor a show add swap moments inside it. Numbers are examples; type or drag any value.</span></div>'+
+        metersF()+'<h3 class="fh">What JioHotstar sells today, and where Flicks fits</h3>'+formatsF()+'<h3 class="fh">Try the numbers</h3>'+calcF(p));
     } else if(p.calc==="D"){
       h+=card(S(),["Pricing","Agency partner · brand budgets"],'<div class="note">'+ic("users")+'<span><b>Agency partner:</b> the agency sells Flicks to its brands at a price per 1,000, keeps its share, and passes the rest to Flam. Flam runs the campaign on partner platforms and keeps what is left after its run cost. The agency commits a spend each quarter; a shortfall is carried forward or paid. Numbers are examples; type or drag any value.</span></div>'+flowD()+calcD());
     } else {
@@ -1382,7 +1489,7 @@ var COMPETITORS={
     applyEditing();
     countUp();
     if(id==="cases"&&!p) wireCases();
-    if(p){ if(p.calc==="B") wireB(p.id); if(p.calc==="D") wireD(p.id); if(p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
+    if(p){ if(p.calc==="B") wireB(p.id); if(p.calc==="D") wireD(p.id); if(p.calc==="F") wireF(p.id); if(p.calc!=="F"&&p.models.indexOf("C")>=0) wireC(p.id); wirePm(); if(p.id==="osmos") wireOsmos(); wireDemo(); }
     wireMind();
     if(jump){var el=$(jump); jump=null; if(el) setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},300);} else window.scrollTo(0,0);
   }
