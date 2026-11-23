@@ -214,6 +214,7 @@ svg.mind .model rect.box{stroke:rgba(255,209,194,.5)}
 .ftable .fdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px;background:var(--accent)}
 .ftable .k2 .fdot{background:var(--rose-2)} .ftable .k0 .fdot{background:var(--faint)} .ftable .k0 td:last-child{color:var(--faint)}
 .finv{display:flex;flex-wrap:wrap;gap:6px}
+.fsum{margin:0;padding:10px 12px;border-radius:12px;background:rgba(255,209,194,.07);box-shadow:inset 0 0 0 1px rgba(255,209,194,.3);font-size:13px;color:var(--cream)}
 .finv button{border:0;border-radius:999px;padding:7px 12px;background:transparent;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer;transition:all .25s}
 .finv button:hover{color:var(--ink)}
 .finv button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:none;font-weight:600}
@@ -672,7 +673,7 @@ var MODELS={
   C:{name:"Swap Partner",icon:"film",status:"draft"},
   D:{name:"Agency partner",icon:"users",status:"built"}
 };
-var F_DEFAULTS={inv:"vod",cpm:400,addon:80,flam:50,imps:20,swOn:true,sr:8,sfee:1,ckOn:true,cr:1,cpc:5,fs:40,bigOn:false,spons:50,moments:20,build:50};
+var F_DEFAULTS={inv:"vod",cpm:400,flam:50,imps:20,swOn:true,sr:8,sfee:1,fsS:40,ckOn:true,cr:1,cpc:5,fsC:40,bigOn:false,spons:50,moments:20,build:50};
 var F_INV={reg:{t:"Regional",r:"₹180 to ₹650",d:300},vod:{t:"Shows and movies",r:"₹180 to ₹1,250",d:400},ctv:{t:"Connected TV",r:"₹800 to ₹3,000+",d:1200},sport:{t:"Live sport",r:"₹1,400 to ₹11,200+",d:2500}};
 var F_FORMATS=[
   {f:"Pre-roll video",w:"Before the stream starts, on mobile and TV. 6 to 20 seconds, can't be skipped",s:"CPM",x:"Swap before the show starts",ok:1},
@@ -1159,28 +1160,29 @@ var COMPETITORS={
   function metersF(){
     var m=function(step,icon,title,amt,unit,who,tag){return '<div class="panel lift fee"><span class="fstepn">'+step+'</span><span class="tile c">'+ic(icon)+'</span><h3>'+title+'</h3><div class="feeamt rose num">'+amt+'</div><p class="small">'+unit+'</p><span class="duo">'+who+'<b>'+tag+'</b></span></div>'};
     return '<div class="grid3 fees">'+
-      m("1 · See","eye","CPM","₹50","Flam's fixed fee per 1,000 Flicks views, on top of JioHotstar's own CPM for the slot","Every brand","Always")+
-      m("2 · Explore","swap","Swap fee","₹1","each time a viewer swaps the product, model or scene. The viewer is exploring variants","Every brand","Optional")+
-      m("3 · Act","cart","CPC","₹5","each click on Buy, Order or Add to cart. The viewer is taking the final action","Every brand","Optional")+
-      m("Big brands","film","Sponsor fee","₹50k","Flam's build fee per swap moment, when a brand also buys a show sponsorship","Sponsors","Add-on")+'</div>';
+      m("1 · See","eye","Flam's CPM","₹50","per 1,000 views. A fixed fee, added on top of JioHotstar's own CPM. Flam keeps all of it","Every brand","Fixed")+
+      m("2 · Explore","swap","Swap fee","₹1","the brand pays this each time a viewer swaps a variant. Split between JioHotstar and Flam","Optional","Shared")+
+      m("3 · Act","cart","CPC","₹5","the brand pays this each time a viewer clicks Buy, Order or Add to cart. Split between JioHotstar and Flam","Optional","Shared")+
+      m("Big brands","film","Build fee","₹50k","per swap moment Flam builds inside a show, when the brand also sponsors that show","Sponsors","Fixed")+'</div>';
   }
   function calcF(p){
+    var N=esc(p.name);
     return '<div class="calc" id="calcF"><div class="controls">'+
-      '<div class="group"><h3>'+ic("tv")+'1 · See: the ad slot</h3><div class="finv" role="group" aria-label="Inventory">'+Object.keys(F_INV).map(function(k){return '<button type="button" data-finv="'+k+'">'+esc(F_INV[k].t)+'</button>'}).join("")+'</div><p class="small" id="f-range"></p>'+
-        ctl("f-cpm","JioHotstar's CPM for the slot",100,12000,10,"₹")+ctl("f-addon","Flicks add-on, per 1,000",0,500,5,"₹")+ctl("f-flam","Flam's fixed fee, per 1,000",10,200,5,"₹")+ctl("f-imps","Flicks views in the campaign",1,1000,1,"","lakh")+'</div>'+
-      '<div class="group"><label class="switch" for="f-swOn">2 · Explore: swap fee <input id="f-swOn" type="checkbox"></label>'+ctl("f-sr","Viewers who swap",0.5,30,0.5,"","%")+ctl("f-sfee","Brand pays per swap",0.25,10,0.25,"₹")+'</div>'+
-      '<div class="group"><label class="switch" for="f-ckOn">3 · Act: CPC <input id="f-ckOn" type="checkbox"></label>'+ctl("f-cr","Viewers who click Buy or Order",0.1,10,0.1,"","%")+ctl("f-cpc","CPC: brand pays per click",1,50,0.5,"₹")+ctl("f-fs","Flam's share of swap and click fees",0,100,5,"","%")+'</div>'+
-      '<div class="group"><label class="switch" for="f-bigOn">Big brand: show sponsorship <input id="f-bigOn" type="checkbox"></label>'+ctl("f-spons","Sponsorship the brand adds",5,1000,5,"₹","lakh")+ctl("f-moments","Swap moments in the show",1,60,1)+ctl("f-build","Flam build fee per moment",10,300,5,"₹","k")+'</div>'+
+      '<div class="group"><h3>'+ic("eye")+'1 · See: CPM</h3><p class="small">Which '+N+' inventory is the ad on?</p><div class="finv" role="group" aria-label="Inventory">'+Object.keys(F_INV).map(function(k){return '<button type="button" data-finv="'+k+'">'+esc(F_INV[k].t)+'</button>'}).join("")+'</div><p class="small" id="f-range"></p>'+
+        ctl("f-cpm",N+"'s CPM: its price per 1,000 views",100,12000,10,"₹")+ctl("f-flam","Flam's CPM: fixed fee per 1,000 views, added on top",10,200,5,"₹")+'<p class="fsum num" id="f-sum"></p>'+ctl("f-imps","Views the campaign buys",1,1000,1,"","lakh")+'</div>'+
+      '<div class="group"><label class="switch" for="f-swOn">2 · Explore: swap fee <input id="f-swOn" type="checkbox"></label>'+ctl("f-sr","Viewers who swap a variant",0.5,30,0.5,"","%")+ctl("f-sfee","Brand pays for each swap",0.25,10,0.25,"₹")+ctl("f-fsS","Flam's share of the swap fees",0,100,5,"","%")+'</div>'+
+      '<div class="group"><label class="switch" for="f-ckOn">3 · Act: CPC <input id="f-ckOn" type="checkbox"></label>'+ctl("f-cr","Viewers who click Buy or Order",0.1,10,0.1,"","%")+ctl("f-cpc","Brand pays for each click (CPC)",1,50,0.5,"₹")+ctl("f-fsC","Flam's share of the click fees",0,100,5,"","%")+'</div>'+
+      '<div class="group"><label class="switch" for="f-bigOn">Big brands only: show sponsorship <input id="f-bigOn" type="checkbox"></label>'+ctl("f-spons","Sponsorship fee the brand pays "+N,5,1000,5,"₹","lakh")+ctl("f-moments","Swap moments Flam builds in the show",1,60,1)+ctl("f-build","Flam's build fee for each moment",10,300,5,"₹","k")+'</div>'+
       '<button class="btn" type="button" id="f-reset">'+ic("reset")+'Reset to examples</button>'+
       '</div><div class="results"><div class="funnel" id="f-funnel"></div><div class="tiles">'+
-      '<div class="mtile lead"><span class="who"><i class="dot8 b-pub"></i>'+esc(p.name)+' earns</span><span class="now num rose" id="fm-p"></span><span class="was num" id="fm-p0"></span><span class="tagx num" id="fm-px"></span></div>'+
+      '<div class="mtile lead"><span class="who"><i class="dot8 b-pub"></i>'+N+' earns</span><span class="now num rose" id="fm-p"></span><span class="was num" id="fm-p0"></span><span class="tagx num" id="fm-px"></span></div>'+
       '<div class="mtile"><span class="who"><i class="dot8 b-flam"></i>Flam earns</span><span class="now num" id="fm-f"></span><span class="was num" id="fm-f0"></span></div>'+
       '<div class="mtile"><span class="who"><i class="dot8 b-brand"></i>Brand pays</span><span class="now num" id="fm-b"></span><span class="was num" id="fm-b0"></span></div>'+
       '</div><details class="xp" open><summary>'+ic("book")+'How each number is built<span class="chev">'+ic("chev")+'</span></summary><div class="xpbody"><div class="tablewrap"><table class="rcpt num"><thead><tr><th>Where the money goes</th><th>Per 1,000 views</th><th>Whole campaign</th></tr></thead><tbody id="f-rows"></tbody></table></div><p class="small" id="f-be" style="margin-top:10px"></p></div></details></div></div>';
   }
   function wireF(pid){
-    var P=byId(pid), DEF={}; for(var k0 in F_DEFAULTS) DEF[k0]=F_DEFAULTS[k0];
-    var NUM=["cpm","addon","flam","imps","sr","sfee","cr","cpc","fs","spons","moments","build"], SW=["swOn","ckOn","bigOn"], KEY="flicks-playbook-f1-"+pid, dv={}; for(var k in DEF) dv[k]=DEF[k];
+    var P=byId(pid), N=esc(P.name), DEF={}; for(var k0 in F_DEFAULTS) DEF[k0]=F_DEFAULTS[k0];
+    var NUM=["cpm","flam","imps","sr","sfee","fsS","cr","cpc","fsC","spons","moments","build"], SW=["swOn","ckOn","bigOn"], KEY="flicks-playbook-f2-"+pid, dv={}; for(var k in DEF) dv[k]=DEF[k];
     try{var saved=JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) for(var s2 in saved) dv[s2]=saved[s2];}catch(e){}
     NUM.forEach(function(id){$("f-"+id).value=dv[id]}); SW.forEach(function(id){$("f-"+id).checked=!!dv[id]});
     var inv=F_INV[dv.inv]?dv.inv:"vod";
@@ -1192,29 +1194,30 @@ var COMPETITORS={
     var n1=function(v){return (Math.round(v*10)/10).toLocaleString("en-IN")};
     var set=function(id,t){var el=$(id); if(el) el.textContent=t};
     function calc(){
-      var cpm=V("cpm"), addon=V("addon"), flam=V("flam"), k=V("imps")*100, swOn=$("f-swOn").checked, ckOn=$("f-ckOn").checked, big=$("f-bigOn").checked;
-      var swaps=swOn?V("sr")*10:0, sw=swaps*V("sfee"), clicks=ckOn?V("cr")*10:0, ck=clicks*V("cpc"), fs=Math.min(V("fs"),100)/100;
+      var cpm=V("cpm"), flam=V("flam"), k=V("imps")*100, swOn=$("f-swOn").checked, ckOn=$("f-ckOn").checked, big=$("f-bigOn").checked;
+      var swaps=swOn?V("sr")*10:0, sw=swaps*V("sfee"), clicks=ckOn?V("cr")*10:0, ck=clicks*V("cpc"), fsS=Math.min(V("fsS"),100)/100, fsC=Math.min(V("fsC"),100)/100;
       var spons=big?V("spons")*1e5:0, build=big?V("moments")*V("build")*1e3:0;
-      [["sr","sfee"],["cr","cpc"],["spons","moments","build"]].forEach(function(g,i){var on=[swOn,ckOn,big][i]; g.forEach(function(id){$("f-"+id).disabled=!on; $("n-f-"+id).disabled=!on})});
-      $("f-fs").disabled=$("n-f-fs").disabled=!(swOn||ckOn);
-      var b1=cpm+addon+sw+ck, f1=flam+fs*(sw+ck), p1=cpm+(addon-flam)+(1-fs)*(sw+ck);
+      [["sr","sfee","fsS"],["cr","cpc","fsC"],["spons","moments","build"]].forEach(function(g,i){var on=[swOn,ckOn,big][i]; g.forEach(function(id){$("f-"+id).disabled=!on; $("n-f-"+id).disabled=!on})});
+      var b1=cpm+flam+sw+ck, f1=flam+fsS*sw+fsC*ck, p1=cpm+(1-fsS)*sw+(1-fsC)*ck;
       var B=b1*k+spons, F=f1*k+build, PJ=p1*k+spons-build, P0=cpm*k;
       document.querySelectorAll("[data-finv]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.finv===inv))});
-      set("f-range",F_INV[inv].t+": published CPM range "+F_INV[inv].r+". An agency's estimate, not JioHotstar's rate card.");
-      $("f-funnel").innerHTML='<div class="fst a"><b class="num">1,000</b><span>see it</span><em class="num">'+money(cpm+addon)+' CPM</em></div>'+
-        '<div class="fst b'+(swOn?'':' off')+'"><b class="num">'+n1(swaps)+'</b><span>explore: swap</span><em class="num">'+(swOn?money(sw)+' in swap fees':'off')+'</em></div>'+
-        '<div class="fst c'+(ckOn?'':' off')+'"><b class="num">'+n1(clicks)+'</b><span>act: click Buy</span><em class="num">'+(ckOn?money(ck)+' in CPC':'off')+'</em></div>';
+      set("f-range",F_INV[inv].t+" usually sells at "+F_INV[inv].r+" per 1,000 views. This is an agency's estimate, not "+P.name+"'s own rate card.");
+      set("f-sum","Brand's CPM = "+money(cpm)+" + "+money(flam)+" = "+money(cpm+flam)+" per 1,000 views");
+      $("f-funnel").innerHTML='<div class="fst a"><b class="num">1,000</b><span>people see the Flicks</span><em class="num">brand pays '+money(cpm+flam)+' CPM</em></div>'+
+        '<div class="fst b'+(swOn?'':' off')+'"><b class="num">'+n1(swaps)+'</b><span>of them swap a variant</span><em class="num">'+(swOn?'brand pays '+money(sw)+' in swap fees':'swap fee is off')+'</em></div>'+
+        '<div class="fst c'+(ckOn?'':' off')+'"><b class="num">'+n1(clicks)+'</b><span>of them click Buy</span><em class="num">'+(ckOn?'brand pays '+money(ck)+' in click fees':'CPC is off')+'</em></div>';
       var row=function(l,a,b,c){return '<tr'+(c?' class="'+c+'"':'')+'><td>'+l+'</td><td>'+(a==null?'':money(a))+'</td><td>'+money(b)+'</td></tr>'}, grp=function(c,t){return '<tr class="grp"><td colspan="3"><i class="dot8 '+c+'"></i>'+t+'</td></tr>'};
-      var h=grp("b-brand","Brand pays")+row("Ad slot, JioHotstar's CPM",cpm,cpm*k)+row("Flicks add-on",addon,addon*k)+
-        (swOn?row("Swaps: "+n1(swaps)+" × "+money(V("sfee")),sw,sw*k):"")+(ckOn?row("Clicks: "+n1(clicks)+" × "+money(V("cpc")),ck,ck*k):"")+(big?row("Show sponsorship",null,spons):"")+row("Total",b1,B,"tot")+
-        grp("b-pub",esc(P.name)+" keeps")+row("Ad slot CPM, same as today",cpm,cpm*k)+row("Flicks add-on, after Flam's fee",addon-flam,(addon-flam)*k)+
-        ((swOn||ckOn)?row(Math.round((1-fs)*100)+"% of swap and click fees",(1-fs)*(sw+ck),(1-fs)*(sw+ck)*k):"")+(big?row("Sponsorship, after Flam's build fees",null,spons-build):"")+row("Total",p1,PJ,"tot")+
-        grp("b-flam","Flam earns")+row("Fixed fee",flam,flam*k)+((swOn||ckOn)?row(Math.round(fs*100)+"% of swap and click fees",fs*(sw+ck),fs*(sw+ck)*k):"")+(big?row("Build fees: "+V("moments")+" moments × "+money(V("build")*1e3),null,build):"")+row("Total",f1,F,"tot");
+      var pS=Math.round(fsS*100), pC=Math.round(fsC*100);
+      var h=grp("b-brand","Brand pays")+row(N+"'s CPM",cpm,cpm*k)+row("Flam's CPM, fixed",flam,flam*k)+
+        (swOn?row("Swap fees: "+n1(swaps)+" swaps × "+money(V("sfee")),sw,sw*k):"")+(ckOn?row("Click fees (CPC): "+n1(clicks)+" clicks × "+money(V("cpc")),ck,ck*k):"")+(big?row("Show sponsorship",null,spons):"")+row("Total",b1,B,"tot")+
+        grp("b-pub",N+" keeps")+row("Its own CPM, in full",cpm,cpm*k)+
+        (swOn?row((100-pS)+"% of the swap fees",(1-fsS)*sw,(1-fsS)*sw*k):"")+(ckOn?row((100-pC)+"% of the click fees",(1-fsC)*ck,(1-fsC)*ck*k):"")+(big?row("Sponsorship, minus Flam's build fees",null,spons-build):"")+row("Total",p1,PJ,"tot")+
+        grp("b-flam","Flam earns")+row("Its fixed CPM, in full",flam,flam*k)+(swOn?row(pS+"% of the swap fees",fsS*sw,fsS*sw*k):"")+(ckOn?row(pC+"% of the click fees",fsC*ck,fsC*ck*k):"")+(big?row("Build fees: "+V("moments")+" moments × "+money(V("build")*1e3),null,build):"")+row("Total",f1,F,"tot");
       $("f-rows").innerHTML=h;
-      set("fm-p",money(PJ)); set("fm-p0","would earn "+money(P0)+" from a normal ad"); set("fm-px",(PJ-P0>=0?"+":"")+money(PJ-P0)+" more"); $("fm-px").className="tagx num "+(PJ-P0>=0?"good":"bad");
-      set("fm-f",money(F)); set("fm-f0",money(f1)+" per 1,000 views"+(big?" plus build fees":""));
-      set("fm-b",money(B)); set("fm-b0",ckOn&&clicks>0?money(B/(clicks*k))+" per click, all in":money(b1)+" per 1,000 views");
-      set("f-be",addon<flam?"The Flicks add-on is below Flam's fee, so JioHotstar earns less on the slot itself. Raise the add-on to at least "+money(flam)+".":"Small brands pay steps 1 to 3 only. The sponsorship switch is for big brands that also buy into a show.");
+      set("fm-p",money(PJ)); set("fm-p0",money(P0)+" is what the same slot earns without Flicks"); set("fm-px",(PJ-P0>=0?"+":"")+money(PJ-P0)+" extra from Flicks"); $("fm-px").className="tagx num "+(PJ-P0>=0?"good":"bad");
+      set("fm-f",money(F)); set("fm-f0",money(flam*k)+" of it is the fixed CPM");
+      set("fm-b",money(B)); set("fm-b0",ckOn&&clicks>0?"works out to "+money(B/(clicks*k))+" per click":money(b1)+" per 1,000 views");
+      set("f-be",swOn||ckOn||big?"The CPM is never shared: "+P.name+" keeps its CPM and Flam keeps its fixed CPM. Only swap fees and click fees are split.":"With swap fee and CPC both off, "+P.name+" earns the same as a normal ad. Turn one on to give it a share.");
       var o={inv:inv}; NUM.forEach(function(id){o[id]=V(id)}); SW.forEach(function(id){o[id]=$("f-"+id).checked}); try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
     }
     FlamFields.make($("calcF"),calc);
@@ -1389,7 +1392,7 @@ var COMPETITORS={
       h+=card(S(),["Onboarding","Pilot, then scale"],'<div class="panel"><span class="duo">Pilot<b>Flam builds</b></span><div class="lane">'+lane(p.onboard.pilot)+'</div></div><div class="panel hl"><span class="duo">Scale<b>Osmos builds</b></span><div class="lane">'+lane(p.onboard.scale)+'</div></div>');
     } else if(p.calc==="F"){
       h+=card(S(),["Pricing","One funnel: see, explore, act"],
-        '<div class="note">'+ic("coins")+'<span><b>How it works:</b> every brand pays a CPM for the views. A brand can add a fee per swap (viewers exploring variants) and a CPC per click on Buy (viewers taking action). Big brands that sponsor a show add swap moments inside it. Numbers are examples; type or drag any value.</span></div>'+
+        '<div class="note">'+ic("coins")+'<span><b>How it works:</b> every brand pays a CPM for views: JioHotstar\'s CPM plus Flam\'s fixed CPM. The CPM is not shared. A brand can also pay per swap (a viewer exploring variants) and per click on Buy (a viewer taking action); those two fees are split between JioHotstar and Flam. Numbers are examples; type or drag any value.</span></div>'+
         metersF()+'<h3 class="fh">Try the numbers</h3>'+calcF(p));
     } else if(p.calc==="D"){
       h+=card(S(),["Pricing","Agency partner · brand budgets"],'<div class="note">'+ic("users")+'<span><b>Agency partner:</b> the agency sells Flicks to its brands at a price per 1,000, keeps its share, and passes the rest to Flam. Flam runs the campaign on partner platforms and keeps what is left after its run cost. The agency commits a spend each quarter; a shortfall is carried forward or paid. Numbers are examples; type or drag any value.</span></div>'+flowD()+calcD());
